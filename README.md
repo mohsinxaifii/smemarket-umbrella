@@ -18,7 +18,7 @@ Content lives in `src/lib/site.ts`; photos and credits in `public/images/`.
 - **Run everything locally: `npm run local`** → http://localhost:3000 (site with live reload; /api is forwarded to the local API + database with sample data on :8788).
   `npm run local:reset` wipes local data and reseeds. Sample logins: admin@smemarket.ae / admin12345, seller@test.ae / test12345, buyer@test.ae / test12345.
   Lead emails are switched off locally; leads land in /admin → Leads.
-- Admins: any account whose email is in `ADMIN_EMAILS` (wrangler.toml) gets the admin role, then /admin.
+- Admins: set with SQL (`UPDATE users SET role='admin' WHERE email='…'`), then /admin. `ADMIN_EMAILS` stays empty in production because sign-up doesn't verify email ownership.
 
 First deploy:
 1. `npx wrangler d1 create smemarket` → paste the id into wrangler.toml

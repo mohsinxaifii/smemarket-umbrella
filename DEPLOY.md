@@ -1,42 +1,41 @@
-# Deploy the new smemarket.ae on Cloudflare Pages
+# Replace smemarket.ae with this site (Cloudflare Pages)
 
-This repo is the full SMEmarket site:
+This repo is the full rebuilt SMEmarket site:
 
 - **Website:** a static Next.js export, built into `out/`.
 - **Marketplace API:** Cloudflare Pages Functions in `functions/`, with the code in `server/`.
 - **D1 database:** accounts, listings, NDAs, messages and leads.
 - **Private R2 bucket:** buyer ID documents and sellers' data-room files.
 
-## How the switch works
+## The plan
 
-| | Old site (keep it) | New site (this repo) |
+| | Old site (keep, offline after cutover) | New site (this repo) |
 |---|---|---|
 | Pages project | `smemarket` (`smemarket-e2w.pages.dev`), branch `main` | **`smemarket-site`**, branch `master` |
 | Data | Workers KV `SUBMISSIONS` | D1 `smemarket` and R2 `smemarket-files` |
 
-We build the new site in its **own** Pages project and test it on its pages.dev address, while the live
-site keeps running. At cutover we move the `www.smemarket.ae` custom domain from the old project to the new
-one. The old project, its KV data and its secrets stay untouched. To roll back, move the domain back.
+We build the new site in its own Pages project, test it on its pages.dev address, then move the
+`www.smemarket.ae` custom domain from the old project to the new one. The old project, its KV data and its
+secrets stay untouched, so rolling back takes one minute. Old user accounts are **not** migrated: users sign
+up again on the new site, and the old data stays safe in the old project.
 
-**Never deploy this repo to the old `smemarket` project.** Its `wrangler.toml` would replace that project's
-KV binding and variables.
+**Never deploy this repo to the old `smemarket` project.** It would replace that project's KV binding and
+variables.
 
 ## Leave these alone
 
-- **Email:** the MX, SPF, DKIM, DMARC and google-site-verification records. They all point to Google
-  Workspace, and email must keep working.
-- **`growth.smemarket.ae`:** the Pages project `smemarket-growth`, a separate site.
-- **The zone rule** that redirects `smemarket.ae` to `https://www.smemarket.ae`. It stays as it is.
+- **Email:** the MX, SPF, DKIM, DMARC and google-site-verification records (Google Workspace).
+- **`growth.smemarket.ae`:** the Pages project `smemarket-growth`.
+- **The zone rule** that redirects `smemarket.ae` to `https://www.smemarket.ae`.
 
-## What you need
+## Setup
 
-- A Cloudflare API token on account `2947ebc94208e9440eb2351fe5ba4abf` with these permissions:
-  - Account: **D1 Edit**, **Workers R2 Storage Edit**, **Cloudflare Pages Edit**, **Workers KV Storage Read**
-  - Zone smemarket.ae: **DNS Edit**, **Zone Read**, **Single Redirect / Page Rules Read**
-- The Web3Forms access key, the same one the growth site uses. It emails every form submission to the
-  team. Get it from the team privately, never in a channel.
-- Optional: a Google Places key (`GOOGLE_PLACES_KEY`) for Google results in the directory. Without one, the
-  directory uses OpenStreetMap.
+You need:
+
+- An API token on account `2947ebc94208e9440eb2351fe5ba4abf` with these permissions:
+  - Account: **D1 Edit**, **Workers R2 Storage Edit**, **Cloudflare Pages Edit**
+  - Zone smemarket.ae: **DNS Edit**, **Zone Read**
+- The Web3Forms key, sent to you privately.
 - Node 22, run as `npx -y node@22 …` if it isn't the default.
 
 ```bash
@@ -46,79 +45,101 @@ git clone https://github.com/mohsinxaifii/smemarket-umbrella.git && cd smemarket
 npm ci
 ```
 
-## Phase A: look before touching anything (read-only)
+## 1. Back up DNS (read-only)
 
-1. Export every DNS record for smemarket.ae to a file and keep it. This is the rollback copy.
-2. List the zone's redirect rules, page rules and any Workers routes.
-3. Take stock of the old site's KV data. Don't copy any secret values into chat.
-   - Find the `SUBMISSIONS` namespace id:
-     `npx wrangler kv namespace list`
-   - Count the keys:
-     `npx wrangler kv key list --namespace-id <id> --remote`
-   - Group the keys by prefix (for example `user:`, `session:`, `msg:`) and count each group.
-   - For each prefix, show one record with **every value replaced by its type**, so only the field names
-     show. Say whether passwords look hashed, and roughly how.
-4. Report back. The owner decides whether old accounts get migrated before cutover.
+Export every DNS record of the zone to a file with
+`GET /zones/b8181b7bc8dceaf465841c81c20ca8c4/dns_records/export`, and keep it. This is the rollback copy.
 
-## Phase B: build the new site next to the old one (live site unaffected)
-
-### Create the database and file storage
+## 2. Database and file storage
 
 ```bash
 npx wrangler d1 create smemarket            # if the name is taken, stop and report
 # put the printed database_id into wrangler.toml, replacing 00000000-0000-0000-0000-000000000000
 # (a local edit is enough; no need to push it)
 
-npx wrangler r2 bucket create smemarket-files   # private: never enable public access
+npx wrangler r2 bucket create smemarket-files   # private: never enable public access. If R2 isn't enabled on the account, stop and report.
 npx wrangler d1 migrations apply smemarket --remote
 npx wrangler d1 execute smemarket --remote --file scripts/seed-production.sql   # the 2 real listings
 ```
 
-### Build and deploy
+## 3. Build and deploy to the new project
 
 ```bash
 export NEXT_PUBLIC_LEAD_ACCESS_KEY=...       # Web3Forms key, baked into the build
 export NEXT_PUBLIC_SITE_URL=https://www.smemarket.ae
 npm run build:pages
 
-npx wrangler pages project create smemarket-site --production-branch master   # first time only
+npx wrangler pages project create smemarket-site --production-branch master
 npx wrangler pages deploy out --project-name smemarket-site --branch master   # run from the repo root
 ```
 
-Note the pages.dev address it prints. Cloudflare may add a suffix, as in `smemarket-site-xxx.pages.dev`.
+Call the pages.dev address it prints `NEW` (for example `https://smemarket-site-xxx.pages.dev`).
 
-### Test on that pages.dev address
+## 4. Test on NEW
 
-- `/` loads, and "Just listed" shows the 2 listings.
-- `/listings` and `/listing?id=l_jlt_barber` load.
-- `/api/me` returns `{"user":null,...}`.
-- Sign up at `/login?tab=signup`, log out, then log in again.
-- `/directory`: a search such as "accountant" in Dubai returns businesses.
-- `/contact`: send the form, and check that it reaches the team inbox.
-- Sign the NDA at `/nda` with a test ID image.
-- Request access to a listing.
-- Add a test listing at `/sell`.
+Use only `@example.com` emails for test accounts. Step 6 deletes them.
 
-Then sign up with **admin@smemarket.ae**. That email gets the admin role through `ADMIN_EMAILS`. In `/admin`,
-approve the test NDA and request, and send a message between the two accounts. Withdraw the test listing
-afterwards.
+1. `/`, `/listings`, `/listing?id=l_jlt_barber`, `/sell`, `/directory`, `/advisory`, `/brokerage`,
+   `/about`, `/contact` and `/login` all load with status 200.
+2. `/` shows both listings in "Just listed".
+3. `/api/me` returns `{"user":null,...}`.
+4. Sign up `qa-seller@example.com`, `qa-buyer@example.com` and `qa-admin@example.com`, each with a random
+   password. Then log out and log back in as one of them.
+5. Make the QA admin an admin:
+   `npx wrangler d1 execute smemarket --remote --command "UPDATE users SET role='admin' WHERE email='qa-admin@example.com'"`
+6. As qa-seller, list a test business at `/sell`. As qa-admin, publish it in `/admin`.
+7. As qa-buyer:
+   - Sign the NDA at `/nda` with a small test image as the ID.
+   - Request access to the test listing.
+   - Save a listing.
+8. As qa-admin, approve the NDA and the access request.
+9. Send a message from the buyer to the seller in `/messages`, and a reply back.
+10. At `/directory`, a search for "accountant" in Dubai returns businesses.
+11. At `/contact`, send the form with the email `qa-buyer@example.com` and the message
+    `QA test, please ignore`. It returns success.
 
-## Phase C: cutover (only with the owner's go-ahead)
+If any step fails, **stop**: don't do the cutover, and report what failed.
 
-1. If the owner chose to migrate old accounts, run that migration first.
-2. Detach the custom domain `www.smemarket.ae` from the old Pages project `smemarket`.
-3. Attach it to `smemarket-site`:
-   ```bash
-   curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/smemarket-site/domains" \
-     -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data '{"name":"www.smemarket.ae"}'
-   ```
-4. Point the `www` DNS record (proxied CNAME) at the new project's pages.dev address. That's the address
-   from Phase B, not `smemarket-e2w.pages.dev`.
-5. Wait until the domain shows **Active** in Pages. Then run the Phase B tests again on
-   `https://www.smemarket.ae`, and check that `https://smemarket.ae` still redirects to www.
+## 5. Cutover (only if every test in step 4 passed)
 
-Rollback: detach `www.smemarket.ae` from `smemarket-site`, re-attach it to `smemarket`, and point the `www`
-CNAME back to `smemarket-e2w.pages.dev`.
+1. Detach the custom domain `www.smemarket.ae` from the old Pages project `smemarket`:
+   `DELETE /accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/smemarket/domains/www.smemarket.ae`
+2. Attach it to the new project:
+   `POST /accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/smemarket-site/domains` with `{"name":"www.smemarket.ae"}`
+3. Point the `www` DNS record at NEW's pages.dev host, as a proxied CNAME.
+4. Wait until the domain shows **active**.
+5. Check `https://www.smemarket.ae`: the home page title is "SMEmarket", the new site loads, `/api/me` returns
+   JSON, and `/listings` shows the 2 listings.
+6. Check that `https://smemarket.ae` still redirects to www.
+
+If the new site isn't serving within 30 minutes, roll back.
+
+**Rollback:**
+1. Detach `www.smemarket.ae` from `smemarket-site`.
+2. Re-attach it to `smemarket`.
+3. Point the `www` CNAME back to `smemarket-e2w.pages.dev`.
+
+## 6. Clean up the QA data
+
+```bash
+# list the private files the QA accounts uploaded, then delete each one
+npx wrangler d1 execute smemarket --remote --command "SELECT id_doc_key AS k FROM ndas WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@example.com') AND id_doc_key IS NOT NULL UNION ALL SELECT r2_key FROM docs WHERE listing_id IN (SELECT id FROM listings WHERE seller_id IN (SELECT id FROM users WHERE email LIKE '%@example.com'))"
+npx wrangler r2 object delete "smemarket-files/<key>" --remote     # for each key listed
+
+npx wrangler d1 execute smemarket --remote --file scripts/cleanup-test-data.sql
+npx wrangler d1 execute smemarket --remote --command "SELECT COUNT(*) AS users FROM users; SELECT id, status FROM listings"
+```
+
+Expected result: 1 user (the system seller `listings@smemarket.ae`), and the 2 real listings, both `live`.
+
+## 7. Admin account
+
+There is no automatic admin. `ADMIN_EMAILS` is empty on purpose, because sign-up doesn't verify email
+ownership. When the owner says they have signed up with `admin@smemarket.ae`, run:
+
+```bash
+npx wrangler d1 execute smemarket --remote --command "UPDATE users SET role='admin' WHERE email='admin@smemarket.ae'"
+```
 
 ## Updating the site later
 

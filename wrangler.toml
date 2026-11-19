@@ -5,8 +5,10 @@ pages_build_output_dir = "out"
 compatibility_date = "2024-11-01"
 
 [vars]
-# comma-separated emails that get the admin role on sign-up/login
-ADMIN_EMAILS = "admin@smemarket.ae"
+# Emails listed here get the admin role on sign-up/login. Left EMPTY on purpose: sign-up doesn't verify
+# email ownership, so anyone could claim a listed address first. Make an admin with SQL instead:
+#   npx wrangler d1 execute smemarket --remote --command "UPDATE users SET role='admin' WHERE email='admin@smemarket.ae'"
+ADMIN_EMAILS = ""
 
 [[d1_databases]]
 binding = "DB"
