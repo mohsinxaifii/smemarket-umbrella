@@ -1,0 +1,21 @@
+# Cloudflare Pages project for www.smemarket.ae
+# Static site (Next.js export in out/) + Pages Functions in functions/ for the marketplace API.
+name = "smemarket"
+pages_build_output_dir = "out"
+compatibility_date = "2024-11-01"
+
+[vars]
+# comma-separated emails that get the admin role on sign-up/login
+ADMIN_EMAILS = "admin@smemarket.ae"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "smemarket"
+# create with `npx wrangler d1 create smemarket`, then paste the id here
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+# private files: buyer ID documents and sellers' data-room documents. Never public.
+binding = "FILES"
+bucket_name = "smemarket-files"

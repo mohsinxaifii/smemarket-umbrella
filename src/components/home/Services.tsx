@@ -1,0 +1,36 @@
+import { ArrowUpRight } from "lucide-react";
+import Character from "@/components/ui/Character";
+import SmartLink from "@/components/ui/SmartLink";
+import { PILLARS } from "@/lib/site";
+
+/** Everything besides buying and selling, as four plain cards: what it is, who it's for, where to go. */
+export default function Services() {
+  const rest = PILLARS.filter((p) => p.slug !== "brokerage");
+  return (
+    <section className="section-y bg-paper">
+      <div className="container-x">
+        <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr] lg:items-end">
+          <div>
+            <p className="label">More than a marketplace</p>
+            <h2 className="display mt-4 text-section">Own a business already? We help you run it and grow it.</h2>
+          </div>
+          <p className="text-[19px] leading-relaxed text-ink-2 lg:pb-2">A bigger, better-run business is worth more when you sell. Same account, same team.</p>
+        </div>
+
+        <div className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-14 md:gap-4 lg:grid-cols-4">
+          {rest.map((p) => (
+            <SmartLink key={p.slug} href={p.href} className={`group relative flex min-h-[440px] flex-col overflow-hidden rounded-[28px] p-6 transition duration-500 hover:-translate-y-1 ${p.tone}`}>
+              <p className="text-[14px] font-semibold text-ink/55">{p.job}</p>
+              <h3 className="mt-2 text-[24px] font-semibold leading-tight tracking-tight">{p.name}</h3>
+              <p className="mt-2 max-w-[17rem] text-[16px] leading-relaxed text-ink-2">{p.line}</p>
+              <span className="relative z-10 mt-5 inline-flex w-fit items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-[14px] font-semibold text-paper">
+                {p.cta} <ArrowUpRight className="size-4 text-lime transition-transform duration-300 group-hover:rotate-45" />
+              </span>
+              <Character who={p.person.who} mood={p.person.mood} body={p.person.body} size={160} className="-mb-9 mt-auto self-end pt-4 transition-transform duration-700 ease-out-expo group-hover:-translate-y-2" />
+            </SmartLink>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
