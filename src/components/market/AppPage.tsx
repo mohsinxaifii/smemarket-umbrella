@@ -1,7 +1,7 @@
 /** Shell for marketplace pages: room for the fixed header, a heading row, then the content. */
 export default function AppPage({ eyebrow, title, intro, aside, children, tone = "bg-paper" }: { eyebrow?: string; title: React.ReactNode; intro?: React.ReactNode; aside?: React.ReactNode; children: React.ReactNode; tone?: string }) {
   return (
-    <section className={`${tone} min-h-[80vh] pb-24 pt-[136px] md:pt-[156px]`}>
+    <section className={`${tone} min-h-[80vh] pb-24 pt-[108px] md:pt-[128px]`}>
       <div className="container-x">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>

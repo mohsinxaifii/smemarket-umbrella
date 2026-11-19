@@ -118,7 +118,7 @@ route("GET", "me", async ({ req, env }) => {
 
 /* ───────────── browse and view ───────────── */
 
-route("GET", "listings", async ({ env, url }) => {
+route("GET", "listings", async ({ req, env, url }) => {
   const where = ["status = 'live'"];
   const args: (string | number)[] = [];
   const city = str(url.searchParams.get("city"), 60);
@@ -134,7 +134,11 @@ route("GET", "listings", async ({ env, url }) => {
   const order = { price_asc: "asking_price ASC", price_desc: "asking_price DESC", profit: "profit DESC" }[url.searchParams.get("sort") || ""] || "created_at DESC";
   const { results } = await env.DB.prepare(`SELECT * FROM listings WHERE ${where.join(" AND ")} ORDER BY ${order} LIMIT 200`).bind(...args).all<ListingRow>();
   const facets = await env.DB.prepare("SELECT city, industry FROM listings WHERE status = 'live'").all<{ city: string; industry: string }>();
+  // which of these the visitor has saved, so cards can show their bookmark state
+  const me = await currentUser(env, req);
+  const saved = me ? (await env.DB.prepare("SELECT listing_id FROM saved WHERE user_id = ?").bind(me.id).all<{ listing_id: string }>()).results.map((r) => r.listing_id) : [];
   return json({
+    saved,
     listings: results.map(publicListing),
     cities: [...new Set(facets.results.map((r) => r.city))].sort(),
     industries: [...new Set(facets.results.map((r) => r.industry))].sort(),

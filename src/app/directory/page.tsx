@@ -20,7 +20,7 @@ export default function DirectoryPage() {
   const p = getPillar("directory");
   return (
     <>
-      <section className="bg-paper pb-14 pt-[136px] md:pb-20 md:pt-[160px]">
+      <section className="bg-paper pb-14 pt-[108px] md:pb-20 md:pt-[128px]">
         <div className="container-x grid items-center gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
           <div>
             <p className="label">SME services directory · by SMEmarket</p>

@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useInView } from "@/lib/useInView";
 import { ArrowUpRight, Check } from "lucide-react";
 import { APP } from "@/lib/site";
 
@@ -11,10 +12,41 @@ const STEP = 25_000;
 /** Drag the price; see exactly what selling costs. The answer is the pitch: nothing until it sells. */
 export default function FeeCalc() {
   const [price, setPrice] = useState(750_000);
+  const [touched, setTouched] = useState(false);
+  const root = useRef<HTMLElement>(null);
+  const seen = useInView(root, 0.35);
+  // until someone touches it, the slider demonstrates itself
+  useEffect(() => {
+    if (!seen || touched || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const DEMO = [450_000, 1_200_000, 2_500_000, 750_000];
+    let k = 0;
+    let raf = 0;
+    let from = DEMO[DEMO.length - 1];
+    const glideTo = (to: number) => {
+      const start = performance.now();
+      const a = from;
+      const step = (t: number) => {
+        const p = Math.min(1, (t - start) / 800);
+        const e = 1 - Math.pow(1 - p, 3);
+        setPrice(Math.round((a + (to - a) * e) / STEP) * STEP);
+        if (p < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+      from = to;
+    };
+    const t = setInterval(() => {
+      k = (k + 1) % DEMO.length;
+      glideTo(DEMO[k]);
+    }, 2200);
+    return () => {
+      clearInterval(t);
+      cancelAnimationFrame(raf);
+    };
+  }, [seen, touched]);
   const pct = ((price - MIN) / (MAX - MIN)) * 100;
 
   return (
-    <section className="section-y bg-paper">
+    <section ref={root} className="section-y bg-paper">
       <div className="container-x">
         <div className="relative overflow-hidden rounded-[36px] bg-ink p-6 text-paper md:p-12 lg:p-16">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
@@ -51,7 +83,8 @@ export default function FeeCalc() {
                 max={MAX}
                 step={STEP}
                 value={price}
-                onChange={(e) => setPrice(+e.target.value)}
+                onChange={(e) => (setTouched(true), setPrice(+e.target.value))}
+                onPointerDown={() => setTouched(true)}
                 className="mt-5 h-2 w-full cursor-pointer appearance-none rounded-full bg-paper-2 accent-ink [&::-moz-range-thumb]:size-7 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-4 [&::-moz-range-thumb]:border-lime [&::-moz-range-thumb]:bg-ink [&::-webkit-slider-thumb]:size-7 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-lime [&::-webkit-slider-thumb]:bg-ink"
                 style={{ background: `linear-gradient(to right, #15130f ${pct}%, #e8e2d5 ${pct}%)` }}
               />

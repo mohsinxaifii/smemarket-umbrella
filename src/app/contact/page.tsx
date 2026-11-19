@@ -23,7 +23,7 @@ const WAYS = [
 export default function ContactPage() {
   return (
     <>
-      <section className="bg-paper pb-16 pt-[136px] md:pb-24 md:pt-[160px]">
+      <section className="bg-paper pb-16 pt-[108px] md:pb-24 md:pt-[128px]">
         <div className="container-x">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>

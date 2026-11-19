@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-ink pb-16 pt-[160px] text-paper md:pb-24 md:pt-[200px]">
+      <section className="relative overflow-hidden bg-ink pb-16 pt-[132px] text-paper md:pb-24 md:pt-[172px]">
         <Image quality={90} src="/images/al-seef.jpg" alt="A shaded street of shops in Al Seef, old Dubai" fill priority sizes="100vw" className="object-cover object-[50%_40%] opacity-45" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/30" />
         <div className="container-x relative">

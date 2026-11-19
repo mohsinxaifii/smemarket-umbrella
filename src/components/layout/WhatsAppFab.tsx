@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { waLink } from "@/lib/site";
@@ -8,6 +9,8 @@ import { waLink } from "@/lib/site";
 export default function WhatsAppFab() {
   const [show, setShow] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const pathname = usePathname();
+  const onListing = /^\/listing\/?$/.test(pathname);
 
   useEffect(() => {
     const on = () => setShow(window.scrollY > 500);
@@ -40,7 +43,7 @@ export default function WhatsAppFab() {
       aria-label="WhatsApp us"
       className={clsx(
         "fixed bottom-4 right-4 z-40 grid size-14 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_18px_40px_-14px_rgba(21,19,15,.6)] transition-all duration-500 ease-out-expo hover:scale-105 md:bottom-6 md:right-6",
-        show && !blocked ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0",
+        show && !blocked && !onListing ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0",
       )}
     >
       <WhatsAppIcon className="size-6" />

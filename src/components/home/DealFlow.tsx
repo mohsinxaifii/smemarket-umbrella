@@ -1,52 +1,28 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import clsx from "clsx";
 import { BadgeCheck, FileSignature, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock } from "lucide-react";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { useInView, useCycle } from "@/lib/useInView";
 import { TRUST } from "@/lib/site";
 
 const ICONS = [ShieldCheck, FileSignature, BadgeCheck, MessagesSquare];
 const STATUS = ["Reviewed · live", "NDA signed · ID checked", "Approved by the seller", "In a private thread"];
 
 /**
- * Four checks, one listing. Desktop pins the section and scrolling walks through the steps:
- * the listing card unlocks as each check passes.
+ * Four checks, one listing. Plays by itself when it comes on screen: each check lights up in turn and
+ * the listing card unlocks with it. Tap a step to jump to it.
  */
 export default function DealFlow() {
   const root = useRef<HTMLElement>(null);
-  const [step, setStep] = useState(0);
-
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) {
-        setStep(3);
-        return;
-      }
-      const mm = gsap.matchMedia();
-      mm.add("(min-width: 1024px)", () => {
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: root.current,
-            start: "top top",
-            end: "+=1600",
-            scrub: 0.5,
-            pin: root.current!.querySelector<HTMLElement>("[data-pin]")!,
-            anticipatePin: 1,
-            onUpdate: (self) => setStep(Math.min(3, Math.floor(self.progress * 4))),
-          },
-        }).fromTo("[data-line]", { scaleY: 0 }, { scaleY: 1, ease: "none" });
-      });
-      mm.add("(max-width: 1023px)", () => setStep(3));
-      return () => mm.revert();
-    },
-    { scope: root },
-  );
+  const seen = useInView(root, 0.35);
+  // plays on its own while on screen: one check every 2.4s, a longer pause once it's all unlocked
+  const [step, setStep] = useCycle(4, 2400, seen);
 
   const open = step >= 2;
 
   return (
     <section ref={root} className="bg-paper-2">
-      <div data-pin className="py-20 lg:flex lg:h-screen lg:items-center lg:py-0">
+      <div className="section-y">
         <div className="container-x grid items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
           <div>
             <p className="label">Trust, built in</p>
@@ -55,19 +31,19 @@ export default function DealFlow() {
 
             <ol className="relative mt-10 space-y-2">
               <span className="absolute bottom-6 left-[19px] top-6 w-[2px] bg-ink/10">
-                <span data-line className="block h-full origin-top bg-ink lg:scale-y-0" />
+                <span className="block origin-top bg-ink transition-[height] duration-700 ease-out-expo" style={{ height: `${(step / 3) * 100}%` }} />
               </span>
               {TRUST.map((t, i) => {
                 const I = ICONS[i];
                 const on = i <= step;
                 return (
-                  <li key={t.t} className="relative flex gap-5">
+                  <li key={t.t} className="relative flex cursor-pointer gap-5" onClick={() => setStep(i)}>
                     <span className={clsx("relative z-10 grid size-10 shrink-0 place-items-center rounded-full transition-all duration-500", on ? "bg-ink text-lime" : "bg-paper-2 text-ink/40 ring-2 ring-ink/10")}>
                       <I className="size-[18px]" />
                     </span>
                     <div className={clsx("pb-5 transition-opacity duration-500", on ? "opacity-100" : "opacity-40")}>
                       <h3 className="text-[19px] font-semibold leading-snug">{t.t}</h3>
-                      <p className={clsx("grid text-[16px] leading-relaxed text-ink-2 transition-[grid-template-rows,opacity] duration-500", i === step ? "grid-rows-[1fr]" : "grid-rows-[0fr] lg:opacity-0")}>
+                      <p className={clsx("grid text-[16px] leading-relaxed text-ink-2 transition-[grid-template-rows,opacity] duration-500", i === step ? "grid-rows-[1fr]" : "grid-rows-[0fr] opacity-0")}>
                         <span className="overflow-hidden pt-1">{t.d}</span>
                       </p>
                     </div>

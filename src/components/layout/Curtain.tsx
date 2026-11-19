@@ -6,19 +6,16 @@ import { setCovered } from "@/lib/reveal";
 import { stripBase } from "@/lib/image-loader";
 import { getLenis } from "./SmoothScroll";
 import { SITE_ROUTES } from "@/lib/site";
-import Character from "@/components/ui/Character";
+import { Avatar, type Body, type Cast, type Mood } from "@/components/ui/Character";
 
 /*
- * Big lime pixel blocks.
- *  - First visit: on ink, the blocks pop in at random until the screen is solid lime, with a little film grain.
- *    A seller walks in from the left ("I'm ready to sell my café."), a buyer from the right
- *    ("I'm looking to buy one."), and SMEmarket lands between them: "We bring them together, and help you grow."
- *    Then the blocks break away in a diagonal wave and the page is underneath. Once per visit, about 3.6s.
- *  - Between pages: the blocks sweep in, show where you're going, and sweep out.
+ * One ink sheet.
+ *  - Home page, every fresh visit: "Every business has a next chapter." rises line by line, the people of
+ *    SMEmarket pop up in a row beneath it, then the sheet lifts off the page, its bottom edge bowing
+ *    into a soft curve as it goes. About 2.4s.
+ *  - Any other page on a fresh visit: the sheet simply lifts.
+ *  - Between pages: the sheet rises from the bottom (top edge curved), shows the next page's name, and lifts away.
  */
-/** The scene: a seller and a buyer, and us in the middle. */
-const SELLER = { who: "rashid" as const, mood: "happy" as const, body: "Coffee" as const, says: "I'm ready to sell my café." };
-const BUYER = { who: "lina" as const, mood: "excited" as const, body: "Paper" as const, says: "I'm looking to buy one." };
 const NAMES: Record<string, string> = {
   "/": "Home",
   "/brokerage": "Buy & sell",
@@ -37,6 +34,16 @@ const NAMES: Record<string, string> = {
   "/admin": "Admin",
 };
 
+type P = { who: Cast; mood: Mood; body: Body; tone: string; does: string };
+const PEOPLE: P[] = [
+  { who: "lina", mood: "excited", body: "Paper", tone: "bg-[#f6e3b5]", does: "Buy" },
+  { who: "rashid", mood: "happy", body: "Coffee", tone: "bg-[#e3dcf2]", does: "Sell" },
+  { who: "zara", mood: "excited", body: "PointingUp", tone: "bg-[#e9f1c9]", does: "Grow" },
+  { who: "priya", mood: "calm", body: "Explaining", tone: "bg-[#dbe6ef]", does: "Advice" },
+  { who: "james", mood: "happy", body: "Device", tone: "bg-[#d5ece4]", does: "Providers" },
+];
+const LINES = [["Every", "business", "has"], ["a", "next", "chapter."]];
+
 function glide(hash: string, immediate = false) {
   const el = hash ? document.getElementById(hash) : null;
   const l = getLenis();
@@ -46,9 +53,12 @@ function glide(hash: string, immediate = false) {
 }
 const norm = (p: string) => stripBase(p).replace(/\/$/, "") || "/";
 
-/** Fine film grain as an inline SVG, so nothing extra is downloaded. */
-const GRAIN =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.55'/></svg>\")";
+/** The sheet's curved edge: flat while it covers the page, bowed while it moves. */
+const curve = (edge: "top" | "bottom", depth: number) => {
+  const r = `${Math.round(window.innerWidth / 2)}px ${depth}px`;
+  return edge === "bottom" ? { borderBottomLeftRadius: r, borderBottomRightRadius: r } : { borderTopLeftRadius: r, borderTopRightRadius: r };
+};
+const FLAT = { borderRadius: "0px" };
 
 export default function Curtain() {
   const root = useRef<HTMLDivElement>(null);
@@ -56,7 +66,6 @@ export default function Curtain() {
   const pathname = usePathname();
   const busy = useRef(false);
   const arrived = useRef<(() => void) | null>(null);
-  const [grid, setGrid] = useState<{ cols: number; rows: number } | null>(null);
   const [dest, setDest] = useState("");
 
   useEffect(() => {
@@ -66,114 +75,84 @@ export default function Curtain() {
     requestAnimationFrame(() => requestAnimationFrame(done));
   }, [pathname]);
 
-  // size the blocks to the screen: ~12 across on desktop, 6 on a phone, always square
+  /* first load */
   useLayoutEffect(() => {
-    if (!prefersReducedMotion()) setCovered(true);
-    const size = () => {
-      const cols = window.innerWidth < 640 ? 6 : window.innerWidth < 1024 ? 9 : 12;
-      setGrid({ cols, rows: Math.ceil(window.innerHeight / (window.innerWidth / cols)) });
-    };
-    size();
-    window.addEventListener("resize", size);
-    return () => window.removeEventListener("resize", size);
-  }, []);
-
-  /* first visit */
-  const started = useRef(false);
-  useEffect(() => {
-    if (!grid || started.current) return;
-    started.current = true;
     const el = root.current!;
     el.classList.remove("intro-failsafe");
     const q = gsap.utils.selector(el);
-    const blocks = q("[data-block]");
+    const sheet = q("[data-sheet]");
     const hide = () => {
       gsap.set(el, { autoAlpha: 0 });
     };
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem("smem:intro") === "1";
-      sessionStorage.setItem("smem:intro", "1");
-    } catch {}
-
     if (prefersReducedMotion()) {
       hide();
       setCovered(false);
       return;
     }
-    gsap.set(q("[data-name]"), { yPercent: 115, autoAlpha: 1 });
-    gsap.set(q("[data-tag], [data-bubble]"), { autoAlpha: 0 });
-    gsap.set(q("[data-seller]"), { xPercent: -120, autoAlpha: 1 });
-    gsap.set(q("[data-buyer]"), { xPercent: 120, autoAlpha: 1 });
-    const g = { grid: [grid.rows, grid.cols] as [number, number] };
+    setCovered(true);
+    const lift = (tl: gsap.core.Timeline, at: number) =>
+      tl
+        .add(() => setCovered(false), at)
+        .to(sheet, { yPercent: -100, duration: 1.05, ease: "expo.inOut" }, at)
+        .fromTo(sheet, curve("bottom", 0), { ...curve("bottom", Math.min(220, window.innerHeight * 0.25)), duration: 0.55, ease: "power2.in" }, at)
+        .add(hide);
 
-    if (seen) {
-      // later loads: solid lime, straight into the break-away
-      gsap.set(blocks, { scale: 1.02 });
-      gsap.set(q("[data-ink]"), { opacity: 0 });
-      setCovered(false);
-      const quick = gsap.to(blocks, { scale: 0, duration: 0.5, ease: "power3.in", stagger: { ...g, from: "start", amount: 0.45 }, onComplete: hide });
+    if (norm(window.location.pathname) !== "/") {
+      gsap.set(q("[data-intro]"), { autoAlpha: 0 });
+      const tl = gsap.timeline();
+      lift(tl, 0.15);
       return () => {
-        quick.kill();
+        tl.kill();
       };
     }
 
+    gsap.set(q("[data-word]"), { yPercent: 110 });
+    gsap.set(q("[data-person]"), { yPercent: 60, scale: 0.6, autoAlpha: 0 });
+    gsap.set(q("[data-does]"), { autoAlpha: 0, y: 6 });
+    gsap.set(q("[data-sub]"), { autoAlpha: 0, y: 10 });
     const tl = gsap.timeline();
-    tl.fromTo(blocks, { scale: 0 }, { scale: 1.02, duration: 0.4, ease: "back.out(2)", stagger: { ...g, from: "random", amount: 0.5 } }, 0.1)
-      .set(q("[data-ink]"), { opacity: 0 })
-      .fromTo(q("[data-meta]"), { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0.6);
-    tl.to(q("[data-seller]"), { xPercent: 0, duration: 0.8, ease: "expo.out" }, 0.5)
-      .fromTo(q("[data-bubble='s']"), { autoAlpha: 0, scale: 0.6, y: 10 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2)" }, 0.85)
-      .to(q("[data-buyer]"), { xPercent: 0, duration: 0.8, ease: "expo.out" }, 1.15)
-      .fromTo(q("[data-bubble='b']"), { autoAlpha: 0, scale: 0.6, y: 10 }, { autoAlpha: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2)" }, 1.5)
-      .to(q("[data-bubble]"), { autoAlpha: 0, y: -8, duration: 0.25 }, 2.3)
-      .to(q("[data-name]"), { yPercent: 0, duration: 0.6, ease: "expo.out" }, 2.25)
-      .to(q("[data-tag]"), { autoAlpha: 1, duration: 0.4 }, 2.45)
-      // the two lean in towards the middle, the deal is done
-      .to(q("[data-seller]"), { x: 30, duration: 0.5, ease: "power2.out" }, 2.3)
-      .to(q("[data-buyer]"), { x: -30, duration: 0.5, ease: "power2.out" }, 2.3)
-      .to(q("[data-name]"), { yPercent: -115, duration: 0.4, ease: "expo.in" }, 3.15)
-      .to(q("[data-tag], [data-meta]"), { autoAlpha: 0, duration: 0.25 }, 3.15)
-      .to(q("[data-seller]"), { xPercent: -120, duration: 0.5, ease: "expo.in" }, 3.1)
-      .to(q("[data-buyer]"), { xPercent: 120, duration: 0.5, ease: "expo.in" }, 3.1)
-      .add(() => setCovered(false), 3.5)
-      .to(blocks, { scale: 0, duration: 0.55, ease: "power3.in", stagger: { ...g, from: "start", amount: 0.5 } }, 3.45)
-      .add(hide);
+    tl.to(q("[data-word]"), { yPercent: 0, duration: 0.85, ease: "expo.out", stagger: 0.06 }, 0.2)
+      .to(q("[data-sub]"), { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.75)
+      .to(q("[data-person]"), { yPercent: 0, scale: 1, autoAlpha: 1, duration: 0.55, ease: "back.out(1.9)", stagger: 0.08 }, 0.85)
+      .to(q("[data-does]"), { autoAlpha: 1, y: 0, duration: 0.35, stagger: 0.08 }, 1.05)
+      .to(q("[data-intro]"), { y: -40, autoAlpha: 0, duration: 0.45, ease: "power2.in" }, 2.0);
+    lift(tl, 2.1);
     return () => {
       tl.kill();
     };
-  }, [grid]);
+  }, []);
 
   /* page changes */
   useEffect(() => {
-    if (!grid) return;
     const el = root.current!;
     const q = gsap.utils.selector(el);
+    const sheet = q("[data-sheet]");
     const reduced = prefersReducedMotion();
-    const g = { grid: [grid.rows, grid.cols] as [number, number] };
 
     const cover = () =>
       new Promise<void>((resolve) => {
-        gsap.set(q("[data-name], [data-tag], [data-meta], [data-seller], [data-buyer], [data-bubble]"), { autoAlpha: 0 });
-        gsap.set(q("[data-ink]"), { opacity: 0 });
+        gsap.set(q("[data-intro]"), { autoAlpha: 0 });
         gsap.set(el, { autoAlpha: 1 });
         if (reduced) {
-          gsap.set(q("[data-block]"), { scale: 1.02 });
+          gsap.set(sheet, { yPercent: 0, ...FLAT });
           return resolve();
         }
-        gsap.fromTo(q("[data-block]"), { scale: 0 }, { scale: 1.02, duration: 0.4, ease: "power3.out", stagger: { ...g, from: "end", amount: 0.35 }, onComplete: () => resolve() });
-        gsap.fromTo(q("[data-dest]"), { yPercent: 115, autoAlpha: 1 }, { yPercent: 0, duration: 0.55, ease: "expo.out", delay: 0.4 });
+        gsap.fromTo(sheet, { yPercent: 100, ...curve("top", Math.min(200, window.innerHeight * 0.22)) }, { yPercent: 0, ...curve("top", 0), duration: 0.7, ease: "expo.inOut", onComplete: () => resolve() });
+        gsap.fromTo(q("[data-dest]"), { yPercent: 110, autoAlpha: 1 }, { yPercent: 0, duration: 0.55, ease: "expo.out", delay: 0.45 });
       });
     const uncover = () =>
       new Promise<void>((resolve) => {
         setCovered(false);
         const done = () => {
           gsap.set(el, { autoAlpha: 0 });
+          gsap.set(sheet, FLAT);
           resolve();
         };
         if (reduced) return done();
-        gsap.to(q("[data-dest]"), { yPercent: -115, duration: 0.35, ease: "expo.in" });
-        gsap.to(q("[data-block]"), { scale: 0, duration: 0.45, ease: "power3.in", delay: 0.15, stagger: { ...g, from: "start", amount: 0.35 }, onComplete: done });
+        gsap.to(q("[data-dest]"), { yPercent: -110, duration: 0.3, ease: "expo.in" });
+        gsap.set(sheet, FLAT);
+        gsap.to(sheet, { yPercent: -100, duration: 0.8, ease: "expo.inOut", delay: 0.12, onComplete: done });
+        gsap.fromTo(sheet, curve("bottom", 0), { ...curve("bottom", Math.min(200, window.innerHeight * 0.22)), duration: 0.45, ease: "power2.in", delay: 0.12 });
       });
 
     const go = async (url: URL) => {
@@ -199,12 +178,11 @@ export default function Curtain() {
       if (!a || !a.href || a.target === "_blank" || a.hasAttribute("download")) return;
       const url = new URL(a.href, location.href);
       if (url.origin !== location.origin) return;
-      // app pages (listings, sign-up…) live on the backend: let the browser load them
       const p = norm(url.pathname);
       if (!SITE_ROUTES.includes(p)) return;
       e.preventDefault();
       if (busy.current) return;
-      if (p === norm(location.pathname)) {
+      if (p === norm(location.pathname) && url.search === location.search) {
         window.dispatchEvent(new Event("smem:navigate"));
         requestAnimationFrame(() => glide(url.hash.slice(1)));
         return;
@@ -214,64 +192,51 @@ export default function Curtain() {
     // capture phase: runs before Next's <Link> handler, so every internal link gets the transition
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [router, grid]);
+  }, [router]);
 
   return (
     <div ref={root} aria-hidden className="intro-failsafe pointer-events-none fixed inset-0 z-[90] overflow-hidden">
-      {/* ink underlay: covers the page until the blocks have filled in */}
-      <div data-ink className="absolute inset-0 bg-ink" />
-
-      {/* the blocks */}
-      {grid && (
-        <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${grid.cols}, 1fr)`, gridAutoRows: `${100 / grid.cols}vw` }}>
-          {Array.from({ length: grid.cols * grid.rows }).map((_, i) => (
-            <span key={i} data-block className="block bg-lime" style={{ transform: "scale(0)" }} />
-          ))}
-        </div>
-      )}
-
-      {/* grain over everything */}
-      <div className="absolute inset-0 opacity-[0.22] mix-blend-multiply [animation:grain_.6s_steps(3)_infinite]" style={{ backgroundImage: GRAIN }} />
-
-      {/* us, in the middle */}
-      <div className="absolute inset-x-0 top-[22%] px-5 text-center text-ink md:top-1/2 md:-translate-y-[60%]">
-        <div className="overflow-hidden pb-[0.06em]">
-          <p data-name className="invisible text-[clamp(3rem,9vw,8rem)] font-semibold leading-[0.98] tracking-[-0.06em]">
-            SMEmarket
+      <div data-sheet className="absolute inset-0 bg-ink text-paper">
+        {/* home welcome */}
+        <div data-intro className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+          <p className="text-[clamp(2.1rem,8vw,7.6rem)] font-semibold leading-[0.98] tracking-[-0.055em]">
+            {LINES.map((line, i) => (
+              <span key={i} className="flex flex-wrap justify-center gap-x-[0.24em]">
+                {line.map((w) => (
+                  <span key={w} className="-mx-[0.12em] overflow-hidden px-[0.12em] pb-[0.08em]">
+                    <span data-word className={`inline-block ${w === "chapter." ? "text-lime" : ""}`}>
+                      {w}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            ))}
           </p>
+          <p data-sub className="mt-5 max-w-xl text-[clamp(1rem,1.6vw,1.35rem)] leading-snug text-paper/70">
+            Buy one, sell yours, or grow the one you have. SMEmarket is where it happens.
+          </p>
+          <ul className="mt-10 flex gap-3 md:mt-12 md:gap-6">
+            {PEOPLE.map((p) => (
+              <li key={p.who} className="flex flex-col items-center">
+                <span data-person className="block">
+                  <Avatar who={p.who} mood={p.mood} body={p.body} tone={p.tone} size={56} className="md:hidden" />
+                  <Avatar who={p.who} mood={p.mood} body={p.body} tone={p.tone} size={92} className="hidden md:block" />
+                </span>
+                <span data-does className="mt-2 text-[12px] font-semibold text-paper/60 md:text-[14px]">
+                  {p.does}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <p data-tag className="invisible mx-auto mt-4 max-w-[30rem] text-[clamp(1.05rem,1.7vw,1.4rem)] font-medium leading-snug text-ink/75">
-          We bring buyers and sellers together, and help you grow what you own.
-        </p>
-      </div>
 
-      {/* the seller, from the left */}
-      <div data-seller className="invisible absolute bottom-0 left-[-4%] md:left-[3%]">
-        <p data-bubble="s" className="absolute bottom-[88%] left-[18%] w-max max-w-[44vw] origin-bottom-left rounded-2xl rounded-bl-md bg-ink px-4 py-2.5 text-[clamp(.95rem,1.4vw,1.2rem)] font-semibold text-paper md:left-[58%] md:max-w-[30vw]">
-          {SELLER.says}
-        </p>
-        <Character who={SELLER.who} mood={SELLER.mood} body={SELLER.body} size={420} eager className="!h-[min(46vh,44vw,460px)] !w-[min(46vh,44vw,460px)] translate-y-[6%]" />
-      </div>
-
-      {/* the buyer, from the right */}
-      <div data-buyer className="invisible absolute bottom-0 right-[-4%] md:right-[3%]">
-        <p data-bubble="b" className="absolute bottom-[88%] right-[18%] w-max max-w-[44vw] origin-bottom-right rounded-2xl rounded-br-md bg-paper px-4 py-2.5 text-[clamp(.95rem,1.4vw,1.2rem)] font-semibold text-ink md:right-[58%] md:max-w-[30vw]">
-          {BUYER.says}
-        </p>
-        <Character who={BUYER.who} mood={BUYER.mood} body={BUYER.body} size={420} eager className="!h-[min(46vh,44vw,460px)] !w-[min(46vh,44vw,460px)] translate-y-[6%] -scale-x-100" />
-      </div>
-
-      <div data-meta className="absolute inset-x-0 top-0 flex items-center justify-between p-5 text-[14px] font-semibold text-ink opacity-0 md:p-8">
-        <span>SMEmarket</span>
-        <span className="hidden sm:inline">The UAE&apos;s marketplace for small businesses</span>
-      </div>
-
-      {/* page-change label */}
-      <div className="absolute inset-0 grid place-items-center">
-        <div className="overflow-hidden pb-[0.08em]">
-          <span data-dest className="invisible block text-[clamp(2.6rem,7vw,6rem)] font-semibold leading-tight tracking-[-0.05em] text-ink">
-            {dest}
-          </span>
+        {/* page-change label */}
+        <div className="absolute inset-0 grid place-items-center">
+          <div className="-mx-[0.12em] overflow-hidden px-[0.12em] pb-[0.08em]">
+            <span data-dest className="invisible block text-[clamp(2.6rem,7vw,6rem)] font-semibold leading-tight tracking-[-0.05em]">
+              {dest}
+            </span>
+          </div>
         </div>
       </div>
     </div>

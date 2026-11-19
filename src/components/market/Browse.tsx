@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Search, SlidersHorizontal, X } from "lucide-react";
 import AppPage, { Empty, Notice, SELECT_CLS } from "./AppPage";
-import ListingCard, { type PublicListing } from "./ListingCard";
+import ListingCard, { ListingCardSkeleton, type PublicListing } from "./ListingCard";
 import Button from "@/components/ui/Button";
 import { api } from "@/lib/api";
 import { APP } from "@/lib/site";
@@ -18,7 +18,8 @@ const PRICES: [string, number | null, number | null][] = [
 
 /** Browse live listings with filters. Filters live in the URL so a search can be shared. */
 export default function Browse() {
-  const [data, setData] = useState<{ listings: PublicListing[]; cities: string[]; industries: string[] } | null>(null);
+  const [data, setData] = useState<{ listings: PublicListing[]; cities: string[]; industries: string[]; saved: string[] } | null>(null);
+  const [round, setRound] = useState(0); // bumps on every new result set, so the cards cascade in again
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(true);
   const [f, setF] = useState({ q: "", city: "", industry: "", price: 0, sort: "" });
@@ -47,7 +48,8 @@ export default function Browse() {
       setBusy(true);
       api<typeof data>(`listings${qs ? `?${qs}` : ""}`)
         .then((d) => {
-          setData((prev) => ({ listings: d!.listings, cities: prev?.cities.length ? prev.cities : d!.cities, industries: prev?.industries.length ? prev.industries : d!.industries }));
+          setData((prev) => ({ listings: d!.listings, saved: d!.saved ?? [], cities: prev?.cities.length ? prev.cities : d!.cities, industries: prev?.industries.length ? prev.industries : d!.industries }));
+          setRound((r) => r + 1);
           setErr("");
         })
         .catch((e) => setErr(e.message))
@@ -132,8 +134,12 @@ export default function Browse() {
       )}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data?.listings.map((l) => (
-          <ListingCard key={l.id} l={l} />
+        {!data &&
+          Array.from({ length: 6 }).map((_, i) => <ListingCardSkeleton key={i} />)}
+        {data?.listings.map((l, i) => (
+          <div key={`${round}-${l.id}`} className="h-full [&>article]:h-full" style={{ animation: `pageIn .55s cubic-bezier(.16,1,.3,1) ${Math.min(i, 8) * 60}ms both` }}>
+            <ListingCard l={l} saved={data.saved.includes(l.id)} />
+          </div>
         ))}
       </div>
       {data && !data.listings.length && !busy && (

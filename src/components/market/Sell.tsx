@@ -109,7 +109,7 @@ export default function Sell() {
   const pct = step < 0 ? 0 : Math.min(100, ((step + (step >= total ? 1 : 0)) / (total + 1)) * 100);
 
   return (
-    <section className="min-h-screen bg-paper pb-24 pt-[136px] md:pt-[156px]" onKeyDown={onKey}>
+    <section className="min-h-screen bg-paper pb-24 pt-[108px] md:pt-[128px]" onKeyDown={onKey}>
       <div className="container-x">
         <div className="mx-auto max-w-3xl">
           {step >= 0 && step <= total && (

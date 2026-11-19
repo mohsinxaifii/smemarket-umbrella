@@ -9,7 +9,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:pages": "rm -rf out && node scripts/build-peeps.mjs && STATIC_EXPORT=1 node scripts/build-images.mjs && STATIC_EXPORT=1 next build"
+    "build:pages": "rm -rf out && node scripts/build-peeps.mjs && STATIC_EXPORT=1 node scripts/build-images.mjs && STATIC_EXPORT=1 next build",
+    "api": "wrangler d1 migrations apply smemarket --local && wrangler pages dev out --port 8788",
+    "db:migrate": "wrangler d1 migrations apply smemarket --remote",
+    "local": "node scripts/local.mjs",
+    "local:reset": "node scripts/local.mjs --reset"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

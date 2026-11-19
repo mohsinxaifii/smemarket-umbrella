@@ -20,7 +20,7 @@ const NAV = [
   { href: "/about", label: "About" },
 ];
 
-/** A full-width bar: a slim ink strip with contact details on top, the main row underneath. The strip folds away on scroll. */
+/** A full-width bar that tightens on scroll, see-through over the home page photo. */
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [overHero, setOverHero] = useState(false);
@@ -32,7 +32,7 @@ export default function Header() {
   useEffect(() => {
     const on = () => {
       setScrolled(window.scrollY > 40);
-      // the home page opens on a full-bleed photo: the bar goes see-through and light until you scroll past it
+      // the home hero is dark: the bar goes see-through and light until you scroll past it
       setOverHero((pathname === "/" || pathname === "") && window.scrollY < window.innerHeight - 90);
     };
     on();
@@ -41,7 +41,9 @@ export default function Header() {
   }, [pathname]);
   const light = overHero && !open;
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
   useEffect(() => {
     const close = () => setOpen(false);
     window.addEventListener("smem:navigate", close);
@@ -58,26 +60,6 @@ export default function Header() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      {/* info strip */}
-      <div className={clsx("overflow-hidden bg-ink text-paper transition-[height] duration-500 ease-out-expo", scrolled ? "h-0" : "h-9")}>
-        <div className="container-x flex h-9 items-center justify-between gap-4 text-[13px]">
-          <p className="truncate text-paper/70">
-            <span className="mr-2 inline-block size-1.5 -translate-y-px rounded-full bg-lime align-middle" />
-            For the 1.3M+ small and medium businesses of the UAE
-          </p>
-          <div className="hidden shrink-0 items-center gap-5 sm:flex">
-            <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-paper/80 hover:text-paper">
-              <WhatsAppIcon className="size-3.5" /> {SITE.phone}
-            </a>
-            {!user && (
-              <a href={APP.login} className="text-paper/80 hover:text-paper">
-                Log in
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* main row */}
       <div className={clsx("border-b transition-colors duration-500", light ? "border-paper/15 bg-transparent text-paper" : scrolled || open ? "border-rule bg-paper/90 backdrop-blur-xl" : "border-transparent bg-paper")}>
         <div className={clsx("container-x flex items-center justify-between gap-6 transition-[height] duration-500 ease-out-expo", scrolled ? "h-16" : "h-[76px]")}>
@@ -101,6 +83,11 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {!user && (
+              <a href={APP.login} className={clsx("hidden px-3 py-2 text-[15px] font-medium transition-opacity hover:opacity-70 sm:block", light ? "text-paper" : "text-ink")}>
+                Log in
+              </a>
+            )}
             <a href={cta.href} className={clsx("group hidden h-11 items-center gap-2 rounded-[10px] pl-5 pr-4 text-[15px] font-semibold transition sm:flex", light ? "bg-paper text-ink hover:bg-white" : "bg-ink text-paper hover:bg-ink-3")}>
               {cta.label}
               <ArrowUpRight className={clsx("size-4 transition-transform duration-300 group-hover:rotate-45", light ? "text-ink" : "text-lime")} />
@@ -129,7 +116,7 @@ export default function Header() {
         data-lenis-prevent
         className={clsx(
           "fixed inset-x-0 bottom-0 overflow-y-auto bg-paper transition-[clip-path] duration-700 ease-out-expo lg:hidden",
-          scrolled ? "top-16" : "top-[112px]",
+          scrolled ? "top-16" : "top-[76px]",
           open ? "[clip-path:inset(0_0_0_0)]" : "pointer-events-none [clip-path:inset(0_0_100%_0)]",
         )}
       >

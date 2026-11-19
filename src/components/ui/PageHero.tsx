@@ -25,7 +25,7 @@ export default function PageHero({
   note?: React.ReactNode;
 }) {
   return (
-    <section className="bg-paper pb-12 pt-[136px] md:pb-20 md:pt-[160px]">
+    <section className="bg-paper pb-12 pt-[108px] md:pb-20 md:pt-[128px]">
       <div className="container-x grid items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
         <div>
           <p className="label animate-[pageIn_.8s_cubic-bezier(.16,1,.3,1)_both]">{eyebrow}</p>

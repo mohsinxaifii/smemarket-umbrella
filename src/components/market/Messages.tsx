@@ -5,12 +5,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowUp, Loader2 } from "lucide-react";
 import { api, ago, useMe } from "@/lib/api";
+import { toast } from "@/components/ui/Toast";
 import { APP } from "@/lib/site";
 import AppPage, { Empty, Notice } from "./AppPage";
 import SignInGate from "./SignInGate";
 
 type Thread = { id: string; listing_id: string; title: string; last_at: number; i_am_seller: number; last_body: string | null };
-type Msg = { id: string; body: string; created_at: number; mine: number; sender_role: string; from_buyer: number };
+type Msg = { id: string; body: string; created_at: number; mine: number; sender_role: string; from_buyer: number; pending?: boolean; failed?: boolean };
 type Open = { thread: { id: string; listing_id: string; title: string; i_am_seller: boolean; buyer_name?: string }; messages: Msg[] };
 
 /** Private buyer–seller conversations. Everything stays on SMEmarket, on record. */
@@ -49,19 +50,27 @@ export default function Messages() {
     const t = setInterval(loadOpen, 15000);
     return () => clearInterval(t);
   }, [user, tid, loadOpen]);
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [open?.messages.length]);
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "end" });
+  }, [open?.messages.length]);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim() || !tid) return;
+    const body = text.trim();
+    if (!body || !tid) return;
+    // show it straight away; the server copy replaces it when it lands
+    const temp: Msg = { id: `temp-${Date.now()}`, body, created_at: Date.now(), mine: 1, sender_role: "user", from_buyer: 0, pending: true };
+    setOpen((o) => (o ? { ...o, messages: [...o.messages, temp] } : o));
+    setText("");
     setSending(true);
     try {
-      await api(`threads/${tid}`, { body: { body: text } });
-      setText("");
+      await api(`threads/${tid}`, { body: { body } });
       loadOpen();
       loadThreads();
     } catch (x) {
-      setErr((x as Error).message);
+      setOpen((o) => (o ? { ...o, messages: o.messages.map((m) => (m.id === temp.id ? { ...m, pending: false, failed: true } : m)) } : o));
+      setText(body);
+      toast((x as Error).message, "error");
     } finally {
       setSending(false);
     }
@@ -131,11 +140,11 @@ export default function Messages() {
               <div className="flex max-h-[60vh] min-h-[320px] flex-1 flex-col gap-3 overflow-y-auto p-5" data-lenis-prevent>
                 {!open.messages.length && <p className="m-auto text-[15px] text-muted">Say hello. Ask about the figures, the lease or a visit.</p>}
                 {open.messages.map((m) => (
-                  <div key={m.id} className={clsx("flex max-w-[80%] flex-col", m.mine ? "self-end items-end" : "self-start")}>
-                    <span className="mb-1 text-[12px] font-semibold text-muted">
-                      {who(m)} · {ago(m.created_at)}
+                  <div key={m.id} className={clsx("flex max-w-[80%] animate-[pageIn_.35s_cubic-bezier(.16,1,.3,1)_both] flex-col", m.mine ? "self-end items-end" : "self-start")}>
+                    <span className={clsx("mb-1 text-[12px] font-semibold", m.failed ? "text-stamp" : "text-muted")}>
+                      {who(m)} · {m.failed ? "Not sent" : m.pending ? "Sending…" : ago(m.created_at)}
                     </span>
-                    <p className={clsx("whitespace-pre-line rounded-2xl px-4 py-2.5 text-[16px] leading-relaxed", m.mine ? "rounded-br-md bg-ink text-paper" : "rounded-bl-md bg-paper-2")}>{m.body}</p>
+                    <p className={clsx("whitespace-pre-line rounded-2xl px-4 py-2.5 text-[16px] leading-relaxed transition-opacity", m.mine ? "rounded-br-md bg-ink text-paper" : "rounded-bl-md bg-paper-2", (m.pending || m.failed) && "opacity-60")}>{m.body}</p>
                   </div>
                 ))}
                 <div ref={end} />

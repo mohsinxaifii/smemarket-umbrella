@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppFab from "@/components/layout/WhatsAppFab";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Curtain from "@/components/layout/Curtain";
+import Toaster from "@/components/ui/Toast";
 
 const sans = Geist({ subsets: ["latin"], variable: "--ff-sans", display: "swap" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--ff-mono", display: "swap" });
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </main>
         <Footer />
         <WhatsAppFab />
+        <Toaster />
         <Curtain />
       </body>
     </html>

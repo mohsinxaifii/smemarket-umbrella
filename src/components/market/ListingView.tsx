@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import clsx from "clsx";
-import { ArrowLeft, BadgeCheck, Bookmark, Clock, FileText, Loader2, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock, Upload } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bookmark, Clock, FileText, Link2, Loader2, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock, Upload } from "lucide-react";
+import { toast } from "@/components/ui/Toast";
 import { api, aed, short, ago } from "@/lib/api";
 import { APP } from "@/lib/site";
 import { Notice } from "./AppPage";
@@ -32,11 +33,12 @@ export default function ListingView() {
   }, [id]);
   useEffect(load, [load]);
 
-  const act = async (fn: () => Promise<unknown>) => {
+  const act = async (fn: () => Promise<unknown>, done?: string) => {
     setBusy(true);
     setErr("");
     try {
       await fn();
+      if (done) toast(done);
       load();
     } catch (e) {
       setErr((e as Error).message);
@@ -45,6 +47,20 @@ export default function ListingView() {
     }
   };
   const here = `${APP.listing(id)}`;
+  const share = async () => {
+    const url = window.location.href;
+    // phones get the native share sheet; elsewhere, copy the link
+    if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
+      await navigator.share({ title: d?.listing.title, url }).catch(() => {});
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Link copied");
+    } catch {
+      toast("Couldn't copy the link", "error");
+    }
+  };
   const message = () =>
     act(async () => {
       const t = await api<{ id: string }>(`listings/${id}/thread`, { method: "POST" });
@@ -55,7 +71,9 @@ export default function ListingView() {
     return (
       <section className="min-h-[70vh] bg-paper pb-24 pt-[156px]">
         <div className="container-x">
-          <Notice tone="error">{err}</Notice>
+          <h1 className="display text-[clamp(2.2rem,4vw,3.4rem)]">This business isn&apos;t available.</h1>
+          <p className="mt-3 max-w-xl text-[18px] text-ink-2">It may have sold, been withdrawn, or the link is wrong. Here are the businesses for sale right now.</p>
+
           <Link href={APP.listings} className="mt-6 inline-flex items-center gap-2 font-semibold">
             <ArrowLeft className="size-4" /> All businesses
           </Link>
@@ -64,7 +82,7 @@ export default function ListingView() {
     );
   if (!d)
     return (
-      <section className="grid min-h-[70vh] place-items-center bg-paper pt-[136px]">
+      <section className="grid min-h-[70vh] place-items-center bg-paper pt-[108px]">
         <Loader2 className="size-6 animate-spin text-muted" />
       </section>
     );
@@ -90,7 +108,7 @@ export default function ListingView() {
       ];
 
   return (
-    <section className="bg-paper pb-24 pt-[136px] md:pt-[156px]">
+    <section className="bg-paper pb-32 pt-[108px] md:pt-[128px] lg:pb-24">
       <div className="container-x">
         <Link href={APP.listings} className="inline-flex items-center gap-2 text-[15px] font-medium text-ink-2 hover:text-ink">
           <ArrowLeft className="size-4" /> All businesses
@@ -110,9 +128,14 @@ export default function ListingView() {
             </div>
             <h1 className="display mt-4 text-[clamp(2.2rem,min(4.4vw,8vh),3.8rem)]">{l.business_name || l.title}</h1>
             {l.business_name && <p className="mt-1 text-[17px] text-muted">Listed as “{l.title}”</p>}
-            <p className="mt-3 flex items-center gap-1.5 text-[17px] text-ink-2">
-              <MapPin className="size-4" /> {[l.area, l.city].filter(Boolean).join(", ")}
-            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <p className="flex items-center gap-1.5 text-[17px] text-ink-2">
+                <MapPin className="size-4" /> {[l.area, l.city].filter(Boolean).join(", ")}
+              </p>
+              <button onClick={share} className="flex items-center gap-1.5 rounded-full border border-rule-strong px-3 py-1.5 text-[14px] font-semibold transition hover:border-ink hover:bg-ink hover:text-paper active:scale-95">
+                <Link2 className="size-4" /> Share
+              </button>
+            </div>
 
             <div className="mt-8 rounded-[24px] bg-ink p-6 text-paper md:p-8">
               <p className="text-[15px] text-paper/60">Asking price</p>
@@ -215,11 +238,11 @@ export default function ListingView() {
                       </Link>
                     )}
                     {me.signedIn && me.nda && me.nda !== "rejected" && !me.access && (
-                      <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/access`, { method: "POST" }))} className="flex h-12 items-center justify-center gap-2 rounded-[10px] bg-ink text-[15px] font-semibold text-paper disabled:opacity-60">
+                      <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/access`, { method: "POST" }), "Request sent to the seller")} className="flex h-12 items-center justify-center gap-2 rounded-[10px] bg-ink text-[15px] font-semibold text-paper disabled:opacity-60">
                         {busy && <Loader2 className="size-4 animate-spin" />} Request full details
                       </button>
                     )}
-                    {me.access === "requested" && <Notice>Request sent. The seller will review it, usually within a few days.</Notice>}
+                    {me.access === "requested" && <Notice>Request sent. The seller will review it and you’ll see the answer here.</Notice>}
                     {me.access === "approved" && !me.unlocked && <Notice>The seller approved you. Your ID check is with our team; details open as soon as it passes.</Notice>}
                     {me.access === "declined" && <Notice>The seller didn&apos;t approve this request. Other businesses are waiting.</Notice>}
                     {me.nda === "rejected" && <Notice tone="error">Your ID check didn&apos;t pass. Please contact us so we can sort it out.</Notice>}
@@ -228,7 +251,7 @@ export default function ListingView() {
                         <button disabled={busy} onClick={message} className="flex h-12 items-center justify-center gap-2 rounded-[10px] border border-ink/30 text-[15px] font-semibold hover:bg-paper-2">
                           <MessagesSquare className="size-4" /> {me.thread ? "Messages" : "Ask the seller"}
                         </button>
-                        <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/save`, { method: "POST" }))} className={clsx("flex h-12 items-center justify-center gap-2 rounded-[10px] border text-[15px] font-semibold", me.saved ? "border-ink bg-ink text-paper" : "border-ink/30 hover:bg-paper-2")}>
+                        <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/save`, { method: "POST" }), me.saved ? "Removed from saved" : "Saved to your account")} className={clsx("flex h-12 items-center justify-center gap-2 rounded-[10px] border text-[15px] font-semibold", me.saved ? "border-ink bg-ink text-paper" : "border-ink/30 hover:bg-paper-2")}>
                           <Bookmark className="size-4" /> {me.saved ? "Saved" : "Save"}
                         </button>
                       </div>
@@ -244,6 +267,35 @@ export default function ListingView() {
           </aside>
         </div>
       </div>
+
+      {/* phones: price and the next step, always within thumb's reach */}
+      {!me.owner && !me.admin && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur-xl lg:hidden">
+          <div className="flex items-center gap-3">
+            <span className="min-w-0 flex-1">
+              <span className="block text-[12px] text-muted">Asking price</span>
+              <span className="block truncate text-[18px] font-semibold tracking-tight">{aed(l.asking_price)}</span>
+            </span>
+            {!me.signedIn ? (
+              <Link href={`${APP.signup}&next=${encodeURIComponent(here)}`} className="flex h-12 items-center rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper">
+                See full details
+              </Link>
+            ) : !me.nda ? (
+              <Link href={`${APP.nda}?next=${encodeURIComponent(here)}`} className="flex h-12 items-center rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper">
+                Sign the NDA
+              </Link>
+            ) : !me.access && me.nda !== "rejected" ? (
+              <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/access`, { method: "POST" }), "Request sent to the seller")} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper disabled:opacity-60">
+                {busy && <Loader2 className="size-4 animate-spin" />} Request details
+              </button>
+            ) : (
+              <button disabled={busy} onClick={message} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper">
+                <MessagesSquare className="size-4" /> {me.thread ? "Messages" : "Ask the seller"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

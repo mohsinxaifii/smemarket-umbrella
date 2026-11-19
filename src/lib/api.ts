@@ -35,7 +35,8 @@ export function refreshMe() {
 
 /** The signed-in user (null when signed out), shared across the page. */
 export function useMe() {
-  const [state, setState] = useState<{ user: Me; nda: Nda; loading: boolean }>({ user: cache?.user ?? null, nda: cache?.nda ?? null, loading: !cache });
+  // always start "loading" so the first client render matches the static HTML, then fill in
+  const [state, setState] = useState<{ user: Me; nda: Nda; loading: boolean }>({ user: null, nda: null, loading: true });
   const load = useCallback(() => {
     api<{ user: Me; nda: Nda }>("me")
       .then((d) => {
@@ -45,7 +46,8 @@ export function useMe() {
       .catch(() => setState({ user: null, nda: null, loading: false }));
   }, []);
   useEffect(() => {
-    if (!cache) load();
+    if (cache) setState({ ...cache, loading: false });
+    else load();
     listeners.add(load);
     return () => {
       listeners.delete(load);

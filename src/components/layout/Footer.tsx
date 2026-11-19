@@ -1,16 +1,10 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Character from "@/components/ui/Character";
 import SmartLink from "@/components/ui/SmartLink";
-import { APP, PILLARS, SITE, waLink, mailLink } from "@/lib/site";
+import { PILLARS, SITE, waLink, mailLink } from "@/lib/site";
+import AccountCta, { MarketLinks } from "./FooterAccount";
 
-const MARKET = [
-  [APP.listings, "Businesses for sale"],
-  [APP.sell, "Sell your business"],
-  [APP.signup, "Sign up"],
-  [APP.login, "Log in"],
-];
 const COMPANY = [
   ["/about", "About"],
   ["/contact", "Contact"],
@@ -31,9 +25,7 @@ export default function Footer() {
               <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex h-14 items-center justify-center gap-2.5 rounded-[10px] bg-[#25D366] px-6 text-[16px] font-semibold text-white transition hover:brightness-95">
                 <WhatsAppIcon className="size-5" /> Chat on WhatsApp
               </a>
-              <a href={APP.signup} className="group flex h-14 items-center justify-center gap-2 rounded-[10px] bg-lime px-6 text-[16px] font-semibold text-ink transition hover:brightness-95">
-                Sign up free <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
-              </a>
+              <AccountCta />
             </div>
           </div>
 
@@ -68,13 +60,7 @@ export default function Footer() {
             ))}
           </Col>
           <Col title="Marketplace">
-            {MARKET.map(([h, l]) => (
-              <li key={h}>
-                <a href={h} className="text-[15px] text-paper/75 transition-colors hover:text-paper">
-                  {l}
-                </a>
-              </li>
-            ))}
+            <MarketLinks />
           </Col>
           <Col title="Company">
             {COMPANY.map(([h, l]) => (

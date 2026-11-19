@@ -92,7 +92,7 @@ export default function Account() {
           {d?.nda ? <ShieldCheck className="size-6 shrink-0" /> : <FileSignature className="size-6 shrink-0" />}
           <span className="min-w-0 flex-1">
             <span className="block text-[16px] font-semibold">{!d?.nda ? "NDA not signed" : d.nda.id_status === "approved" ? "NDA signed, ID checked" : d.nda.id_status === "pending" ? "NDA signed, ID in review" : "ID check didn't pass"}</span>
-            <span className="block text-[14px] text-ink-2">{!d?.nda ? "Needed to see any business's details." : "One NDA covers every listing."}</span>
+            <span className="block text-[14px] text-ink-2">{!d?.nda ? "Buying? Sign once to see any business's details." : "One NDA covers every listing."}</span>
           </span>
           {(!d?.nda || d.nda.id_status === "rejected") && (
             <Link href={APP.nda} className="shrink-0 rounded-[10px] bg-ink px-3.5 py-2 text-[14px] font-semibold text-paper">
@@ -168,7 +168,7 @@ export default function Account() {
         ) : d.saved.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {d.saved.map((l) => (
-              <ListingCard key={l.id} l={l} />
+              <ListingCard key={l.id} l={l} saved />
             ))}
           </div>
         ) : (

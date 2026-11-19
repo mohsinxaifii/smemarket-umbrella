@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
         // server-only files use the .node.ts suffix (the lead API route)
         pageExtensions: ["node.ts", "tsx", "ts", "jsx", "js"],
         images: { formats: ["image/avif", "image/webp"], qualities: [75, 90] },
+        // `npm run dev` has no Pages Functions: send /api to a local `wrangler pages dev` (npm run api)
+        async rewrites() {
+          return [{ source: "/api/:path*", destination: `${process.env.API_ORIGIN || "http://localhost:8788"}/api/:path*` }];
+        },
       }),
 };
 

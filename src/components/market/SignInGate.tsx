@@ -1,13 +1,15 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Character from "@/components/ui/Character";
 import { APP } from "@/lib/site";
 
 /** Shown in place of a page that needs an account. */
 export default function SignInGate({ title = "Log in to continue", children }: { title?: string; children?: React.ReactNode }) {
   const path = usePathname();
-  const next = typeof window !== "undefined" ? path + window.location.search : path;
+  const [next, setNext] = useState(path);
+  useEffect(() => setNext(path + window.location.search), [path]);
   return (
     <div className="mx-auto grid max-w-3xl items-center gap-8 overflow-hidden rounded-[28px] bg-[#f6e3b5] p-7 md:grid-cols-[1fr_200px] md:p-10">
       <div>

@@ -93,7 +93,7 @@ function render(blocks: Block[]) {
 export default function PrivacyPage() {
   const { intro, out } = parts();
   return (
-    <section className="bg-paper pb-24 pt-[136px] md:pt-[160px]">
+    <section className="bg-paper pb-24 pt-[108px] md:pt-[128px]">
       <div className="container-x">
         <p className="label">Privacy policy</p>
         <SplitHeading as="h1" immediate className="display mt-4 max-w-4xl text-[clamp(2.6rem,min(5.6vw,10vh),5rem)]">
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
         </p>
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[260px_1fr] lg:gap-16">
-          <nav aria-label="Contents" className="lg:sticky lg:top-28 lg:self-start">
+          <nav aria-label="Contents" className="min-w-0 lg:sticky lg:top-28 lg:self-start">
             <p className="text-[14px] font-semibold text-muted">Contents</p>
             <ol className="mt-3 space-y-1.5 border-l border-rule-strong pl-4 text-[15px]">
               {out.map((p) => (
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
             </ol>
           </nav>
 
-          <div className="max-w-3xl space-y-12 text-[17px] leading-relaxed text-ink-2">
+          <div className="min-w-0 max-w-3xl space-y-12 text-[17px] leading-relaxed text-ink-2">
             <div className="space-y-4 text-[19px] text-ink">{render(intro)}</div>
             {out.map((p) => (
               <article key={p.id} id={p.id} className="scroll-mt-28 border-t border-rule-strong pt-8">

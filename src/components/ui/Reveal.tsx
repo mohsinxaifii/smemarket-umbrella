@@ -51,6 +51,11 @@ export function SplitHeading({ children, className, as = "h2", delay = 0, immedi
     () => {
       if (!ref.current || prefersReducedMotion()) return;
       const split = SplitText.create(ref.current, { type: "lines,words", mask: "lines", linesClass: "pt-[0.06em] pb-[0.16em] -mb-[0.16em]" });
+      // give each line's clipping box room on the sides, so round letters (S, G, O) and tight tracking aren't shaved off
+      (split.masks as HTMLElement[]).forEach((m) => {
+        m.style.paddingInline = "0.14em";
+        m.style.marginInline = "-0.14em";
+      });
       const tween = gsap.from(split.words, {
         yPercent: 115,
         duration: 1.2,

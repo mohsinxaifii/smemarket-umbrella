@@ -36,7 +36,7 @@ export default function Login() {
   }
 
   return (
-    <section className="min-h-screen bg-paper pb-20 pt-[136px] md:pt-[156px]">
+    <section className="min-h-screen bg-paper pb-20 pt-[108px] md:pt-[128px]">
       <div className="container-x grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
         <div className="hidden lg:block">
           <h1 className="display text-[clamp(2.6rem,min(5vw,9vh),4.6rem)]">One account for everything.</h1>
