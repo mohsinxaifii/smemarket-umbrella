@@ -1,6 +1,6 @@
-# Cloudflare Pages project for www.smemarket.ae
+# Cloudflare Pages project for www.smemarket.ae (the new site; the old live project "smemarket" is kept for rollback)
 # Static site (Next.js export in out/) + Pages Functions in functions/ for the marketplace API.
-name = "smemarket"
+name = "smemarket-site"
 pages_build_output_dir = "out"
 compatibility_date = "2024-11-01"
 
