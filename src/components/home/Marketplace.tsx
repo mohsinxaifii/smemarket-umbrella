@@ -62,7 +62,6 @@ export default function Marketplace({ head = true, cards = true }: { head?: bool
               </div>
             ))}
           </Reveal>
-          <p className="mt-5 text-[15px] text-muted">Price, sales and profit stay claims until a bank statement, VAT return or the books back them up.</p>
         </div>
 
         {/* fees */}

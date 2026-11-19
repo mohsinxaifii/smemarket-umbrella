@@ -3,9 +3,12 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, Check, CornerDownLeft, Loader2, Lock } from "lucide-react";
+import { notifyTeam } from "@/lib/leads";
 import { api, refreshMe, useMe } from "@/lib/api";
 import { APP, EMIRATES, INDUSTRIES } from "@/lib/site";
 import { Field, Notice } from "./AppPage";
+import SellLanding from "./SellLanding";
+import { getLenis } from "@/components/layout/SmoothScroll";
 import Character from "@/components/ui/Character";
 
 type Q = {
@@ -82,11 +85,13 @@ export default function Sell() {
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // read the form now: React clears e.currentTarget after the first await
+    const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     setBusy(true);
     setErr("");
     try {
       if (!user) {
-        const fd = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+        const fd = f;
         await api("auth/signup", { body: fd }).catch(async (x) => {
           // already have an account? log in with the same details instead
           if ((x as { status?: number }).status === 409) return api("auth/login", { body: { email: fd.email, password: fd.password } });
@@ -95,6 +100,7 @@ export default function Sell() {
         refreshMe();
       }
       await api("listings", { body: a });
+      notifyTeam(`New listing to review: ${a.title || "a business"}`, { type: "new-listing", seller: user?.name || f.name, email: user?.email || f.email, phone: f.phone, ...a });
       try {
         localStorage.removeItem(STORE);
       } catch {}
@@ -107,6 +113,13 @@ export default function Sell() {
   }
 
   const pct = step < 0 ? 0 : Math.min(100, ((step + (step >= total ? 1 : 0)) / (total + 1)) * 100);
+
+  const start = () => {
+    setStep(0);
+    getLenis()?.scrollTo(0, { immediate: true });
+    window.scrollTo(0, 0);
+  };
+  if (step === -1) return <SellLanding onStart={start} resume={Object.keys(a).length > 0} />;
 
   return (
     <section className="min-h-screen bg-paper pb-24 pt-[108px] md:pt-[128px]" onKeyDown={onKey}>
@@ -122,33 +135,6 @@ export default function Sell() {
               </div>
               <div className="mt-2 h-1.5 rounded-full bg-ink/10">
                 <div className="h-full rounded-full bg-ink transition-all duration-500 ease-out-expo" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          )}
-
-          {/* intro */}
-          {step === -1 && (
-            <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
-              <div>
-                <p className="label">Sell your business</p>
-                <h1 className="display mt-3 text-[clamp(2.6rem,min(5.4vw,9vh),4.8rem)]">List it quietly. Sell it properly.</h1>
-                <p className="mt-4 text-[19px] leading-relaxed text-ink-2">12 quick questions, about three minutes. We review every business and only list the ones that meet our standards.</p>
-                <ul className="mt-6 space-y-2.5 text-[17px]">
-                  {["Free to list. 5% only when it sells", "Your name stays hidden until you approve a buyer", "Only NDA-signed, ID-checked buyers"].map((t) => (
-                    <li key={t} className="flex items-center gap-3">
-                      <span className="grid size-6 place-items-center rounded-full bg-lime">
-                        <Check className="size-3.5" strokeWidth={3} />
-                      </span>
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-                <button onClick={() => setStep(0)} className="group mt-8 flex h-14 items-center gap-2 rounded-[10px] bg-ink px-7 text-[16px] font-semibold text-paper">
-                  {Object.keys(a).length ? "Continue where you left off" : "Start"} <ArrowRight className="size-4 text-lime transition-transform group-hover:translate-x-1" />
-                </button>
-              </div>
-              <div className="relative hidden h-[420px] overflow-hidden rounded-[32px] bg-[#e3dcf2] md:block">
-                <Character who="rashid" mood="happy" body="Coffee" size={340} className="absolute -bottom-4 left-1/2 -translate-x-1/2" />
               </div>
             </div>
           )}

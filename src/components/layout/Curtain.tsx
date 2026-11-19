@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 import { setCovered } from "@/lib/reveal";
 import { stripBase } from "@/lib/image-loader";
@@ -14,25 +14,8 @@ import { Avatar, type Body, type Cast, type Mood } from "@/components/ui/Charact
  *    SMEmarket pop up in a row beneath it, then the sheet lifts off the page, its bottom edge bowing
  *    into a soft curve as it goes. About 2.4s.
  *  - Any other page on a fresh visit: the sheet simply lifts.
- *  - Between pages: the sheet rises from the bottom (top edge curved), shows the next page's name, and lifts away.
+ *  - Between pages: no sheet. The page fades up and out, a lime progress bar runs along the top, the next page settles in.
  */
-const NAMES: Record<string, string> = {
-  "/": "Home",
-  "/brokerage": "Buy & sell",
-  "/advisory": "Advisory",
-  "/directory": "Directory",
-  "/about": "About",
-  "/contact": "Contact",
-  "/privacy": "Privacy",
-  "/listings": "For sale",
-  "/listing": "For sale",
-  "/sell": "Sell",
-  "/login": "Welcome",
-  "/account": "Your account",
-  "/nda": "NDA",
-  "/messages": "Messages",
-  "/admin": "Admin",
-};
 
 type P = { who: Cast; mood: Mood; body: Body; tone: string; does: string };
 const PEOPLE: P[] = [
@@ -58,7 +41,6 @@ const curve = (edge: "top" | "bottom", depth: number) => {
   const r = `${Math.round(window.innerWidth / 2)}px ${depth}px`;
   return edge === "bottom" ? { borderBottomLeftRadius: r, borderBottomRightRadius: r } : { borderTopLeftRadius: r, borderTopRightRadius: r };
 };
-const FLAT = { borderRadius: "0px" };
 
 export default function Curtain() {
   const root = useRef<HTMLDivElement>(null);
@@ -66,7 +48,6 @@ export default function Curtain() {
   const pathname = usePathname();
   const busy = useRef(false);
   const arrived = useRef<(() => void) | null>(null);
-  const [dest, setDest] = useState("");
 
   useEffect(() => {
     if (!arrived.current) return;
@@ -74,6 +55,7 @@ export default function Curtain() {
     arrived.current = null;
     requestAnimationFrame(() => requestAnimationFrame(done));
   }, [pathname]);
+  const progress = useRef<{ start: () => void; done: () => void } | null>(null);
 
   /* first load */
   useLayoutEffect(() => {
@@ -122,54 +104,36 @@ export default function Curtain() {
     };
   }, []);
 
-  /* page changes */
+  /* page changes: the page fades up and out, a thin progress bar runs while the next one loads, the new page settles in */
   useEffect(() => {
-    const el = root.current!;
-    const q = gsap.utils.selector(el);
-    const sheet = q("[data-sheet]");
-    const reduced = prefersReducedMotion();
+    const html = document.documentElement;
+    let fallback = 0;
 
-    const cover = () =>
-      new Promise<void>((resolve) => {
-        gsap.set(q("[data-intro]"), { autoAlpha: 0 });
-        gsap.set(el, { autoAlpha: 1 });
-        if (reduced) {
-          gsap.set(sheet, { yPercent: 0, ...FLAT });
-          return resolve();
-        }
-        gsap.fromTo(sheet, { yPercent: 100, ...curve("top", Math.min(200, window.innerHeight * 0.22)) }, { yPercent: 0, ...curve("top", 0), duration: 0.7, ease: "expo.inOut", onComplete: () => resolve() });
-        gsap.fromTo(q("[data-dest]"), { yPercent: 110, autoAlpha: 1 }, { yPercent: 0, duration: 0.55, ease: "expo.out", delay: 0.45 });
-      });
-    const uncover = () =>
-      new Promise<void>((resolve) => {
-        setCovered(false);
-        const done = () => {
-          gsap.set(el, { autoAlpha: 0 });
-          gsap.set(sheet, FLAT);
-          resolve();
-        };
-        if (reduced) return done();
-        gsap.to(q("[data-dest]"), { yPercent: -110, duration: 0.3, ease: "expo.in" });
-        gsap.set(sheet, FLAT);
-        gsap.to(sheet, { yPercent: -100, duration: 0.8, ease: "expo.inOut", delay: 0.12, onComplete: done });
-        gsap.fromTo(sheet, curve("bottom", 0), { ...curve("bottom", Math.min(200, window.innerHeight * 0.22)), duration: 0.45, ease: "power2.in", delay: 0.12 });
-      });
-
-    const go = async (url: URL) => {
+    const go = (url: URL) => {
       busy.current = true;
       window.dispatchEvent(new Event("smem:navigate"));
       const path = stripBase(url.pathname);
-      setDest(NAMES[norm(path)] ?? "");
       router.prefetch(path);
-      setCovered(true);
-      await cover();
-      const landed = new Promise<void>((r) => (arrived.current = r));
-      router.push(path + url.search + url.hash, { scroll: false });
-      await Promise.race([landed, new Promise((r) => setTimeout(r, 4000))]);
-      glide(url.hash.slice(1), true);
-      await new Promise((r) => setTimeout(r, 150));
-      await uncover();
-      busy.current = false;
+      progress.current?.start();
+      const reduced = prefersReducedMotion();
+      if (!reduced) html.dataset.nav = "leaving";
+      arrived.current = () => {
+        arrived.current = null;
+        delete html.dataset.nav;
+        progress.current?.done();
+        glide(url.hash.slice(1), true);
+        busy.current = false;
+        clearTimeout(fallback);
+      };
+      // let the fade-out play, then switch pages
+      const samePage = norm(path) === norm(location.pathname); // only the query changes (e.g. another listing)
+      window.setTimeout(() => {
+        router.push(path + url.search + url.hash, { scroll: false });
+        // same page component, so the path never changes: settle once the new data has had a moment
+        if (samePage) window.setTimeout(() => arrived.current?.(), 450);
+      }, reduced ? 0 : 180);
+      // never leave the page hidden, even if the route is slow or fails
+      fallback = window.setTimeout(() => arrived.current?.(), 8000);
     };
 
     const onClick = (e: MouseEvent) => {
@@ -189,12 +153,17 @@ export default function Curtain() {
       }
       go(url);
     };
-    // capture phase: runs before Next's <Link> handler, so every internal link gets the transition
+    // capture phase: runs before Next's <Link> handler, so every internal link gets the same transition
     document.addEventListener("click", onClick, true);
-    return () => document.removeEventListener("click", onClick, true);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      clearTimeout(fallback);
+    };
   }, [router]);
 
   return (
+    <>
+    <NavProgress api={progress} />
     <div ref={root} aria-hidden className="intro-failsafe pointer-events-none fixed inset-0 z-[90] overflow-hidden">
       <div data-sheet className="absolute inset-0 bg-ink text-paper">
         {/* home welcome */}
@@ -230,15 +199,32 @@ export default function Curtain() {
           </ul>
         </div>
 
-        {/* page-change label */}
-        <div className="absolute inset-0 grid place-items-center">
-          <div className="-mx-[0.12em] overflow-hidden px-[0.12em] pb-[0.08em]">
-            <span data-dest className="invisible block text-[clamp(2.6rem,7vw,6rem)] font-semibold leading-tight tracking-[-0.05em]">
-              {dest}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
+    </>
   );
+}
+
+/** A thin lime bar along the top while the next page loads. */
+function NavProgress({ api }: { api: React.MutableRefObject<{ start: () => void; done: () => void } | null> }) {
+  const bar = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let tw: gsap.core.Tween | null = null;
+    api.current = {
+      start() {
+        tw?.kill();
+        gsap.set(bar.current, { scaleX: 0, opacity: 1 });
+        tw = gsap.to(bar.current, { scaleX: 0.85, duration: 4, ease: "power3.out" });
+      },
+      done() {
+        tw?.kill();
+        tw = gsap.to(bar.current, { scaleX: 1, duration: 0.25, ease: "power2.out", onComplete: () => void gsap.to(bar.current, { opacity: 0, duration: 0.3 }) });
+      },
+    };
+    return () => {
+      tw?.kill();
+      api.current = null;
+    };
+  }, [api]);
+  return <div ref={bar} aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-[95] h-[3px] origin-left bg-lime opacity-0" style={{ transform: "scaleX(0)" }} />;
 }

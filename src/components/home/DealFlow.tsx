@@ -65,22 +65,22 @@ export default function DealFlow() {
 
               <div className="mt-5">
                 <p className="text-[13px] text-muted">Business name</p>
-                <p className={clsx("text-[24px] font-semibold tracking-tight transition-all duration-700", !open && "select-none blur-[7px]")}>{open ? "The Grooming Room" : "Hidden until approved"}</p>
+                <p className={clsx("text-[24px] font-semibold tracking-tight transition-all duration-700", !open && "select-none blur-[7px]")}>{open ? "JLT Barbershop" : "Hidden until approved"}</p>
                 <p className="mt-1 flex items-center gap-1 text-[14px] text-muted">
-                  <MapPin className="size-3.5" /> Al Barsha, Dubai
+                  <MapPin className="size-3.5" /> JLT, Dubai
                 </p>
               </div>
 
               <div className="mt-5 rounded-2xl bg-paper-2 p-4">
                 <p className="text-[13px] text-muted">Asking price</p>
-                <p className="text-[30px] font-semibold tracking-tight">AED 650,000</p>
+                <p className="text-[30px] font-semibold tracking-tight">AED 400,000</p>
               </div>
 
               <div className="mt-3 grid grid-cols-3 gap-2">
                 {[
-                  ["Revenue", "820K"],
-                  ["Profit", "190K"],
-                  ["Multiple", "3.4x"],
+                  ["Revenue", "500K"],
+                  ["Profit", "100K"],
+                  ["Multiple", "4x"],
                 ].map(([k, v], i) => (
                   <div key={k} className="rounded-2xl border border-rule p-3 text-center">
                     <p className={clsx("text-[19px] font-semibold transition-all duration-700", step < 1 && "blur-[6px]")} style={{ transitionDelay: `${i * 90}ms` }}>
@@ -105,11 +105,10 @@ export default function DealFlow() {
               <div className={clsx("mt-4 flex items-center gap-3 rounded-2xl bg-ink p-3.5 text-paper transition-all duration-500", step >= 3 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0")}>
                 <MessagesSquare className="size-5 text-lime" />
                 <p className="text-[14px]">
-                  <span className="font-semibold">Seller:</span> Happy to walk you through the books on Thursday.
+                  <span className="font-semibold">Private thread opened</span> with the seller, on record.
                 </p>
               </div>
             </div>
-            <p className="mt-3 text-center text-[13px] text-muted">An example listing. Figures are seller-provided until a bank statement, VAT return or the books back them up.</p>
           </div>
         </div>
       </div>

@@ -8,6 +8,8 @@ import { APP } from "@/lib/site";
 import { ApiError, aed, api, short } from "@/lib/api";
 import { useTilt, GLOW } from "@/lib/useTilt";
 import { toast } from "@/components/ui/Toast";
+import Image from "next/image";
+import { listingImage } from "@/lib/listingImage";
 
 export type PublicListing = {
   id: string;
@@ -37,6 +39,7 @@ export default function ListingCard({ l, badge, saved: savedProp = false, style 
   const [saved, setSaved] = useState(savedProp);
   const [busy, setBusy] = useState(false);
   useEffect(() => setSaved(savedProp), [savedProp]);
+  const img = listingImage(l);
 
   const toggle = async () => {
     if (busy) return;
@@ -58,16 +61,21 @@ export default function ListingCard({ l, badge, saved: savedProp = false, style 
   };
 
   return (
-    <article {...tilt} style={style} className="group relative flex flex-col rounded-[24px] bg-card p-5 ring-1 ring-rule transition-[transform,box-shadow] duration-300 ease-out hover:shadow-[0_30px_60px_-34px_rgba(21,19,15,.55)] hover:ring-ink/25 md:p-6">
+    <article {...tilt} style={style} className="group relative flex flex-col rounded-[24px] bg-card p-3 pb-5 ring-1 ring-rule transition-[transform,box-shadow] duration-300 ease-out hover:shadow-[0_30px_60px_-34px_rgba(21,19,15,.55)] hover:ring-ink/25 md:pb-6">
       <span aria-hidden className={GLOW} />
-      <div className="flex items-center justify-between gap-3">
-        <span className="truncate rounded-full bg-paper-2 px-3 py-1 text-[13px] font-semibold">{l.industry}</span>
-        {badge ?? (
-          <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold text-muted">
-            <Lock className="size-3.5" /> Sign NDA to view
-          </span>
-        )}
+      {/* photo, with the tags laid over it */}
+      <div className="relative aspect-[16/10] overflow-hidden rounded-[16px] bg-paper-2">
+        <Image src={img.src} alt={img.alt} fill sizes="(min-width:1024px) 400px, (min-width:640px) 50vw, 90vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.06]" />
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-3">
+          <span className="truncate rounded-full bg-paper/95 px-3 py-1 text-[12px] font-semibold backdrop-blur">{l.industry}</span>
+          {badge ?? (
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-ink/80 px-2.5 py-1 text-[12px] font-semibold text-paper backdrop-blur">
+              <Lock className="size-3" /> NDA
+            </span>
+          )}
+        </div>
       </div>
+      <div className="flex flex-1 flex-col px-2 md:px-3">
       <h3 className="mt-4 text-[20px] font-semibold leading-snug tracking-tight">
         {/* the stretched link: the whole card is clickable */}
         <Link href={APP.listing(l.id)} className="after:absolute after:inset-0 after:z-[1] after:rounded-[24px] after:content-['']">
@@ -108,6 +116,7 @@ export default function ListingCard({ l, badge, saved: savedProp = false, style 
           <Bookmark key={String(saved)} className={clsx("size-[18px]", saved && "animate-[tickPop_.45s_cubic-bezier(.34,1.56,.64,1)] fill-ink")} />
         </button>
       </div>
+      </div>
     </article>
   );
 }
@@ -115,8 +124,9 @@ export default function ListingCard({ l, badge, saved: savedProp = false, style 
 /** A grey placeholder card while listings load. */
 export function ListingCardSkeleton() {
   return (
-    <div className="rounded-[24px] bg-card p-5 ring-1 ring-rule md:p-6" aria-hidden>
-      <div className="flex justify-between">
+    <div className="rounded-[24px] bg-card p-3 pb-5 ring-1 ring-rule" aria-hidden>
+      <span className="block aspect-[16/10] animate-pulse rounded-[16px] bg-paper-2" />
+      <div className="mt-4 flex justify-between px-2">
         <span className="h-6 w-28 animate-pulse rounded-full bg-paper-2" />
         <span className="h-4 w-24 animate-pulse rounded bg-paper-2" />
       </div>

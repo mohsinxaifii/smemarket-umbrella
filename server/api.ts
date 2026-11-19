@@ -1,4 +1,5 @@
 import { currentUser, endSession, login, requireAdmin, requireUser, signup, startSession } from "./auth";
+import { searchDirectory } from "./directory";
 import { type Env, type User, HttpError, body, fail, id, isEmail, json, now, num, str } from "./util";
 
 /*
@@ -407,6 +408,16 @@ route("GET", "my", async ({ req, env }) => {
 /* ───────────── directory ───────────── */
 
 const EMIRATES = ["dubai", "abu dhabi", "sharjah", "ajman", "ras al khaimah", "fujairah", "umm al quwain"];
+
+route("GET", "directory/search", async ({ env, url }) => {
+  const q = (url.searchParams.get("q") || "").trim();
+  if (q.length < 2) return fail(400, "Tell us what you're looking for.");
+  try {
+    return json(await searchDirectory(env, q, url.searchParams.get("area") || ""));
+  } catch (e) {
+    return fail(502, (e as Error).message.startsWith("google") ? "The search didn't answer. Try again in a moment." : (e as Error).message);
+  }
+});
 
 route("GET", "providers", async ({ env, url }) => {
   const q = str(url.searchParams.get("q"), 200).toLowerCase();

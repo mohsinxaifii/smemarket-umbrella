@@ -50,6 +50,26 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* the businesses we're here for */}
+      <section className="overflow-hidden bg-paper pb-4">
+        <div className="container-x">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+            {[
+              ["/images/barber-cut.jpg", "Barbershops", "A barber at work"],
+              ["/images/tailor-owner.jpg", "Studios and tailors", "A studio owner at her desk"],
+              ["/images/cafe-counter.jpg", "Cafés", "A café counter"],
+              ["/images/dubai-shop-owner.jpg", "Shops", "A shop owner in Dubai"],
+            ].map(([src, label, alt], i) => (
+              <figure key={src} className={`group relative overflow-hidden rounded-[24px] ${i % 2 ? "aspect-[4/5] md:mt-10" : "aspect-[4/5]"}`}>
+                <Image src={src} alt={alt} fill sizes="(min-width:768px) 25vw, 50vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.05]" />
+                <figcaption className="absolute bottom-3 left-3 rounded-full bg-paper/95 px-3 py-1 text-[13px] font-semibold">{label}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-6 max-w-xl text-[16px] text-muted">The kinds of businesses that keep the UAE running, and change hands on SMEmarket.</p>
+        </div>
+      </section>
+
       {/* the people behind each part */}
       <section className="section-y bg-paper-2">
         <div className="container-x">

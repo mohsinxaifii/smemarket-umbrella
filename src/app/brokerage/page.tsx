@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import Button from "@/components/ui/Button";
@@ -59,12 +60,16 @@ export default function BrokeragePage() {
           <h2 className="display mt-4 max-w-3xl text-section">Four steps, whichever side of the table you&apos;re on.</h2>
           <div className="mt-10 grid gap-4 md:mt-14 lg:grid-cols-2">
             {[
-              { side: "Buying", steps: BUY, href: APP.listings, cta: "Browse businesses", dark: false },
-              { side: "Selling", steps: SELL, href: APP.sell, cta: "Start your listing", dark: true },
+              { side: "Buying", steps: BUY, href: APP.listings, cta: "Browse businesses", dark: false, img: "/images/cafe-counter.jpg", alt: "A café counter, the kind of business you could own" },
+              { side: "Selling", steps: SELL, href: APP.sell, cta: "Start your listing", dark: true, img: "/images/handshake.jpg", alt: "Two business owners shaking hands on a deal" },
             ].map((c) => (
-              <div key={c.side} className={`flex flex-col rounded-[28px] p-6 md:p-9 ${c.dark ? "bg-ink text-paper" : "bg-card ring-1 ring-rule"}`}>
-                <p className={`text-[15px] font-semibold ${c.dark ? "text-lime" : "text-muted"}`}>{c.side}</p>
-                <Reveal as="ul" className="mt-4" stagger={0.08}>
+              <div key={c.side} className={`group flex flex-col overflow-hidden rounded-[28px] ${c.dark ? "bg-ink text-paper" : "bg-card ring-1 ring-rule"}`}>
+                <div className="relative aspect-[16/7] overflow-hidden">
+                  <Image src={c.img} alt={c.alt} fill sizes="(min-width:1024px) 45vw, 100vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]" />
+                  <span className={`absolute left-5 top-5 rounded-full px-3 py-1 text-[14px] font-semibold ${c.dark ? "bg-lime text-ink" : "bg-paper text-ink"}`}>{c.side}</span>
+                </div>
+                <div className="flex flex-1 flex-col p-6 pt-2 md:p-9 md:pt-3">
+                <Reveal as="ul" stagger={0.08}>
                   {c.steps.map((s, i) => (
                     <li key={s.t} data-reveal className={`flex gap-4 border-b py-5 last:border-0 ${c.dark ? "border-rule-dark" : "border-rule"}`}>
                       <span className={`grid size-9 shrink-0 place-items-center rounded-full text-[14px] font-semibold ${c.dark ? "bg-lime text-ink" : "bg-ink text-lime"}`}>{i + 1}</span>
@@ -78,6 +83,7 @@ export default function BrokeragePage() {
                 <a href={c.href} className={`group mt-6 inline-flex h-12 w-fit items-center gap-2 rounded-full px-5 text-[15px] font-semibold ${c.dark ? "bg-lime text-ink" : "bg-ink text-paper"}`}>
                   {c.cta} <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
                 </a>
+                </div>
               </div>
             ))}
           </div>

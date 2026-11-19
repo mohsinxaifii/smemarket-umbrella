@@ -104,3 +104,24 @@ export async function submitLead(lead: LeadPayload): Promise<LeadResult> {
 
 export const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
 export const isPhone = (v: string) => v.replace(/[^\d]/g, "").length >= 8;
+
+/**
+ * Emails the team about something that happened on the marketplace (a new listing, a signed NDA) through
+ * the same Web3Forms inbox as the lead forms. Best effort: the record is already saved in /admin either way.
+ * Never pass ID documents or passwords here.
+ */
+export function notifyTeam(subject: string, fields: Record<string, unknown>) {
+  if (!ENDPOINT) return;
+  const clean = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined && v !== null && v !== ""));
+  void fetch(ENDPOINT, {
+    method: "POST",
+    keepalive: true,
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      ...clean,
+      page: typeof window !== "undefined" ? window.location.pathname : "",
+      submittedAt: new Date().toISOString(),
+      ...(ACCESS_KEY && { access_key: ACCESS_KEY, subject, from_name: "SMEmarket website" }),
+    }),
+  }).catch(() => {});
+}

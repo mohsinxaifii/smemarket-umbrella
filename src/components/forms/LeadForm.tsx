@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Check, Loader2, Phone } from "lucide-react";
 import { SITE, waLink } from "@/lib/site";
@@ -59,6 +59,21 @@ export default function LeadForm({
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [name, setName] = useState("");
   const [waPending, setWaPending] = useState<string | null>(null);
+
+  // other parts of the page can drop a question into the message box (e.g. Advisory's common questions)
+  const message = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const on = (e: Event) => {
+      const { text, topic } = (e as CustomEvent<{ text: string; topic?: string }>).detail;
+      if (message.current) {
+        message.current.value = text;
+        message.current.focus({ preventScroll: true });
+      }
+      if (topic && topics?.includes(topic)) setPicked((s) => (s.includes(topic) ? s : single ? [topic] : [...s, topic]));
+    };
+    window.addEventListener(`smem:prefill-${type}`, on);
+    return () => window.removeEventListener(`smem:prefill-${type}`, on);
+  }, [type, topics, single]);
 
   const toggle = (t: string) => setPicked((s) => (single ? [t] : s.includes(t) ? s.filter((x) => x !== t) : [...s, t]));
 
@@ -198,7 +213,7 @@ export default function LeadForm({
       </div>
 
       <Field label={messageLabel} optional={!messageRequired} error={errors.message}>
-        <textarea name="message" rows={compact ? 3 : 4} className="field resize-none" placeholder={messagePlaceholder} aria-invalid={!!errors.message} />
+        <textarea ref={message} name="message" rows={compact ? 3 : 4} className="field resize-none" placeholder={messagePlaceholder} aria-invalid={!!errors.message} />
       </Field>
 
       {errors.form && (

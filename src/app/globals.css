@@ -490,3 +490,15 @@ html::-webkit-scrollbar-thumb:hover {
     transform: scale(1);
   }
 }
+
+/* page changes: the current page fades up and out while the next one loads */
+html[data-nav="leaving"] main {
+  opacity: 0;
+  transform: translateY(-12px);
+  transition:
+    opacity 0.18s ease-in,
+    transform 0.18s ease-in;
+}
+
+/* the directory search box shows focus on the whole bar instead of the bare input */
+#dir-q:focus-visible { outline: none; }

@@ -7,6 +7,7 @@ import { api, refreshMe } from "@/lib/api";
 import { APP } from "@/lib/site";
 import { Field, Notice } from "./AppPage";
 import Character from "@/components/ui/Character";
+import Image from "next/image";
 
 /** Only same-site paths are allowed as a destination after login. */
 const safeNext = (n: string | null) => (n && n.startsWith("/") && !n.startsWith("//") ? n : APP.account);
@@ -51,9 +52,21 @@ export default function Login() {
               </li>
             ))}
           </ul>
-          <div className="mt-10 flex items-end">
-            <Character who="rashid" mood="happy" body="Device" size={220} />
-            <Character who="lina" mood="excited" body="Paper" size={200} className="-ml-10" />
+          {/* a real business, and the two people this account is for */}
+          <div className="relative mt-10 max-w-[520px]">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[28px]">
+              <Image src="/images/cafe-counter.jpg" alt="A busy café counter" fill sizes="520px" className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/55 to-transparent" />
+              <p className="absolute bottom-4 left-5 text-[15px] font-semibold text-paper">Buyers and sellers, one account.</p>
+            </div>
+            <div className="absolute -bottom-8 -right-4 flex items-end">
+              <span className="overflow-hidden rounded-full bg-[#f6e3b5] ring-4 ring-paper">
+                <Character who="lina" mood="excited" body="Paper" size={96} className="translate-y-[10%] animate-idle" />
+              </span>
+              <span className="-ml-4 overflow-hidden rounded-full bg-[#e3dcf2] ring-4 ring-paper">
+                <Character who="rashid" mood="happy" body="Device" size={112} className="translate-y-[10%] animate-idle [animation-delay:-1.5s]" />
+              </span>
+            </div>
           </div>
         </div>
 

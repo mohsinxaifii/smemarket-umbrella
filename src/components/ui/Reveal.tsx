@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { onReveal } from "@/lib/reveal";
 import { gsap, useGSAP, SplitText, prefersReducedMotion } from "@/lib/gsap";
 
-type Tagish = "div" | "section" | "h1" | "h2" | "h3" | "p" | "span" | "ul";
+type Tagish = "div" | "section" | "h1" | "h2" | "h3" | "p" | "span" | "ul" | "ol";
 type Poly = React.FC<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>;
 
 /**

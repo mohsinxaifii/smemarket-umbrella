@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { BadgeCheck, Camera, Loader2, ShieldCheck } from "lucide-react";
+import { notifyTeam } from "@/lib/leads";
 import { api, refreshMe, useMe } from "@/lib/api";
 import { APP, SITE } from "@/lib/site";
 import AppPage, { Field, Notice, SELECT_CLS } from "./AppPage";
@@ -27,6 +28,13 @@ export default function NdaForm() {
     setErr("");
     try {
       await api("nda", { form });
+      // the ID document stays private: only the buyer's profile goes in the email
+      notifyTeam(`NDA signed: ${user?.name ?? "a buyer"}`, {
+        type: "nda",
+        name: user?.name,
+        email: user?.email,
+        ...Object.fromEntries([...form.entries()].filter(([k, v]) => typeof v === "string" && !/id_doc|nationality|passport|emirates|phone|password/i.test(k))),
+      });
       refreshMe();
       router.push(safeNext(params.get("next")));
     } catch (x) {

@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
 import { STATS } from "@/lib/site";
 import CountUp from "@/components/ui/CountUp";
@@ -25,9 +24,6 @@ export default function Numbers() {
             </div>
           ))}
         </Reveal>
-        <a href={STATS.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-[14px] text-paper/45 hover:text-paper">
-          Source: {STATS.source} <ArrowUpRight className="size-3.5" />
-        </a>
       </div>
     </section>
   );

@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, BadgeCheck, Bookmark, Clock, FileText, Link2, Loader2, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock, Upload } from "lucide-react";
 import { toast } from "@/components/ui/Toast";
+import Image from "next/image";
+import { listingImage } from "@/lib/listingImage";
 import { api, aed, short, ago } from "@/lib/api";
 import { APP } from "@/lib/site";
 import { Notice } from "./AppPage";
@@ -137,7 +139,11 @@ export default function ListingView() {
               </button>
             </div>
 
-            <div className="mt-8 rounded-[24px] bg-ink p-6 text-paper md:p-8">
+            <div className="relative mt-6 aspect-[16/8] overflow-hidden rounded-[24px] bg-paper-2">
+              <Image src={listingImage(l).src} alt={listingImage(l).alt} fill priority sizes="(min-width:1024px) 60vw, 100vw" className="object-cover" />
+            </div>
+
+            <div className="mt-4 rounded-[24px] bg-ink p-6 text-paper md:p-8">
               <p className="text-[15px] text-paper/60">Asking price</p>
               <p className="text-[clamp(2.2rem,4vw,3.2rem)] font-semibold tracking-tight">{aed(l.asking_price)}</p>
               <div className="mt-5 grid grid-cols-3 gap-3 border-t border-rule-dark pt-5">

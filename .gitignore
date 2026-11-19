@@ -49,3 +49,4 @@ next-env.d.ts
 /out/
 .wrangler/
 
+/.next-local/

@@ -4,6 +4,8 @@ export interface Env {
   DB: D1Database;
   FILES: R2Bucket;
   ADMIN_EMAILS?: string;
+  /** optional: Google Places (New) key. Without it the directory searches OpenStreetMap. */
+  GOOGLE_PLACES_KEY?: string;
 }
 
 export type User = { id: string; name: string; email: string; phone: string | null; role: "user" | "admin"; created_at: number };

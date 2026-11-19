@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Search, SlidersHorizontal, X } from "lucide-react";
-import AppPage, { Empty, Notice, SELECT_CLS } from "./AppPage";
+import AppPage, { Empty, Notice } from "./AppPage";
+import Dropdown from "@/components/ui/Dropdown";
 import ListingCard, { ListingCardSkeleton, type PublicListing } from "./ListingCard";
 import Button from "@/components/ui/Button";
 import { api } from "@/lib/api";
@@ -62,6 +63,7 @@ export default function Browse() {
   }, [qs, f]);
 
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF((x) => ({ ...x, [k]: k === "price" ? Number(e.target.value) : e.target.value }));
+  const pick = (k: keyof typeof f) => (v: string) => setF((x) => ({ ...x, [k]: k === "price" ? Number(v) : v }));
   const active = !!(f.q || f.city || f.industry || f.price);
 
   return (
@@ -87,31 +89,20 @@ export default function Browse() {
           </button>
         </div>
         <div className={`${showFilters ? "grid" : "hidden"} gap-2 border-t border-rule p-2 pt-3 md:grid md:grid-cols-4`}>
-          <select value={f.city} onChange={set("city")} className={SELECT_CLS} aria-label="City">
-            <option value="">All cities</option>
-            {data?.cities.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-          <select value={f.industry} onChange={set("industry")} className={SELECT_CLS} aria-label="Industry">
-            <option value="">All industries</option>
-            {data?.industries.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-          <select value={f.price} onChange={set("price")} className={SELECT_CLS} aria-label="Price">
-            {PRICES.map(([l], i) => (
-              <option key={l} value={i}>
-                {l}
-              </option>
-            ))}
-          </select>
-          <select value={f.sort} onChange={set("sort")} className={SELECT_CLS} aria-label="Sort">
-            <option value="">Newest first</option>
-            <option value="price_asc">Price: low to high</option>
-            <option value="price_desc">Price: high to low</option>
-            <option value="profit">Highest profit</option>
-          </select>
+          <Dropdown label="City" value={f.city} onChange={pick("city")} options={[{ value: "", label: "All cities" }, ...(data?.cities ?? []).map((c) => ({ value: c, label: c }))]} />
+          <Dropdown label="Industry" value={f.industry} onChange={pick("industry")} options={[{ value: "", label: "All industries" }, ...(data?.industries ?? []).map((c) => ({ value: c, label: c }))]} />
+          <Dropdown label="Price" value={String(f.price)} onChange={pick("price")} options={PRICES.map(([l], i) => ({ value: String(i), label: l }))} />
+          <Dropdown
+            label="Sort"
+            value={f.sort}
+            onChange={pick("sort")}
+            options={[
+              { value: "", label: "Newest first" },
+              { value: "price_asc", label: "Price: low to high" },
+              { value: "price_desc", label: "Price: high to low" },
+              { value: "profit", label: "Highest profit" },
+            ]}
+          />
         </div>
       </div>
 
@@ -148,7 +139,6 @@ export default function Browse() {
         </div>
       )}
 
-      <p className="mt-10 text-[14px] text-muted">Names and identifying details unlock after the seller approves you. Figures are seller-provided until a bank statement, VAT return or the books back them up.</p>
     </AppPage>
   );
 }

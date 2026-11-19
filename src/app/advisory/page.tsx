@@ -3,6 +3,10 @@ import { Compass, Map, Route, Scale } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import Button from "@/components/ui/Button";
 import FormBlock from "@/components/ui/FormBlock";
+import AskBoard from "@/components/forms/AskBoard";
+import Faq from "@/components/home/Faq";
+import Character from "@/components/ui/Character";
+import Image from "next/image";
 import LeadForm from "@/components/forms/LeadForm";
 import { Reveal } from "@/components/ui/Reveal";
 import SectionHead from "@/components/ui/SectionHead";
@@ -71,6 +75,39 @@ export default function AdvisoryPage() {
         </div>
       </section>
 
+      {/* the questions owners actually bring: tap one and it lands in the form */}
+      <section className="section-y bg-paper">
+        <div className="container-x grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+          <div>
+            <p className="label">Bring us a question</p>
+            <h2 className="display mt-4 text-section">What owners ask us most.</h2>
+            <p className="mt-5 max-w-lg text-[19px] leading-relaxed text-ink-2">Tap one that sounds like you. It goes straight into the form below, ready to send.</p>
+            <div className="mt-8">
+              <AskBoard
+                form="advisory"
+                items={[
+                  { q: "Should I open a second branch or wait?", topic: "Planning" },
+                  { q: "Is this business I'm looking at priced fairly?", topic: "Buying or selling" },
+                  { q: "What is my business actually worth?", topic: "Buying or selling" },
+                  { q: "Why are customers choosing my competitor?", topic: "Positioning" },
+                  { q: "Where should I spend my marketing budget?", topic: "Positioning" },
+                  { q: "How do I get ready to sell in a year?", topic: "Planning" },
+                ]}
+              />
+            </div>
+          </div>
+          <div className="relative">
+            <div className="relative aspect-[4/3.6] overflow-hidden rounded-[32px]">
+              <Image src="/images/handshake.jpg" alt="Two business owners shaking hands" fill sizes="(min-width:1024px) 40vw, 100vw" className="object-cover" />
+            </div>
+            <div className={`absolute -bottom-6 -left-4 overflow-hidden rounded-[24px] ring-4 ring-paper ${p.tone}`}>
+              <Character who={p.person.who} mood={p.person.mood} body={p.person.body} size={140} className="translate-y-[8%] animate-idle" />
+            </div>
+            <p className="absolute right-4 top-4 max-w-[240px] rounded-2xl rounded-tr-md bg-paper px-4 py-3 text-[15px] font-semibold leading-snug shadow-lg">“Bring me the decision. You&apos;ll leave with a next step.”</p>
+          </div>
+        </div>
+      </section>
+
       <section className="section-y bg-ink text-paper">
         <div className="container-x">
           <p className="label !text-paper/60">How it works</p>
@@ -106,6 +143,17 @@ export default function AdvisoryPage() {
           meta={{ source: "advisory" }}
         />
       </FormBlock>
+
+      <Faq
+        tone="bg-paper-2"
+        title="Advisory, answered."
+        items={[
+          { q: "Who will I talk to?", a: "Our in-house team: people who have run and invested in businesses. Not a marketplace of consultants." },
+          { q: "How does it start?", a: "Tell us what you're working on, here or on WhatsApp. We come back with how we can help and what it would involve." },
+          { q: "Can you help me before I buy a business on SMEmarket?", a: "Yes. A second opinion on price, what to check and what to ask the seller is one of the most common things we're asked." },
+          { q: "Do I get a long report?", a: "No. You get a clear answer, the reasons for it, and what to do next." },
+        ]}
+      />
     </>
   );
 }

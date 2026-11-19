@@ -7,8 +7,10 @@ import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { onReveal } from "@/lib/reveal";
 import { APP, EMIRATES } from "@/lib/site";
 import { api, aed, short } from "@/lib/api";
+import { listingImage } from "@/lib/listingImage";
 import type { PublicListing } from "@/components/market/ListingCard";
 import Link from "next/link";
+import Dropdown from "@/components/ui/Dropdown";
 import { useRouter } from "next/navigation";
 import Character, { type Body, type Cast, type Mood } from "@/components/ui/Character";
 
@@ -123,7 +125,7 @@ export default function Hero() {
           Small businesses for sale across the UAE, each one checked by our team. Sign one NDA to see the real figures.
         </p>
 
-        <div data-fade className="mt-[clamp(1.2rem,3.4vh,2.2rem)] max-w-[760px]">
+        <div data-fade className="relative z-30 mt-[clamp(1.2rem,3.4vh,2.2rem)] max-w-[760px]">
           <HeroSearch />
         </div>
 
@@ -197,22 +199,20 @@ function HeroSearch() {
     router.push(`${APP.listings}${p.toString() ? `?${p}` : ""}`);
   };
   return (
-    <form onSubmit={go} role="search" className="flex flex-col gap-2 rounded-[18px] bg-paper p-2 text-ink shadow-[0_30px_70px_-30px_rgba(0,0,0,.8)] sm:flex-row sm:items-center">
+    <form onSubmit={go} role="search" className="relative z-30 flex flex-col gap-2 rounded-[18px] bg-paper p-2 text-ink shadow-[0_30px_70px_-30px_rgba(0,0,0,.8)] sm:flex-row sm:items-center">
       <label className="flex flex-1 items-center gap-3 pl-3">
         <Search className="size-5 shrink-0 text-muted" />
         <span className="sr-only">What kind of business?</span>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Café, salon, clinic, e-commerce…" className="h-12 w-full min-w-0 bg-transparent text-[17px] outline-none placeholder:text-faint" />
       </label>
-      <label className="flex items-center gap-2 border-rule px-3 sm:border-l">
-        <MapPin className="size-4 shrink-0 text-muted" />
-        <span className="sr-only">Emirate</span>
-        <select value={city} onChange={(e) => setCity(e.target.value)} className="h-12 w-full bg-transparent text-[16px] font-medium outline-none sm:w-auto">
-          <option value="">All emirates</option>
-          {EMIRATES.map((c) => (
-            <option key={c}>{c}</option>
-          ))}
-        </select>
-      </label>
+      <Dropdown
+        label="Emirate"
+        value={city}
+        onChange={setCity}
+        icon={<MapPin className="size-4" />}
+        options={[{ value: "", label: "All emirates" }, ...EMIRATES.map((c) => ({ value: c, label: c }))]}
+        className="sm:w-[180px]"
+      />
       <button type="submit" className="flex h-12 items-center justify-center gap-2 rounded-[12px] bg-ink px-6 text-[16px] font-semibold text-paper transition hover:bg-ink-3">
         Search businesses
       </button>
@@ -421,13 +421,20 @@ function JustListed() {
 
 /** What a card in the deck shows. */
 function DeckCard({ l }: { l: PublicListing }) {
+  const img = listingImage(l);
   return (
-    <div className="rounded-[24px] bg-paper p-5">
-      <div className="flex items-center justify-between gap-3">
-        <span className="truncate rounded-full bg-paper-2 px-3 py-1 text-[13px] font-semibold">{l.industry}</span>
-        <span className="shrink-0 text-[13px] text-muted">{[l.area, l.city].filter(Boolean).join(", ")}</span>
+    <div className="overflow-hidden rounded-[24px] bg-paper">
+      <div className="relative h-[clamp(84px,12vh,120px)]">
+        <Image src={img.src} alt={img.alt} fill sizes="400px" draggable={false} className="pointer-events-none object-cover" />
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-3">
+          <span className="truncate rounded-full bg-paper/95 px-3 py-1 text-[12px] font-semibold">{l.industry}</span>
+          <span className="shrink-0 rounded-full bg-ink/75 px-2.5 py-1 text-[12px] font-medium text-paper backdrop-blur">{[l.area, l.city].filter(Boolean).join(", ")}</span>
+        </div>
       </div>
-      <p className="mt-4 truncate text-[20px] font-semibold leading-snug tracking-tight" title={l.title}>{l.title}</p>
+      <div className="p-5 pt-4">
+      <p className="truncate text-[20px] font-semibold leading-snug tracking-tight" title={l.title}>
+        {l.title}
+      </p>
       <p className="mt-3 text-[13px] text-muted">Asking price</p>
       <p className="text-[28px] font-semibold tracking-tight">{aed(l.asking_price)}</p>
       <div className="mt-4 grid grid-cols-3 gap-2 border-t border-rule pt-4">
@@ -445,6 +452,7 @@ function DeckCard({ l }: { l: PublicListing }) {
       <span className="mt-4 flex items-center justify-between text-[14px] font-semibold">
         View business <ArrowUpRight className="size-4" />
       </span>
+      </div>
     </div>
   );
 }
