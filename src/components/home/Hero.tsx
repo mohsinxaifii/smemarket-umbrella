@@ -21,7 +21,7 @@ import Character, { type Body, type Cast, type Mood } from "@/components/ui/Char
  */
 // x: position on desktop. px: position on phones, where only four people stand and every one fits fully on screen.
 const PEOPLE: { who: Cast; mood: Mood; body: Body; says: string; service: string; x: number; s: number; phone?: boolean; px?: number }[] = [
-  { who: "lina", mood: "excited", body: "Paper", says: "Buying my first business", service: "Business brokerage", x: 0, s: 0.92, phone: true, px: 1 },
+  { who: "lina", mood: "excited", body: "Paper", says: "Buying my first business", service: "Business brokerage", x: 1.5, s: 0.92, phone: true, px: 1 },
   { who: "james", mood: "happy", body: "Device", says: "Found a VAT accountant", service: "Services directory", x: 10.5, s: 0.84 },
   { who: "priya", mood: "calm", body: "Explaining", says: "Planning a second branch", service: "Strategy & advisory", x: 21, s: 0.96, phone: true, px: 25 },
   { who: "omar", mood: "happy", body: "Shirt", says: "Asked about a café, got a visit", service: "Business brokerage", x: 32, s: 0.86 },
@@ -29,7 +29,7 @@ const PEOPLE: { who: Cast; mood: Mood; body: Body; says: string; service: string
   { who: "hana", mood: "happy", body: "Paper", says: "Training my team on AI", service: "AI trainings", x: 54, s: 0.88 },
   { who: "zara", mood: "excited", body: "PointingUp", says: "Getting more customers", service: "Growth Studio", x: 64.5, s: 0.97, phone: true, px: 73 },
   { who: "sami", mood: "calm", body: "Device", says: "Listed for free in 3 minutes", service: "Sell your business", x: 75, s: 0.85 },
-  { who: "maya", mood: "happy", body: "Explaining", says: "New website, more enquiries", service: "Growth Studio", x: 86, s: 0.93 },
+  { who: "maya", mood: "happy", body: "Explaining", says: "New website, more enquiries", service: "Growth Studio", x: 83.5, s: 0.93 },
 ];
 
 /** Where a speech bubble sits over its person: hugging the screen edge near the sides (phones are narrower, so wider bands there). */
@@ -156,7 +156,7 @@ export default function Hero() {
               <div data-person className="h-full w-full">
                 <div className={clsx("h-full w-full transition-transform duration-500 ease-out-expo", on ? "-translate-y-2" : "")}>
                   <div className="animate-idle h-full w-full" style={{ animationDelay: `${k * -0.7}s` }}>
-                    <Character who={c.who} mood={c.mood} body={c.body} size={250} eager className={clsx("!h-full !w-full md:!h-[118%] md:!w-[118%] md:-translate-x-[8%] md:translate-y-[6%]", STICKER)} />
+                    <Character who={c.who} mood={c.mood} body={c.body} size={250} eager className={clsx("!h-full !w-full translate-y-[14%] md:!h-[118%] md:!w-[118%] md:-translate-x-[8%] md:translate-y-[6%]", STICKER)} />
                   </div>
                 </div>
               </div>
