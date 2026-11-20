@@ -14,7 +14,7 @@ ADMIN_EMAILS = ""
 binding = "DB"
 database_name = "smemarket"
 # create with `npx wrangler d1 create smemarket`, then paste the id here
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "622fecc7-6774-47ce-8d46-db45aef49c5c"
 migrations_dir = "migrations"
 
 # No R2: private files (ID documents, data-room documents) live in D1 (migrations/0002_files.sql, server/files.ts).
