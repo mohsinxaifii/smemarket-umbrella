@@ -9,7 +9,6 @@ import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { Avatar } from "@/components/ui/Character";
 import { APP, PILLARS, SITE, waLink } from "@/lib/site";
 import { getLenis } from "./SmoothScroll";
-import { useMe } from "@/lib/api";
 
 const NAV = [
   { href: APP.listings, label: "Buy" },
@@ -26,8 +25,7 @@ export default function Header() {
   const [overHero, setOverHero] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { user } = useMe();
-  const cta = user ? { href: APP.account, label: "My account" } : { href: APP.signup, label: "Sign up free" };
+  const cta = { href: APP.sell, label: "List your business" };
 
   useEffect(() => {
     const on = () => {
@@ -83,11 +81,6 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            {!user && (
-              <a href={APP.login} className={clsx("hidden px-3 py-2 text-[15px] font-medium transition-opacity hover:opacity-70 sm:block", light ? "text-paper" : "text-ink")}>
-                Log in
-              </a>
-            )}
             <a href={cta.href} className={clsx("group hidden h-11 items-center gap-2 rounded-[10px] pl-5 pr-4 text-[15px] font-semibold transition sm:flex", light ? "bg-paper text-ink hover:bg-white" : "bg-ink text-paper hover:bg-ink-3")}>
               {cta.label}
               <ArrowUpRight className={clsx("size-4 transition-transform duration-300 group-hover:rotate-45", light ? "text-ink" : "text-lime")} />
@@ -146,7 +139,6 @@ export default function Header() {
               { href: APP.sell, label: "Sell your business" },
               { href: "/about", label: "About" },
               { href: "/contact", label: "Contact" },
-              user ? { href: APP.account, label: "My account" } : { href: APP.login, label: "Log in" },
             ].map((n) => (
               <SmartLink key={n.label} href={n.href} onClick={() => setOpen(false)} className="py-2 text-[17px] font-medium">
                 {n.label}

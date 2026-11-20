@@ -6,11 +6,10 @@ import { Check, ExternalLink, Loader2, X } from "lucide-react";
 import { api, aed, ago, useMe } from "@/lib/api";
 import { APP } from "@/lib/site";
 import AppPage, { Empty, Notice } from "./AppPage";
-import SignInGate from "./SignInGate";
 
 type Row = Record<string, string | number | null>;
 type Data = { listings: Row[]; ndas: Row[]; providers: Row[]; leads: Row[]; users: number };
-type Tab = "listings" | "ndas" | "providers" | "leads";
+type Tab = "listings" | "providers" | "leads";
 
 /** The team's desk: review listings, check IDs, approve directory providers, see every lead. */
 export default function Admin() {
@@ -39,20 +38,26 @@ export default function Admin() {
   };
 
   if (loading) return <AppPage title="Admin"><Loader2 className="size-6 animate-spin text-muted" /></AppPage>;
-  if (!user) return <AppPage title="Admin"><SignInGate title="Admins, log in" /></AppPage>;
+  if (!user)
+    return (
+      <AppPage title="Admin">
+        <Link href={`${APP.login}?next=${encodeURIComponent(APP.admin)}`} className="inline-flex h-12 items-center rounded-[10px] bg-ink px-6 text-[15px] font-semibold text-paper">
+          Team log in
+        </Link>
+      </AppPage>
+    );
   if (user.role !== "admin") return <AppPage title="Admin"><Notice tone="error">This page is for the SMEmarket team.</Notice></AppPage>;
 
   const count = (rows: Row[] | undefined, k: string, v: string) => rows?.filter((r) => r[k] === v).length ?? 0;
   const tabs: { k: Tab; l: string; n: number }[] = [
     { k: "listings", l: "Listings", n: count(d?.listings, "status", "pending") },
-    { k: "ndas", l: "Buyer IDs", n: count(d?.ndas, "id_status", "pending") },
     { k: "providers", l: "Directory", n: count(d?.providers, "status", "pending") },
     { k: "leads", l: "Leads", n: count(d?.leads, "status", "new") },
   ];
   const btn = "inline-flex h-9 items-center gap-1.5 rounded-[8px] px-3 text-[14px] font-semibold";
 
   return (
-    <AppPage eyebrow="Admin" title="The desk." intro={d ? `${d.users} accounts · ${d.listings.length} listings · ${d.ndas.length} NDAs` : undefined}>
+    <AppPage eyebrow="Admin" title="The desk." intro={d ? `${d.listings.length} listings · ${d.leads.length} enquiries` : undefined}>
       {err && <Notice tone="error">{err}</Notice>}
       <div role="tablist" className="flex flex-wrap gap-1 border-b border-rule-strong">
         {tabs.map((t) => (
@@ -74,20 +79,20 @@ export default function Admin() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-[18px] font-semibold">
-                        {l.business_name} <span className="font-normal text-muted">· {l.title}</span>
+                        {l.business_name || l.title} {l.business_name ? <span className="font-normal text-muted">· {l.title}</span> : null}
                       </p>
                       <p className="text-[14px] text-muted">
                         {l.industry} · {[l.area, l.city].filter(Boolean).join(", ")} · Asking {aed(Number(l.asking_price))} · Revenue {aed(l.revenue as number)} · Profit {aed(l.profit as number)}
                       </p>
                       <p className="mt-1 text-[14px] text-muted">
-                        Seller: {l.seller_name} · {l.seller_email} {l.seller_phone ? `· ${l.seller_phone}` : ""} · {ago(Number(l.created_at))}
+                        Seller: {[l.contact_name ?? l.seller_name, l.contact_phone, l.contact_email ?? (l.contact_name ? null : l.seller_email)].filter(Boolean).join(" · ")} · {ago(Number(l.created_at))}
                       </p>
                       {l.summary && <p className="mt-2 max-w-3xl text-[15px] text-ink-2">{l.summary}</p>}
                     </div>
                     <span className={clsx("rounded-full px-3 py-1 text-[13px] font-semibold", l.status === "live" ? "bg-lime" : l.status === "pending" ? "bg-[#f6e3b5]" : "bg-paper-2")}>{l.status}</span>
                   </div>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <input value={note[String(l.id)] ?? String(l.review_note ?? "")} onChange={(e) => setNote((n) => ({ ...n, [String(l.id)]: e.target.value }))} placeholder="Note to the seller (optional)" className="field h-9 max-w-sm py-1 text-[14px]" />
+                    <input value={note[String(l.id)] ?? String(l.review_note ?? "")} onChange={(e) => setNote((n) => ({ ...n, [String(l.id)]: e.target.value }))} placeholder="Team note (optional)" className="field h-9 max-w-sm py-1 text-[14px]" />
                     {l.status !== "live" && (
                       <button onClick={() => run(`admin/listings/${l.id}`, { status: "live", review_note: note[String(l.id)] ?? l.review_note ?? "" })} className={`${btn} bg-ink text-paper`}>
                         <Check className="size-4" /> Publish
@@ -116,44 +121,6 @@ export default function Admin() {
               ))
             ) : (
               <Empty title="No listings yet." />
-            ))}
-
-          {tab === "ndas" &&
-            (d.ndas.length ? (
-              d.ndas.map((n) => (
-                <div key={String(n.user_id)} className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] bg-card p-5 ring-1 ring-rule">
-                  <div>
-                    <p className="text-[17px] font-semibold">
-                      {n.full_name} {n.company && <span className="font-normal text-muted">· {n.company}</span>}
-                    </p>
-                    <p className="text-[14px] text-muted">
-                      {n.email} {n.phone ? `· ${n.phone}` : ""} · {[n.budget, n.funding, n.timeline].filter(Boolean).join(" · ")} · signed {ago(Number(n.signed_at))}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {n.has_id ? (
-                      <a href={`/api/admin/ndas/${n.user_id}/doc`} target="_blank" rel="noopener" className={`${btn} border border-ink/30`}>
-                        <ExternalLink className="size-4" /> View ID
-                      </a>
-                    ) : (
-                      <span className="text-[14px] text-muted">No ID uploaded</span>
-                    )}
-                    <span className={clsx("rounded-full px-3 py-1 text-[13px] font-semibold", n.id_status === "approved" ? "bg-lime" : n.id_status === "pending" ? "bg-[#f6e3b5]" : "bg-stamp/15 text-stamp")}>{n.id_status}</span>
-                    {n.id_status !== "approved" && (
-                      <button onClick={() => run(`admin/ndas/${n.user_id}`, { id_status: "approved" })} className={`${btn} bg-ink text-paper`}>
-                        <Check className="size-4" /> ID passes
-                      </button>
-                    )}
-                    {n.id_status !== "rejected" && (
-                      <button onClick={() => run(`admin/ndas/${n.user_id}`, { id_status: "rejected" })} className={`${btn} border border-ink/30`}>
-                        <X className="size-4" /> Reject
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <Empty title="No NDAs yet." />
             ))}
 
           {tab === "providers" &&

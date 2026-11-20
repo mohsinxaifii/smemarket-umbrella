@@ -209,6 +209,40 @@ route("POST", "listings", async ({ req, env }) => {
   return json({ id: lid, status: "pending" });
 });
 
+/** No account needed: a seller sends the basics, the team reviews it in /admin and gets in touch. */
+route("POST", "listings/submit", async ({ req, env }) => {
+  const b = await body(req);
+  if (str(b.website, 10)) return json({ id: "ignored", status: "pending" }); // honeypot
+  const v = {
+    name: str(b.name, 120),
+    phone: str(b.phone, 40),
+    email: str(b.email, 200),
+    business_name: str(b.business_name, 160),
+    industry: str(b.industry, 60),
+    city: str(b.city, 60),
+    area: str(b.area, 80) || null,
+    asking_price: num(b.asking_price),
+    revenue: num(b.revenue),
+    profit: num(b.profit),
+    years_trading: num(b.years_trading),
+    summary: str(b.summary, 1500) || null,
+  };
+  if (!v.name) fail(400, "Please add your name.");
+  if (!v.phone && !v.email) fail(400, "Add a phone/WhatsApp number or an email so we can reach you.");
+  if (v.email && !isEmail(v.email)) fail(400, "That email doesn't look right.");
+  if (!v.industry || !v.city) fail(400, "Please choose the type of business and the emirate.");
+  if (!v.asking_price) fail(400, "Please add an asking price. Your best estimate is fine.");
+  const lid = id(9);
+  const t = now();
+  await env.DB.prepare(
+    `INSERT INTO listings (id, seller_id, status, title, industry, city, area, asking_price, revenue, profit, years_trading, summary, business_name, contact_name, contact_phone, contact_email, created_at, updated_at)
+     VALUES (?, 'u_smemarket', 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(lid, `${v.industry} business for sale`, v.industry, v.city, v.area, v.asking_price, v.revenue, v.profit, v.years_trading, v.summary, v.business_name || "", v.name, v.phone || null, v.email || null, t, t)
+    .run();
+  return json({ id: lid, status: "pending" });
+});
+
 route("POST", "listings/:id/withdraw", async ({ req, env, params }) => {
   const u = await requireUser(env, req);
   const l = await getListing(env, params[0]);

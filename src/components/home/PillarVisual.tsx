@@ -1,4 +1,4 @@
-import { BadgeCheck, Check, GraduationCap, Lock, MapPin, Search, Sparkles } from "lucide-react";
+import { BadgeCheck, Check, GraduationCap, MapPin, Search, Sparkles } from "lucide-react";
 
 const card = "rounded-xl bg-white shadow-[0_8px_20px_-12px_rgba(21,19,15,.35)]";
 
@@ -10,7 +10,7 @@ export default function PillarVisual({ slug }: { slug: string }) {
         <div className="flex items-center justify-between">
           <span className="rounded-full bg-paper-2 px-2.5 py-1 text-[12px] font-semibold">Retail</span>
           <span className="flex items-center gap-1 text-[12px] font-semibold text-muted">
-            <Lock className="size-3" /> Sign NDA to view
+            <BadgeCheck className="size-3" /> Reviewed
           </span>
         </div>
         <p className="mt-3 text-[17px] font-semibold leading-tight">Tailoring business for sale</p>

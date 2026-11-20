@@ -14,11 +14,11 @@ const SIDES = {
     body: "Paper" as const,
     steps: [
       { t: "Browse listings", d: "Curated UAE businesses with asking prices, revenue and profit. Filter by city, industry and price." },
-      { t: "Sign one NDA", d: "A quick ID check and one NDA. Then request access to any business you like." },
-      { t: "See everything, then agree", d: "Once the seller approves you, the name, figures and documents open. Talk in a private thread through to the SPA." },
+      { t: "Ask us about it", d: "Message or WhatsApp us about any business. No account, no paperwork." },
+      { t: "Meet the owner, then agree", d: "We share the details, arrange a visit, and help you through to the SPA." },
     ],
     cta: { label: "Browse businesses for sale", href: APP.listings },
-    note: "One NDA covers every listing.",
+    note: "A person replies within one business day.",
   },
   sell: {
     label: "I'm selling",
@@ -26,9 +26,9 @@ const SIDES = {
     mood: "happy" as const,
     body: "Coffee" as const,
     steps: [
-      { t: "Answer 12 quick questions", d: "About three minutes. Nothing goes live when you send it." },
-      { t: "We prepare your listing", d: "We review your business and write the listing with you. Your name stays hidden." },
-      { t: "Verified buyers, your choice", d: "Only NDA-signed, ID-checked buyers can ask. You decide who sees more, and pay 5% only when it sells." },
+      { t: "Answer 7 quick questions", d: "About two minutes, no account needed. Nothing goes live when you send it." },
+      { t: "We prepare your listing", d: "We call you, check the details and write the listing. Your business name stays private." },
+      { t: "We handle the buyers", d: "Every enquiry comes to us. You only meet serious buyers, and pay 5% only when it sells." },
     ],
     cta: { label: "List your business for free", href: APP.sell },
     note: "Free to list. 5% only at the SPA.",

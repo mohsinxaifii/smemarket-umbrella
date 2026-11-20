@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, Check, CornerDownLeft, Loader2, Lock } from "lucide-react";
 import { notifyTeam } from "@/lib/leads";
-import { api, refreshMe, useMe } from "@/lib/api";
+import { api } from "@/lib/api";
 import { APP, EMIRATES, INDUSTRIES } from "@/lib/site";
 import { Field, Notice } from "./AppPage";
 import SellLanding from "./SellLanding";
@@ -25,24 +25,18 @@ type Q = {
 const QUESTIONS: Q[] = [
   { key: "industry", q: "What kind of business is it?", kind: "choice", options: INDUSTRIES },
   { key: "city", q: "Which emirate is it in?", kind: "choice", options: EMIRATES },
-  { key: "area", q: "Which area?", help: "Buyers search by area. The exact address stays private.", kind: "text", placeholder: "e.g. JLT, Al Barsha, Business Bay", optional: true },
-  { key: "business_name", q: "What's the business called?", help: "Only buyers you approve ever see the name.", kind: "text", placeholder: "Trade name" },
+  { key: "area", q: "Which area?", help: "Buyers search by area. The exact address isn't shown.", kind: "text", placeholder: "e.g. JLT, Al Barsha, Business Bay", optional: true },
   { key: "asking_price", q: "What's your asking price?", help: "Not sure? Put your best estimate. We'll talk it through with you.", kind: "money", placeholder: "450,000" },
   { key: "revenue", q: "Roughly how much does it sell in a year?", help: "Yearly revenue, before costs.", kind: "money", placeholder: "600,000", optional: true },
   { key: "profit", q: "And the yearly profit?", help: "What's left for the owner after all costs.", kind: "money", placeholder: "150,000", optional: true },
-  { key: "years_trading", q: "How many years has it been trading?", kind: "number", placeholder: "4", optional: true },
-  { key: "employees", q: "How many people work there?", kind: "number", placeholder: "6", optional: true },
-  { key: "rent", q: "What's the yearly rent?", help: "Kept private until you approve a buyer.", kind: "money", placeholder: "120,000", optional: true, extra: { key: "lease", label: "Time left on the lease", placeholder: "e.g. 3 years, renewable" } },
-  { key: "reason", q: "Why are you selling?", help: "Buyers always ask. Private until you approve them.", kind: "long", placeholder: "Relocating, retiring, focusing on another business…", optional: true },
-  { key: "summary", q: "Describe the business in a few lines.", help: "This is what every buyer sees first. No names.", kind: "long", placeholder: "What it sells, who its customers are, what makes it good…" },
+  { key: "summary", q: "Tell buyers about it in a few lines.", help: "What it sells, who its customers are, how long it's been running.", kind: "long", placeholder: "A busy barbershop in JLT, 6 chairs, trading since 2019…", optional: true },
 ];
 
 const STORE = "smem:sell-draft";
 type Draft = Record<string, string>;
 
 export default function Sell() {
-  const { user, loading } = useMe();
-  const [step, setStep] = useState(-1); // -1 intro, 0..11 questions, 12 account/submit, 13 done
+  const [step, setStep] = useState(-1); // -1 intro, then the questions, then contact/submit, then done
   const [a, setA] = useState<Draft>({});
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -75,7 +69,7 @@ export default function Sell() {
   };
   const back = () => setStep((s) => Math.max(-1, s - 1));
   const onKey = (e: React.KeyboardEvent) => {
-    if (!q) return; // the account step is a normal form: Enter submits it
+    if (!q) return; // the contact step is a normal form: Enter submits it
     if (e.key === "Enter" && !(e.target instanceof HTMLTextAreaElement && e.shiftKey)) {
       if (e.target instanceof HTMLTextAreaElement && !e.metaKey && !e.ctrlKey) return;
       e.preventDefault();
@@ -87,20 +81,12 @@ export default function Sell() {
     e.preventDefault();
     // read the form now: React clears e.currentTarget after the first await
     const f = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+    if (!f.phone?.trim() && !f.email?.trim()) return setErr("Add a phone/WhatsApp number or an email so we can reach you.");
     setBusy(true);
     setErr("");
     try {
-      if (!user) {
-        const fd = f;
-        await api("auth/signup", { body: fd }).catch(async (x) => {
-          // already have an account? log in with the same details instead
-          if ((x as { status?: number }).status === 409) return api("auth/login", { body: { email: fd.email, password: fd.password } });
-          throw x;
-        });
-        refreshMe();
-      }
-      await api("listings", { body: a });
-      notifyTeam(`New listing to review: ${a.title || "a business"}`, { type: "new-listing", seller: user?.name || f.name, email: user?.email || f.email, phone: f.phone, ...a });
+      await api("listings/submit", { body: { ...a, ...f } });
+      notifyTeam(`New listing to review: ${a.industry || "a business"} in ${a.area || a.city || "the UAE"}`, { type: "new-listing", seller: f.name, phone: f.phone, email: f.email, business: f.business_name, ...a });
       try {
         localStorage.removeItem(STORE);
       } catch {}
@@ -205,29 +191,26 @@ export default function Sell() {
             </div>
           )}
 
-          {/* account + submit */}
+          {/* contact + submit */}
           {step === total && (
             <form onSubmit={submit} className="animate-[pageIn_.5s_cubic-bezier(.16,1,.3,1)_both]">
-              <h2 className="display text-[clamp(2rem,4vw,3.2rem)]">{user ? "Ready to send it for review?" : "Last step: your account."}</h2>
-              <p className="mt-3 text-[18px] text-ink-2">
-                {user ? `We'll review it and let you know at ${user.email}. Nothing goes live until we've checked it.` : "So you can follow your listing, see who's interested and approve buyers. Nothing goes live until we've checked it."}
-              </p>
-              {!user && !loading && (
-                <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <Field label="Full name">
-                    <input name="name" required autoComplete="name" className="field" />
-                  </Field>
-                  <Field label="Phone / WhatsApp">
-                    <input name="phone" type="tel" required autoComplete="tel" placeholder="+971 5X XXX XXXX" className="field" />
-                  </Field>
-                  <Field label="Email">
-                    <input name="email" type="email" required autoComplete="email" className="field" />
-                  </Field>
-                  <Field label="Password" hint="At least 8 characters. Already have an account? Use the same details.">
-                    <input name="password" type="password" required minLength={8} autoComplete="new-password" className="field" />
-                  </Field>
-                </div>
-              )}
+              <h2 className="display text-[clamp(2rem,4vw,3.2rem)]">Last step: how do we reach you?</h2>
+              <p className="mt-3 text-[18px] text-ink-2">No account needed. Our team reviews it, calls you to check the details, and puts it live. Nothing is published before we talk.</p>
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <Field label="Your name">
+                  <input name="name" required autoComplete="name" className="field" />
+                </Field>
+                <Field label="Phone / WhatsApp">
+                  <input name="phone" type="tel" autoComplete="tel" placeholder="+971 5X XXX XXXX" className="field" />
+                </Field>
+                <Field label="Email" optional>
+                  <input name="email" type="email" autoComplete="email" className="field" />
+                </Field>
+                <Field label="Business name" optional hint="Only our team sees it.">
+                  <input name="business_name" className="field" />
+                </Field>
+              </div>
               {err && (
                 <div className="mt-4">
                   <Notice tone="error">{err}</Notice>
@@ -237,8 +220,8 @@ export default function Sell() {
                 <button type="button" onClick={back} className="flex h-12 items-center gap-2 rounded-[10px] border border-ink/30 px-4 text-[15px] font-semibold">
                   <ArrowLeft className="size-4" /> Back
                 </button>
-                <button type="submit" disabled={busy || loading} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-6 text-[15px] font-semibold text-paper disabled:opacity-60">
-                  {busy && <Loader2 className="size-4 animate-spin" />} Send for review
+                <button type="submit" disabled={busy} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-6 text-[15px] font-semibold text-paper disabled:opacity-60">
+                  {busy && <Loader2 className="size-4 animate-spin" />} Send to our team
                 </button>
               </div>
             </form>
@@ -252,10 +235,10 @@ export default function Sell() {
                   <Check className="size-7" strokeWidth={3} />
                 </span>
                 <h2 className="display mt-6 text-[clamp(2.2rem,4.4vw,3.6rem)]">Thank you. It&apos;s with our team.</h2>
-                <p className="mt-3 text-[18px] text-ink-2">We&apos;ll review your business and get in touch to prepare the listing with you. You can follow it from your account.</p>
+                <p className="mt-3 text-[18px] text-ink-2">We&apos;ll call you within one business day to go through the details and put your listing live.</p>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Link href={APP.account} className="flex h-12 items-center rounded-[10px] bg-ink px-6 text-[15px] font-semibold text-paper">
-                    Go to my account
+                  <Link href={APP.listings} className="flex h-12 items-center rounded-[10px] bg-ink px-6 text-[15px] font-semibold text-paper">
+                    See businesses for sale
                   </Link>
                   <Link href="/" className="flex h-12 items-center rounded-[10px] border border-ink/30 px-6 text-[15px] font-semibold">
                     Back to home

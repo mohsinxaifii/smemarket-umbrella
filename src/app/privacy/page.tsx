@@ -100,7 +100,7 @@ export default function PrivacyPage() {
           How we look after your data.
         </SplitHeading>
         <p className="mt-5 text-[15px] text-muted">
-          Last updated: 16 October 2026 · {SITE.legal} · Meydan Free Zone, Dubai
+          Last updated: 20 November 2026 · {SITE.legal} · Meydan Free Zone, Dubai
         </p>
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[260px_1fr] lg:gap-16">

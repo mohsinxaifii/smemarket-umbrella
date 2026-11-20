@@ -1,16 +1,16 @@
 "use client";
 import { useRef } from "react";
 import clsx from "clsx";
-import { BadgeCheck, FileSignature, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock } from "lucide-react";
+import { BadgeCheck, FileSignature, Handshake, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock } from "lucide-react";
 import { useInView, useCycle } from "@/lib/useInView";
 import { TRUST } from "@/lib/site";
 
-const ICONS = [ShieldCheck, FileSignature, BadgeCheck, MessagesSquare];
-const STATUS = ["Reviewed · live", "NDA signed · ID checked", "Approved by the seller", "In a private thread"];
+const ICONS = [ShieldCheck, MessagesSquare, BadgeCheck, Handshake];
+const STATUS = ["Reviewed · live", "A buyer asked us", "Checked by our team", "Introduced to the owner"];
 
 /**
- * Four checks, one listing. Plays by itself when it comes on screen: each check lights up in turn and
- * the listing card unlocks with it. Tap a step to jump to it.
+ * From listing to introduction. Plays by itself when it comes on screen: each step lights up in turn and
+ * the listing card moves with it. Tap a step to jump to it.
  */
 export default function DealFlow() {
   const root = useRef<HTMLElement>(null);
@@ -26,8 +26,8 @@ export default function DealFlow() {
         <div className="container-x grid items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
           <div>
             <p className="label">Trust, built in</p>
-            <h2 className="display mt-4 text-section">Four checks between a listing and a deal.</h2>
-            <p className="mt-5 max-w-xl text-[19px] leading-relaxed text-ink-2">Sellers stay anonymous until they say yes. Buyers see real figures once they&apos;re verified. Nobody has to take anyone&apos;s word for it.</p>
+            <h2 className="display mt-4 text-section">From listing to handshake.</h2>
+            <p className="mt-5 max-w-xl text-[19px] leading-relaxed text-ink-2">Every buyer asks us first. We answer their questions, check they&apos;re serious, and introduce them to the owner. Sellers never deal with time-wasters.</p>
 
             <ol className="relative mt-10 space-y-2">
               <span className="absolute bottom-6 left-[19px] top-6 w-[2px] bg-ink/10">
@@ -65,7 +65,7 @@ export default function DealFlow() {
 
               <div className="mt-5">
                 <p className="text-[13px] text-muted">Business name</p>
-                <p className={clsx("text-[24px] font-semibold tracking-tight transition-all duration-700", !open && "select-none blur-[7px]")}>{open ? "JLT Barbershop" : "Hidden until approved"}</p>
+                <p className={clsx("text-[24px] font-semibold tracking-tight transition-all duration-700", step < 3 && "select-none blur-[7px]")}>{step >= 3 ? "JLT Barbershop" : "Kept private"}</p>
                 <p className="mt-1 flex items-center gap-1 text-[14px] text-muted">
                   <MapPin className="size-3.5" /> JLT, Dubai
                 </p>
@@ -83,7 +83,7 @@ export default function DealFlow() {
                   ["Multiple", "4x"],
                 ].map(([k, v], i) => (
                   <div key={k} className="rounded-2xl border border-rule p-3 text-center">
-                    <p className={clsx("text-[19px] font-semibold transition-all duration-700", step < 1 && "blur-[6px]")} style={{ transitionDelay: `${i * 90}ms` }}>
+                    <p className="text-[19px] font-semibold" style={{ transitionDelay: `${i * 90}ms` }}>
                       {v}
                     </p>
                     <p className="text-[12px] text-muted">{k}</p>
@@ -105,7 +105,7 @@ export default function DealFlow() {
               <div className={clsx("mt-4 flex items-center gap-3 rounded-2xl bg-ink p-3.5 text-paper transition-all duration-500", step >= 3 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0")}>
                 <MessagesSquare className="size-5 text-lime" />
                 <p className="text-[14px]">
-                  <span className="font-semibold">Private thread opened</span> with the seller, on record.
+                  <span className="font-semibold">Introduced to the owner</span> by SMEmarket.
                 </p>
               </div>
             </div>

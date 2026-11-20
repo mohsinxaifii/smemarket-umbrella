@@ -55,7 +55,7 @@ export default function FeeCalc() {
               <h2 className="display mt-4 text-section">Free to list. You only pay when it sells.</h2>
               <p className="mt-5 max-w-md text-[19px] leading-relaxed text-paper/70">No listing fee, no monthly fee, no retainer. One 5% success fee, paid when the Sale &amp; Purchase Agreement is signed. If it doesn&apos;t sell, you pay nothing.</p>
               <ul className="mt-6 space-y-2 text-[16px]">
-                {["We prepare the listing with you", "Your name stays hidden until you approve a buyer", "Only NDA-signed, ID-checked buyers"].map((t) => (
+                {["We prepare the listing with you", "Your business name kept private", "We handle every buyer enquiry"].map((t) => (
                   <li key={t} className="flex items-center gap-2.5">
                     <span className="grid size-5 place-items-center rounded-full bg-lime text-ink">
                       <Check className="size-3" strokeWidth={3.5} />

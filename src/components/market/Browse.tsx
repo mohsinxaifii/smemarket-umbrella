@@ -70,7 +70,7 @@ export default function Browse() {
     <AppPage
       eyebrow="Businesses for sale"
       title="Find your next business."
-      intro="Curated UAE businesses, every one reviewed by our team before it goes live. Sign one NDA to see names, figures and documents."
+      intro="Curated UAE businesses, every one reviewed by our team before it goes live. See one you like? Ask us about it."
       aside={
         <Button href={APP.sell} variant="outline">
           Selling? List free
@@ -129,7 +129,7 @@ export default function Browse() {
           Array.from({ length: 6 }).map((_, i) => <ListingCardSkeleton key={i} />)}
         {data?.listings.map((l, i) => (
           <div key={`${round}-${l.id}`} className="h-full [&>article]:h-full" style={{ animation: `pageIn .55s cubic-bezier(.16,1,.3,1) ${Math.min(i, 8) * 60}ms both` }}>
-            <ListingCard l={l} saved={data.saved.includes(l.id)} />
+            <ListingCard l={l} />
           </div>
         ))}
       </div>

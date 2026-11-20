@@ -2,7 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import clsx from "clsx";
-import { Check, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { api, refreshMe } from "@/lib/api";
 import { APP } from "@/lib/site";
 import { Field, Notice } from "./AppPage";
@@ -10,12 +10,13 @@ import Character from "@/components/ui/Character";
 import Image from "next/image";
 
 /** Only same-site paths are allowed as a destination after login. */
-const safeNext = (n: string | null) => (n && n.startsWith("/") && !n.startsWith("//") ? n : APP.account);
+const safeNext = (n: string | null) => (n && n.startsWith("/") && !n.startsWith("//") ? n : APP.admin);
 
 export default function Login() {
   const params = useSearchParams();
   const router = useRouter();
-  const [tab, setTab] = useState<"signup" | "login">(params.get("tab") === "signup" ? "signup" : "login");
+  const allowSignup = params.get("tab") === "signup";
+  const [tab, setTab] = useState<"signup" | "login">(allowSignup ? "signup" : "login");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [show, setShow] = useState(false);
@@ -40,24 +41,12 @@ export default function Login() {
     <section className="min-h-screen bg-paper pb-20 pt-[108px] md:pt-[128px]">
       <div className="container-x grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
         <div className="hidden lg:block">
-          <h1 className="display text-[clamp(2.6rem,min(5vw,9vh),4.6rem)]">One account for everything.</h1>
-          <p className="mt-4 max-w-md text-[19px] text-ink-2">Buy, sell, or grow your business. The same account works for all three.</p>
-          <ul className="mt-8 space-y-3 text-[17px]">
-            {["Browse and save businesses for sale", "Sign one NDA to unlock full details", "List your own business for free", "Message buyers and sellers privately"].map((t) => (
-              <li key={t} className="flex items-center gap-3">
-                <span className="grid size-6 place-items-center rounded-full bg-lime">
-                  <Check className="size-3.5" strokeWidth={3} />
-                </span>
-                {t}
-              </li>
-            ))}
-          </ul>
-          {/* a real business, and the two people this account is for */}
+          <h1 className="display text-[clamp(2.6rem,min(5vw,9vh),4.6rem)]">The team desk.</h1>
+          <p className="mt-4 max-w-md text-[19px] text-ink-2">For the SMEmarket team: review new listings, publish them, and answer every enquiry.</p>
           <div className="relative mt-10 max-w-[520px]">
             <div className="relative aspect-[16/10] overflow-hidden rounded-[28px]">
               <Image src="/images/cafe-counter.jpg" alt="A busy café counter" fill sizes="520px" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/55 to-transparent" />
-              <p className="absolute bottom-4 left-5 text-[15px] font-semibold text-paper">Buyers and sellers, one account.</p>
             </div>
             <div className="absolute -bottom-8 -right-4 flex items-end">
               <span className="overflow-hidden rounded-full bg-[#f6e3b5] ring-4 ring-paper">
@@ -71,7 +60,8 @@ export default function Login() {
         </div>
 
         <div className="mx-auto w-full max-w-[480px] rounded-[28px] bg-card p-6 shadow-[0_40px_80px_-60px_rgba(21,19,15,.6)] ring-1 ring-rule md:p-9">
-          <div role="tablist" className="relative grid grid-cols-2 rounded-full bg-paper-2 p-1">
+          {allowSignup && (
+          <div role="tablist" className="relative mb-7 grid grid-cols-2 rounded-full bg-paper-2 p-1">
             <span className={clsx("absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-ink transition-transform duration-500 ease-out-expo", tab === "login" && "translate-x-full")} />
             {(["signup", "login"] as const).map((t) => (
               <button key={t} role="tab" aria-selected={tab === t} onClick={() => (setTab(t), setErr(""))} className={clsx("relative z-10 h-11 rounded-full text-[15px] font-semibold transition-colors", tab === t ? "text-paper" : "text-ink")}>
@@ -79,7 +69,8 @@ export default function Login() {
               </button>
             ))}
           </div>
-          <h2 className="display mt-7 text-[clamp(1.7rem,2.6vw,2.2rem)]">{tab === "signup" ? "Create your free account" : "Welcome back"}</h2>
+          )}
+          <h2 className="display text-[clamp(1.7rem,2.6vw,2.2rem)]">{tab === "signup" ? "Create your team account" : "Team log in"}</h2>
 
           <form onSubmit={submit} className="mt-6 grid gap-4">
             {tab === "signup" && (
@@ -117,7 +108,7 @@ export default function Login() {
                 .
               </p>
             )}
-            {tab === "login" && <p className="text-[14px] text-muted">Forgot your password? Message us on WhatsApp and we&apos;ll reset it.</p>}
+            {tab === "login" && <p className="text-[14px] text-muted">Forgot your password? Ask a team admin to reset it.</p>}
           </form>
         </div>
       </div>

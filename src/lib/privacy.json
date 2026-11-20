@@ -1,7 +1,7 @@
 [
 [
 "p",
-"This policy explains how SMEmarket collects, uses, shares and protects personal data when you use www.smemarket.ae (the \"Site\"), whether you are buying a business, selling one, or using our Grow services. It is written to meet the UAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (the \"PDPL\")."
+"This policy explains how SMEmarket collects, uses, shares and protects personal data when you use www.smemarket.ae (the \"Site\"), whether you are looking at businesses for sale, listing your own, finding a provider in our directory, or asking about our services. It is written to meet the UAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (the \"PDPL\")."
 ],
 [
 "h2",
@@ -29,7 +29,7 @@
 ],
 [
 "p",
-"For the purposes of the PDPL, SME Market L.L.C-FZ is the controller of the personal data described in this policy. Article 10 of the PDPL requires a Data Protection Officer only for high-risk processing (because of new technology or the volume of data), for systematic evaluation of sensitive personal data, or for large volumes of sensitive personal data, with the thresholds to be set by the Executive Regulations, which have not yet been issued. Our processing is small in scale, so we have not appointed a formal DPO. Because our buyer identity check uses AI on identity documents, we have carried out a written risk assessment of it (PDPL Article 21) and we review it whenever the check changes. Our privacy contact is admin@smemarket.ae. If the Executive Regulations require us to appoint a DPO, we will do so and publish their contact details here."
+"For the purposes of the PDPL, SME Market L.L.C-FZ is the controller of the personal data described in this policy. Article 10 of the PDPL requires a Data Protection Officer only for high-risk processing (because of new technology or the volume of data), for systematic evaluation of sensitive personal data, or for large volumes of sensitive personal data, with the thresholds to be set by the Executive Regulations, which have not yet been issued. Our processing is small in scale and does not involve sensitive personal data, so we have not appointed a formal DPO. Our privacy contact is admin@smemarket.ae. If the Executive Regulations require us to appoint a DPO, we will do so and publish their contact details here."
 ],
 [
 "p",
@@ -41,15 +41,15 @@
 ],
 [
 "li",
-"We collect what we need to run a confidential marketplace: your account details, the identity check needed to sign an NDA, what sellers tell us about their business, and the messages you send through the Site."
+"You don't need an account to use the Site. We only collect what you choose to send us: the details you put in a form, or a message on WhatsApp."
 ],
 [
 "li",
-"When a buyer signs an NDA, the seller of that listing sees the signed NDA so they can decide whether to approve them. Sellers never see a buyer's ID document, nationality or phone number. The seller's identity and confidential business details are shown to a buyer only once the seller has approved them."
+"Buyers ask us about a listing; sellers send us their business details. We handle every enquiry ourselves and only share a seller's business name or a buyer's details with the other side after speaking to them."
 ],
 [
 "li",
-"All communication between buyers and sellers goes through SMEmarket."
+"We do not ask for ID documents, and we do not use AI to make decisions about you."
 ],
 [
 "li",
@@ -57,7 +57,7 @@
 ],
 [
 "li",
-"We use a small number of service providers (Cloudflare, xAI, Google and Microsoft), some of which process data outside the UAE."
+"We use a small number of service providers (Cloudflare, Web3Forms, Google and, if you choose it, WhatsApp), some of which process data outside the UAE."
 ],
 [
 "li",
@@ -69,79 +69,43 @@
 ],
 [
 "h3",
-"Account details"
+"Enquiries about a business for sale"
 ],
 [
 "p",
-"When you sign up we collect your full name, email address and phone number (with any country code). If you choose a password, we store only a salted hash of it (PBKDF2-SHA256); we never store or log your password in plain text. If you sign in with a one-time code, we email the code to you and it expires after a short time."
+"When you ask about a listing we collect your name, phone or WhatsApp number, email address (optional), company name (optional), your question, and which listing you asked about."
 ],
 [
 "h3",
-"Buyer identity check and NDA"
+"Listing your business"
 ],
 [
 "p",
-"To unlock a listing's confidential details, a buyer signs a non-disclosure agreement (NDA). As part of this we collect:"
-],
-[
-"li",
-"a photo of your passport data page, or the front and back of your Emirates ID;"
-],
-[
-"li",
-"the details read from that document: your name as printed, date of birth, nationality, document type, expiry date and the last 4 characters of the document number (we do not store the full number);"
-],
-[
-"li",
-"the result of the identity check (passed or flagged, and short reasons), including whether you are 18 or over;"
-],
-[
-"li",
-"what you enter on the NDA: your name, company (optional), typed and/or drawn signature, budget, source of funding and timeline;"
-],
-[
-"li",
-"the time you signed, your IP address and your browser's user-agent, the NDA version, so we have a record of the agreement."
+"If you list a business we collect your name, phone or WhatsApp number, email address (optional), the business name (optional), and your answers about the business: industry, emirate and area, asking price, revenue, profit and a short description. The business name and your contact details are seen only by our team; the public listing shows the industry, area, figures and description."
 ],
 [
 "h3",
-"Seller information"
+"Directory"
 ],
 [
 "p",
-"If you list a business we collect your answers to the seller questionnaire, which can include the business name, industry, location, asking price, revenue, profit, years trading, number of employees, rent and lease terms, and your reason for selling. You can also upload documents to a private data room, such as the trade licence, financial statements, VAT returns, bank statements, the lease or Ejari, a credit report (AECB), staff records (MOHRE / WPS), MOA or ownership documents, asset lists, contracts and photos. These documents may contain personal data about you and about other people (for example employees or business partners). Please share only what is needed and make sure you are allowed to share it."
+"When you search the directory, the words you type and the area you pick are sent from our server to a public business-data service to find matching businesses (see section 6). We do not send your name or any other personal details with the search, and searches are cached for one day without any link to you. If you ask to add your company to our partner list, we collect your name, company, category, area, website, phone and email."
 ],
 [
 "h3",
-"Messages"
+"Advisory, brokerage and contact forms"
 ],
 [
 "p",
-"We keep the messages you send and receive through the Site's chat, including messages from visitors who are not signed in (identified only by a random guest ID). Some replies may be written by an AI assistant (see section 12)."
+"When you use any other form on the Site we collect what you enter: your name, phone or WhatsApp number, email address (optional), company name (optional), the topics you pick and your message, plus the page you sent it from."
 ],
 [
 "h3",
-"Your activity on the Site"
+"Contacting us directly"
 ],
 [
 "p",
-"We keep the listings you save or archive, the NDAs and access requests you make, the enquiries you start (including when you tap a \"contact us on WhatsApp\" button), and a log of key decisions (for example a seller approving or declining a buyer, or an admin action)."
-],
-[
-"h3",
-"Grow services"
-],
-[
-"p",
-"If you use the free growth assessment or ask about our Grow services (SEO, paid ads, SDR/outreach, social media management, the enquiry desk and website redesign), we collect your company name, website address, your answers, and the assessment we produce. To produce it, we look at your public website."
-],
-[
-"h3",
-"Contacting us"
-],
-[
-"p",
-"If you email us or message us on WhatsApp, we receive your name, number or email address and what you send."
+"If you email us, call us or message us on WhatsApp, we receive your name, number or email address and what you send."
 ],
 [
 "h3",
@@ -149,15 +113,15 @@
 ],
 [
 "p",
-"Like any website, our hosting provider receives your IP address and browser details when you visit. We use IP addresses for security (for example limiting repeated login attempts). We also count page views, listing views and WhatsApp clicks as simple daily totals. These counters do not store IP addresses, user IDs or cookies."
+"Like any website, our hosting provider receives your IP address and browser details when you visit, and uses them to keep the Site secure. We do not use analytics or tracking tools."
 ],
 [
 "h3",
-"Information from others"
+"Team accounts"
 ],
 [
 "p",
-"A seller may give us information about other people in their documents."
+"Only SMEmarket staff have accounts on the Site. For them we store a name, email address and a salted hash of their password, never the password itself."
 ],
 [
 "h2",
@@ -175,44 +139,24 @@
 "Lawful basis"
 ],
 [
-"Create and run your account, sign you in, keep you signed in",
-"Performance of our contract with you (our Terms)"
+"Reply to your enquiry and send you the details you asked for",
+"Your consent, given when you send the form or message; and steps you ask us to take before a contract"
 ],
 [
-"Run the marketplace: publish listings, handle NDAs, approvals, data rooms and messages",
-"Performance of our contract with you"
+"Review, prepare and publish your listing, and handle buyer enquiries about it",
+"Performance of our contract with you (our listing terms)"
 ],
 [
-"Check a buyer's identity and age before an NDA is passed to a seller",
-"Your consent, given when you upload your ID; and performance of the contract"
+"Introduce a buyer and a seller to each other",
+"Your consent, which we ask for before making the introduction"
 ],
 [
-"Introduce a buyer and seller and help complete a sale, including our 5% success fee",
-"Performance of our contract with you"
+"Keep records of enquiries, listings and transactions, and defend legal claims",
+"Legal obligation (record-keeping law) and establishing or defending legal claims"
 ],
 [
-"Send service emails (login codes, access approved or declined, listing updates)",
-"Performance of our contract with you"
-],
-[
-"Provide Grow assessments and services",
-"Performance of a contract, or steps you ask us to take before one"
-],
-[
-"Keep the Site secure, prevent fraud and misuse, rate-limit logins",
-"Performance of our contract with you (a secure, fraud-free marketplace is part of the service we provide), protecting your interests, and establishing or defending legal claims (PDPL Article 4)"
-],
-[
-"Keep records of NDAs and transactions, and defend legal claims",
-"Legal obligations and the establishment or defence of legal claims"
-],
-[
-"Count page views to improve the Site",
-"Aggregated counts only, no personal data stored"
-],
-[
-"Send marketing messages",
-"Your consent, which you can withdraw at any time"
+"Keep the Site secure",
+"Necessary to protect the Site and its users"
 ]
 ]
 ],
@@ -230,39 +174,11 @@
 ],
 [
 "p",
-"Sellers. When a buyer signs an NDA for a listing, the seller who owns that listing can see the request and open the signed NDA, so they can decide whether to approve the buyer. From the moment the NDA is signed, whether or not the seller has approved the buyer yet, the seller can see:"
-],
-[
-"li",
-"the buyer's name, email address and company (if given);"
-],
-[
-"li",
-"the type of ID document (passport or Emirates ID);"
-],
-[
-"li",
-"whether the ID was checked (an \"ID checked\" or \"ID not verified\" label; the detailed results and reasons are seen only by SMEmarket);"
-],
-[
-"li",
-"the buyer's stated budget and timeline;"
-],
-[
-"li",
-"the buyer's signature, when they signed, and the IP address and browser recorded at signing."
+"Buyers and sellers. Public listings never show the seller's name, contact details or business name. We share a seller's business name and documents with a buyer, and a buyer's name and contact details with a seller, only after speaking to them and with their agreement."
 ],
 [
 "p",
-"Sellers never see the images of the buyer's passport or Emirates ID, and they cannot open them through any page or link. They also never see the buyer's nationality, date of birth, phone number, source of funding or the detailed results of the identity check. Only the buyer and SMEmarket administrators can see the ID images. Approving the buyer does not give the seller any more of the buyer's details; it opens the full listing to the buyer. A seller can also let SMEmarket approve buyers for them. Sellers must use a buyer's details only to decide on that buyer's request."
-],
-[
-"p",
-"Buyers. Public listing cards never show the seller's identity, the business name or the reason for selling. A buyer sees confidential listing details and data room documents only after signing an NDA and being approved by the seller. Seller contact details are not shared; all communication goes through SMEmarket."
-],
-[
-"p",
-"Service providers. Companies that host the Site, send emails, run the AI features and store backups for us (see section 6). They act on our instructions."
+"Service providers. Companies that host the Site and deliver our email (see section 6). They act on our instructions."
 ],
 [
 "p",
@@ -287,15 +203,15 @@
 ],
 [
 "Cloudflare, Inc.",
-"Hosts the Site and its database (Cloudflare Pages, Functions and Workers KV); stores account data, listings, messages, NDAs and uploaded documents; security",
+"Hosts the Site and its database (Cloudflare Pages, Functions and D1); stores enquiries, listings and directory submissions; security",
 "All data described in section 3",
-"Our database has no regional restriction: it is stored in Cloudflare's central data centres (in the United States and Europe) and cached across Cloudflare's global network, which includes the UAE"
+"Cloudflare's data centres (mainly in the United States and Europe), cached across its global network, which includes the UAE"
 ],
 [
-"xAI (X.AI LLC)",
-"AI models (Grok) for the buyer ID check, AI chat replies and the growth assessment",
-"ID images and the details read from them; chat messages; assessment answers and website",
-"United States. Under xAI's terms it does not train its models on our data, and it deletes what we send within 30 days (unless the law requires longer or the content is flagged for abuse)"
+"Web3Forms",
+"Delivers a copy of each form you send to our team's inbox",
+"What you enter in the form",
+"Outside the UAE"
 ],
 [
 "Google LLC (Google Workspace / Gmail)",
@@ -304,10 +220,10 @@
 "Any country where Google has data centres, including the United States, under Google's Cloud Data Processing Addendum"
 ],
 [
-"Microsoft Corporation (OneDrive)",
-"Stores nightly backups of the database in a private folder",
-"All data in the database",
-"Microsoft data centres in the United States or another region, with a copy in a second region. Each file is encrypted at rest with its own AES-256 key"
+"OpenStreetMap services (Overpass API and Nominatim); Google Maps Platform if we enable it",
+"Find businesses that match a directory search",
+"Only the words you search for and the area you pick, sent from our server. No personal details",
+"Europe (OpenStreetMap services); any country where Google has data centres (Google)"
 ],
 [
 "WhatsApp (Meta Platforms)",
@@ -319,7 +235,7 @@
 ],
 [
 "p",
-"Each provider acts on our instructions under its standard customer terms and data processing terms: Cloudflare's Data Processing Addendum, xAI's Enterprise Terms of Service (which cover API use), Google's Cloud Data Processing Addendum and Microsoft's Services Agreement and Privacy Statement. WhatsApp is used only when you choose to contact us there, and WhatsApp's own terms apply."
+"Each provider acts on our instructions under its standard customer terms and data processing terms. WhatsApp is used only when you choose to contact us there, and WhatsApp's own terms apply."
 ],
 [
 "h2",
@@ -331,15 +247,11 @@
 ],
 [
 "li",
-"necessity for our contract with you: we cannot host the Site, send your emails or run the identity check you ask for without these providers;"
+"necessity for our contract with you, or for steps you ask us to take: we cannot host the Site or reply to you without these providers;"
 ],
 [
 "li",
-"contractual safeguards: each provider's data processing terms bind it to process data only on our instructions, keep it confidential and secure, and use sub-processors only under equivalent terms. Cloudflare and Google also offer the EU Standard Contractual Clauses;"
-],
-[
-"li",
-"your consent for the identity check, given when you upload your ID, which includes sending the image to xAI in the United States."
+"contractual safeguards: each provider's data processing terms bind it to process data only on our instructions, keep it confidential and secure, and use sub-processors only under equivalent terms. Cloudflare and Google also offer the EU Standard Contractual Clauses."
 ],
 [
 "p",
@@ -362,74 +274,34 @@
 "Why"
 ],
 [
-"One-time login codes",
-"10 minutes",
-"Needed only to sign in"
-],
-[
-"Password verification / reset links",
-"24 hours / 1 hour",
-"Needed only once"
-],
-[
-"Login sessions",
-"30 days, or until you log out",
-"Keeps you signed in"
-],
-[
 "Unfinished seller questionnaire",
-"On your device until you submit or clear it; on our server 90 days",
+"On your device only, until you send or clear it",
 "Lets you finish later"
 ],
 [
-"Account details, saved and archived listings",
-"While your account is open, then deleted within 90 days of closing it",
-"Needed to provide your account; 90 days covers mistakes and open requests"
+"Directory searches",
+"1 day, without any link to you",
+"Faster repeat searches"
 ],
 [
-"Passport / Emirates ID images",
-"2 years from signing the NDA (the NDA's term), then deleted",
-"They show who signed the NDA while it is in force"
+"Team login sessions",
+"30 days, or until they log out",
+"Keeps staff signed in"
 ],
 [
-"Signed NDAs, with the details read from the ID (name, date of birth, nationality, last 4 characters, check result)",
-"5 years after the NDA ends (7 years from signing)",
-"Evidence of the agreement if a claim arises; 5-year commercial record-keeping rule"
+"Enquiries and form messages",
+"5 years from your last contact",
+"Commercial record-keeping law; defending legal claims"
 ],
 [
-"Listings and data room documents",
-"While the listing is live; a deleted listing is kept for 12 months, then erased",
-"Lets a seller restore a listing and lets us handle disputes"
+"Listings and seller details",
+"5 years after the listing ends",
+"Commercial record-keeping law; defending legal claims"
 ],
 [
-"Messages",
-"2 years after the last message in a conversation",
-"Long enough to cover a typical sale and any follow-up"
-],
-[
-"Records of completed sales and success fees",
-"5 years after the end of the financial year",
-"UAE commercial and tax record-keeping rules"
-],
-[
-"Growth assessments",
-"2 years",
-"Lets us follow up on the services you asked about"
-],
-[
-"Activity log of decisions (approvals, declines, admin actions)",
-"5 years",
-"Shows who decided what if there is a dispute"
-],
-[
-"Database backups",
-"The newest 30 nightly backups (about 30 days)",
-"Disaster recovery; data deleted from the Site is gone from backups within about 30 days"
-],
-[
-"Daily traffic counts",
-"Kept in aggregate",
-"They contain no personal data"
+"Directory partner submissions",
+"Until you ask us to remove them, or 2 years if we don't list you",
+"To consider and run the listing"
 ]
 ]
 ],
@@ -443,35 +315,15 @@
 ],
 [
 "li",
-"Passwords are stored only as salted hashes; reset and verification tokens are stored only as hashes and work once."
+"Team passwords are stored only as salted hashes; team session cookies are HttpOnly and Secure."
 ],
 [
 "li",
-"Session cookies are signed, HttpOnly and Secure."
+"Listing contact details and business names are never on public pages; only the SMEmarket team can see them."
 ],
 [
 "li",
-"Logins, ID uploads and messages are rate-limited to stop abuse."
-],
-[
-"li",
-"ID images and data room documents are never on public pages. ID images can be seen only by the buyer and SMEmarket administrators, never by sellers (this is enforced on our servers); data room documents only by the seller, approved buyers and administrators."
-],
-[
-"li",
-"A nightly check finds data that has passed the retention periods in section 8 so that it can be deleted."
-],
-[
-"li",
-"Backups are stored in OneDrive, which encrypts each file at rest."
-],
-[
-"li",
-"Access to the admin area is limited to named SMEmarket administrators."
-],
-[
-"li",
-"Backups are stored in a private account and contain personal data, so they are never kept in our source code."
+"Access to the admin area is limited to named SMEmarket staff."
 ],
 [
 "p",
@@ -519,7 +371,7 @@
 ],
 [
 "p",
-"To use any of these rights, email admin@smemarket.ae from the address on your account. We may ask you to confirm your identity. We will reply within 30 days of receiving your request. If the PDPL Executive Regulations set a shorter period, we will follow it. You can also edit your profile and delete your listings yourself from your account."
+"To use any of these rights, email admin@smemarket.ae. We may ask you to confirm your identity. We will reply within 30 days of receiving your request. If the PDPL Executive Regulations set a shorter period, we will follow it."
 ],
 [
 "p",
@@ -531,7 +383,7 @@
 ],
 [
 "p",
-"We use only cookies that are needed for the Site to work. We do not use advertising, analytics or third-party tracking cookies."
+"Visitors get no cookies from us. We do not use advertising, analytics or third-party tracking cookies."
 ],
 [
 "table",
@@ -542,30 +394,15 @@
 "Lasts"
 ],
 [
-"sm_login",
-"Keeps you signed in",
+"sm_session",
+"Keeps SMEmarket staff signed in to the admin area (staff only)",
 "30 days"
-],
-[
-"sm_otp",
-"Remembers which address a login code was sent to",
-"10 minutes"
-],
-[
-"sm_access",
-"Remembers listings you have been approved to view",
-"30 days"
-],
-[
-"sm_guest",
-"A random ID so a signed-out visitor can continue a chat",
-"90 days"
 ]
 ]
 ],
 [
 "p",
-"We also use your browser's local storage to save your progress in the seller questionnaire, and session storage to keep the chat window open as you move between pages. These stay on your device. You can block or delete cookies in your browser, but you will not be able to sign in without them."
+"We use your browser's local storage to save your progress in the seller questionnaire and small preferences such as a remembered filter. These stay on your device and you can clear them at any time."
 ],
 [
 "h2",
@@ -573,19 +410,7 @@
 ],
 [
 "p",
-"Identity check. When a buyer uploads a passport or Emirates ID, the image is sent to xAI's Grok vision model, which reads the document and checks whether it looks genuine, is in date, matches the name you typed and shows you are 18 or over. The check does not make the final decision on its own: a doubtful result is only flagged for an SMEmarket administrator to review, and the NDA still goes to the seller. The only automatic outcome is being asked to upload again when the image is clearly not an ID document. You can ask for a person to review any result."
-],
-[
-"p",
-"AI chat replies. Replies to buyers in the chat may be written by an AI assistant using xAI's Grok models. The assistant sees only what that buyer is allowed to see (public listing details, or confidential details once approved), never the seller's contact details or documents. It hands over to a person for anything sensitive, and a person can reply at any time. You can ask to talk to a person in the chat."
-],
-[
-"p",
-"Growth assessment. Your company name, website and answers are sent to xAI's Grok models to produce the assessment. It is a recommendation only."
-],
-[
-"p",
-"None of these produce decisions with legal effect about you without human involvement."
+"We do not use AI or other automated processing to make decisions about you. Every enquiry and listing is read and handled by a person on our team."
 ],
 [
 "h2",
@@ -593,7 +418,7 @@
 ],
 [
 "p",
-"We send the service emails you need to use the Site, such as login codes, NDA and access updates and listing updates. You cannot opt out of these while you have an account, because the Site cannot work without them."
+"We contact you only about what you asked us for: your enquiry, your listing, or a business you are interested in."
 ],
 [
 "p",
@@ -605,7 +430,7 @@
 ],
 [
 "p",
-"SMEmarket is for adults only. You must be 18 or over to create an account or sign an NDA, and our identity check confirms that buyers are 18 or over. We do not knowingly collect data from anyone under 18. If you think a child has given us data, contact us and we will delete it."
+"SMEmarket is for adults only. You must be 18 or over to send us an enquiry or list a business. We do not knowingly collect data from anyone under 18. If you think a child has given us data, contact us and we will delete it."
 ],
 [
 "h2",

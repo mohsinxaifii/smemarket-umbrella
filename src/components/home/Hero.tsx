@@ -23,7 +23,7 @@ const PEOPLE: { who: Cast; mood: Mood; body: Body; says: string; service: string
   { who: "lina", mood: "excited", body: "Paper", says: "Buying my first business", service: "Business brokerage", x: 0, s: 0.92, phone: true },
   { who: "james", mood: "happy", body: "Device", says: "Found a VAT accountant", service: "Services directory", x: 10.5, s: 0.84 },
   { who: "priya", mood: "calm", body: "Explaining", says: "Planning a second branch", service: "Strategy & advisory", x: 21, s: 0.96, phone: true },
-  { who: "omar", mood: "happy", body: "Shirt", says: "Signed one NDA, figures unlocked", service: "Business brokerage", x: 32, s: 0.86 },
+  { who: "omar", mood: "happy", body: "Shirt", says: "Asked about a café, got a visit", service: "Business brokerage", x: 32, s: 0.86 },
   { who: "rashid", mood: "happy", body: "Coffee", says: "Selling my café, quietly", service: "Business brokerage", x: 43, s: 1, phone: true },
   { who: "hana", mood: "happy", body: "Paper", says: "Training my team on AI", service: "AI trainings", x: 54, s: 0.88 },
   { who: "zara", mood: "excited", body: "PointingUp", says: "Getting more customers", service: "Growth Studio", x: 64.5, s: 0.97, phone: true },
@@ -122,7 +122,7 @@ export default function Hero() {
         </h1>
 
         <p data-fade className="mt-[clamp(0.8rem,2.2vh,1.3rem)] max-w-[34rem] text-[clamp(1.02rem,min(1.3vw,2.2vh),1.2rem)] leading-relaxed text-paper/75">
-          Small businesses for sale across the UAE, each one checked by our team. Sign one NDA to see the real figures.
+          Small businesses for sale across the UAE, each one checked by our team. See one you like? Ask us about it.
         </p>
 
         <div data-fade className="relative z-30 mt-[clamp(1.2rem,3.4vh,2.2rem)] max-w-[760px]">

@@ -1,13 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import clsx from "clsx";
-import { ArrowUpRight, Bookmark, Lock, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { APP } from "@/lib/site";
-import { ApiError, aed, api, short } from "@/lib/api";
+import { aed, short } from "@/lib/api";
 import { useTilt, GLOW } from "@/lib/useTilt";
-import { toast } from "@/components/ui/Toast";
 import Image from "next/image";
 import { listingImage } from "@/lib/listingImage";
 
@@ -30,35 +26,12 @@ export type PublicListing = {
 };
 
 /**
- * A business for sale, as it appears in a grid. The name stays hidden until a buyer is approved.
- * The whole card opens the listing; the bookmark saves it without leaving the page.
+ * A business for sale, as it appears in a grid.
+ * The whole card opens the listing.
  */
-export default function ListingCard({ l, badge, saved: savedProp = false, style }: { l: PublicListing; badge?: React.ReactNode; saved?: boolean; style?: React.CSSProperties }) {
+export default function ListingCard({ l, badge, style }: { l: PublicListing; badge?: React.ReactNode; style?: React.CSSProperties }) {
   const tilt = useTilt(5);
-  const router = useRouter();
-  const [saved, setSaved] = useState(savedProp);
-  const [busy, setBusy] = useState(false);
-  useEffect(() => setSaved(savedProp), [savedProp]);
   const img = listingImage(l);
-
-  const toggle = async () => {
-    if (busy) return;
-    setBusy(true);
-    setSaved((s) => !s); // optimistic
-    try {
-      const r = await api<{ saved: boolean }>(`listings/${l.id}/save`, { method: "POST" });
-      setSaved(r.saved);
-      toast(r.saved ? "Saved to your account" : "Removed from saved", r.saved ? "ok" : "info");
-    } catch (e) {
-      setSaved((s) => !s);
-      if (e instanceof ApiError && e.status === 401) {
-        toast("Log in to save businesses", "info");
-        router.push(`${APP.login}?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-      } else toast((e as Error).message, "error");
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <article {...tilt} style={style} className="group relative flex flex-col rounded-[24px] bg-card p-3 pb-5 ring-1 ring-rule transition-[transform,box-shadow] duration-300 ease-out hover:shadow-[0_30px_60px_-34px_rgba(21,19,15,.55)] hover:ring-ink/25 md:pb-6">
@@ -68,11 +41,7 @@ export default function ListingCard({ l, badge, saved: savedProp = false, style 
         <Image src={img.src} alt={img.alt} fill sizes="(min-width:1024px) 400px, (min-width:640px) 50vw, 90vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.06]" />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-3">
           <span className="truncate rounded-full bg-paper/95 px-3 py-1 text-[12px] font-semibold backdrop-blur">{l.industry}</span>
-          {badge ?? (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-ink/80 px-2.5 py-1 text-[12px] font-semibold text-paper backdrop-blur">
-              <Lock className="size-3" /> NDA
-            </span>
-          )}
+          {badge}
         </div>
       </div>
       <div className="flex flex-1 flex-col px-2 md:px-3">
@@ -99,22 +68,10 @@ export default function ListingCard({ l, badge, saved: savedProp = false, style 
           </span>
         ))}
       </div>
-      <div className="mt-5 flex gap-2">
-        <span className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-ink text-[15px] font-semibold text-paper transition group-hover:bg-ink-3">
+      <div className="mt-5">
+        <span className="flex h-11 items-center justify-center gap-2 rounded-[10px] bg-ink text-[15px] font-semibold text-paper transition group-hover:bg-ink-3">
           View business <ArrowUpRight className="size-4 text-lime transition-transform duration-300 group-hover:rotate-45" />
         </span>
-        <button
-          type="button"
-          onClick={toggle}
-          aria-pressed={saved}
-          aria-label={saved ? "Remove from saved" : "Save this business"}
-          className={clsx(
-            "relative z-10 grid size-11 shrink-0 place-items-center rounded-[10px] border transition active:scale-90",
-            saved ? "border-ink bg-lime text-ink" : "border-rule-strong bg-card hover:border-ink",
-          )}
-        >
-          <Bookmark key={String(saved)} className={clsx("size-[18px]", saved && "animate-[tickPop_.45s_cubic-bezier(.34,1.56,.64,1)] fill-ink")} />
-        </button>
       </div>
       </div>
     </article>

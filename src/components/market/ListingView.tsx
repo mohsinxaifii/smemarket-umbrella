@@ -1,59 +1,37 @@
 "use client";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import clsx from "clsx";
-import { ArrowLeft, BadgeCheck, Bookmark, Clock, FileText, Link2, Loader2, Lock, MapPin, MessagesSquare, ShieldCheck, Unlock, Upload } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Link2, Loader2, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { toast } from "@/components/ui/Toast";
 import Image from "next/image";
 import { listingImage } from "@/lib/listingImage";
-import { api, aed, short, ago } from "@/lib/api";
-import { APP } from "@/lib/site";
-import { Notice } from "./AppPage";
+import { api, aed, short } from "@/lib/api";
+import { APP, SITE, waLink } from "@/lib/site";
 import type { PublicListing } from "./ListingCard";
 import Character from "@/components/ui/Character";
+import LeadForm from "@/components/forms/LeadForm";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import { getLenis } from "@/components/layout/SmoothScroll";
 
-type Full = PublicListing & { business_name?: string; rent?: number | null; lease?: string | null; reason?: string | null; confidential?: string | null; review_note?: string | null };
-type Doc = { id?: string; name: string; kind?: string | null; size?: number };
-type Me = { signedIn: boolean; owner: boolean; admin: boolean; nda: string | null; access: string | null; unlocked: boolean; saved: boolean; thread: string | null };
-type Req = { id: string; status: string; created_at: number; full_name: string; company: string | null; budget: string | null; funding: string | null; timeline: string | null; id_status: string };
-
-const STATUS: Record<string, string> = { pending: "In review by our team", live: "Live", rejected: "Not approved", sold: "Sold", withdrawn: "Withdrawn" };
-
+/** One business for sale: the figures, a short description, and a way to ask us about it. */
 export default function ListingView() {
   const id = useSearchParams().get("id") || "";
-  const router = useRouter();
-  const [d, setD] = useState<{ listing: Full; docs: Doc[]; me: Me } | null>(null);
+  const [l, setL] = useState<PublicListing | null>(null);
   const [err, setErr] = useState("");
-  const [busy, setBusy] = useState(false);
 
-  const load = useCallback(() => {
+  useEffect(() => {
     if (!id) return setErr("That business isn't listed.");
-    api<{ listing: Full; docs: Doc[]; me: Me }>(`listings/${encodeURIComponent(id)}`)
-      .then(setD)
+    api<{ listing: PublicListing }>(`listings/${encodeURIComponent(id)}`)
+      .then((d) => setL(d.listing))
       .catch((e) => setErr(e.message));
   }, [id]);
-  useEffect(load, [load]);
 
-  const act = async (fn: () => Promise<unknown>, done?: string) => {
-    setBusy(true);
-    setErr("");
-    try {
-      await fn();
-      if (done) toast(done);
-      load();
-    } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
-  const here = `${APP.listing(id)}`;
   const share = async () => {
     const url = window.location.href;
     // phones get the native share sheet; elsewhere, copy the link
     if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
-      await navigator.share({ title: d?.listing.title, url }).catch(() => {});
+      await navigator.share({ title: l?.title, url }).catch(() => {});
       return;
     }
     try {
@@ -63,51 +41,44 @@ export default function ListingView() {
       toast("Couldn't copy the link", "error");
     }
   };
-  const message = () =>
-    act(async () => {
-      const t = await api<{ id: string }>(`listings/${id}/thread`, { method: "POST" });
-      router.push(`${APP.messages}?t=${t.id}`);
-    });
+  const toForm = () => {
+    const el = document.getElementById("enquire");
+    const lenis = getLenis();
+    if (el && lenis) lenis.scrollTo(el, { offset: -110, duration: 1 });
+    else el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
-  if (err && !d)
+  if (err && !l)
     return (
       <section className="min-h-[70vh] bg-paper pb-24 pt-[156px]">
         <div className="container-x">
           <h1 className="display text-[clamp(2.2rem,4vw,3.4rem)]">This business isn&apos;t available.</h1>
-          <p className="mt-3 max-w-xl text-[18px] text-ink-2">It may have sold, been withdrawn, or the link is wrong. Here are the businesses for sale right now.</p>
-
+          <p className="mt-3 max-w-xl text-[18px] text-ink-2">It may have sold, or the link is wrong. Here are the businesses for sale right now.</p>
           <Link href={APP.listings} className="mt-6 inline-flex items-center gap-2 font-semibold">
             <ArrowLeft className="size-4" /> All businesses
           </Link>
         </div>
       </section>
     );
-  if (!d)
+  if (!l)
     return (
       <section className="grid min-h-[70vh] place-items-center bg-paper pt-[108px]">
         <Loader2 className="size-6 animate-spin text-muted" />
       </section>
     );
 
-  const { listing: l, docs, me } = d;
+  const place = [l.area, l.city].filter(Boolean).join(", ");
+  const ask = `Hi SMEmarket, I'm interested in "${l.title}" (${place}, ${aed(l.asking_price)}). Can you share more details?`;
   const facts: [string, string][] = [
+    ["Asking price", aed(l.asking_price)],
     ["Revenue (yearly)", aed(l.revenue)],
     ["Profit (yearly)", aed(l.profit)],
-    ["Multiple", l.multiple ? `${l.multiple}x profit` : "—"],
-    ["Years trading", l.years_trading != null ? String(l.years_trading) : "—"],
-    ["Employees", l.employees != null ? String(l.employees) : "—"],
+    ["Price to profit", l.multiple ? `${l.multiple}x` : "—"],
+    ...(l.years_trading != null ? [["Years trading", String(l.years_trading)] as [string, string]] : []),
+    ...(l.employees != null ? [["Employees", String(l.employees)] as [string, string]] : []),
+    ["Location", place],
+    ["Industry", l.industry],
   ];
-  const secret: [string, string][] = me.unlocked
-    ? [
-        ["Rent (yearly)", aed(l.rent)],
-        ["Lease", l.lease || "—"],
-        ["Reason for selling", l.reason || "—"],
-      ]
-    : [
-        ["Rent (yearly)", "•••••"],
-        ["Lease", "•••••"],
-        ["Reason for selling", "•••••"],
-      ];
 
   return (
     <section className="bg-paper pb-32 pt-[108px] md:pt-[128px] lg:pb-24">
@@ -118,21 +89,15 @@ export default function ListingView() {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
           {/* the business */}
-          <div>
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-paper-2 px-3 py-1 text-[14px] font-semibold">{l.industry}</span>
-              {l.status !== "live" && <span className="rounded-full bg-[#f6e3b5] px-3 py-1 text-[14px] font-semibold">{STATUS[l.status] ?? l.status}</span>}
-              {me.unlocked && !me.owner && (
-                <span className="flex items-center gap-1 rounded-full bg-lime px-3 py-1 text-[14px] font-semibold">
-                  <Unlock className="size-3.5" /> Full details unlocked
-                </span>
-              )}
+              {l.status !== "live" && <span className="rounded-full bg-[#f6e3b5] px-3 py-1 text-[14px] font-semibold">Not live yet</span>}
             </div>
-            <h1 className="display mt-4 text-[clamp(2.2rem,min(4.4vw,8vh),3.8rem)]">{l.business_name || l.title}</h1>
-            {l.business_name && <p className="mt-1 text-[17px] text-muted">Listed as “{l.title}”</p>}
+            <h1 className="display mt-4 text-[clamp(2.2rem,min(4.4vw,8vh),3.8rem)]">{l.title}</h1>
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
               <p className="flex items-center gap-1.5 text-[17px] text-ink-2">
-                <MapPin className="size-4" /> {[l.area, l.city].filter(Boolean).join(", ")}
+                <MapPin className="size-4" /> {place}
               </p>
               <button onClick={share} className="flex items-center gap-1.5 rounded-full border border-rule-strong px-3 py-1.5 text-[14px] font-semibold transition hover:border-ink hover:bg-ink hover:text-paper active:scale-95">
                 <Link2 className="size-4" /> Share
@@ -168,262 +133,71 @@ export default function ListingView() {
             )}
 
             <dl className="mt-8 grid border-t border-rule-strong sm:grid-cols-2">
-              {[...facts, ...secret].map(([k, v], i) => (
+              {facts.map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-4 border-b border-rule-strong py-3.5 sm:odd:pr-6 sm:even:pl-6">
                   <dt className="text-[15px] text-muted">{k}</dt>
-                  <dd className={clsx("text-right text-[15px] font-semibold", i >= facts.length && !me.unlocked && "select-none blur-[3px]")}>{v}</dd>
+                  <dd className="text-right text-[15px] font-semibold">{v}</dd>
                 </div>
               ))}
             </dl>
-
-            {me.unlocked && l.confidential && (
-              <div className="mt-6 rounded-[20px] bg-paper-2 p-5">
-                <p className="text-[14px] font-semibold text-muted">From the seller</p>
-                <p className="mt-1 whitespace-pre-line text-[16px]">{l.confidential}</p>
-              </div>
-            )}
-
-            {/* data room */}
-            <div className="mt-10">
-              <h2 className="flex items-center gap-2 text-[20px] font-semibold">
-                <FileText className="size-5" /> Documents
-              </h2>
-              <ul className="mt-3 grid gap-2">
-                {docs.length === 0 && <li className="text-[15px] text-muted">{me.owner ? "Add documents buyers will ask for: trade licence, financials, lease." : "The seller hasn't added documents yet."}</li>}
-                {docs.map((doc, i) => (
-                  <li key={doc.id ?? i}>
-                    {me.unlocked && doc.id ? (
-                      <a href={`/api/docs/${doc.id}`} target="_blank" rel="noopener" className="flex items-center justify-between rounded-xl border border-rule px-4 py-3 text-[15px] hover:border-ink">
-                        <span className="flex items-center gap-2">
-                          <FileText className="size-4 text-muted" /> {doc.name}
-                        </span>
-                        <Unlock className="size-4" />
-                      </a>
-                    ) : (
-                      <span className="flex items-center justify-between rounded-xl border border-rule px-4 py-3 text-[15px] text-muted">
-                        <span className="flex items-center gap-2">
-                          <FileText className="size-4" /> {doc.name}
-                        </span>
-                        <Lock className="size-4" />
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              {me.owner && <DocUpload id={l.id} onDone={load} />}
-            </div>
+            <p className="mt-4 flex items-start gap-2 text-[14px] text-muted">
+              <ShieldCheck className="mt-0.5 size-4 shrink-0" /> Figures are provided by the seller. Our team goes through the details with you before anything is signed.
+            </p>
           </div>
 
-          {/* what you can do */}
-          <aside className="lg:sticky lg:top-28 lg:self-start">
-            {err && (
-              <div className="mb-4">
-                <Notice tone="error">{err}</Notice>
-              </div>
-            )}
-            {me.owner || me.admin ? (
-              <OwnerPanel l={l} me={me} onChange={load} />
-            ) : (
-              <div className="overflow-hidden rounded-[28px] bg-card ring-1 ring-rule">
-                <div className="p-6 md:p-7">
-                  <BuyerSteps me={me} />
-                  <div className="mt-6 grid gap-2.5">
-                    {!me.signedIn && (
-                      <>
-                        <Link href={`${APP.signup}&next=${encodeURIComponent(here)}`} className="flex h-12 items-center justify-center rounded-[10px] bg-ink text-[15px] font-semibold text-paper">
-                          Create a free account to see more
-                        </Link>
-                        <Link href={`${APP.login}?next=${encodeURIComponent(here)}`} className="flex h-12 items-center justify-center rounded-[10px] border border-ink/30 text-[15px] font-semibold">
-                          I have an account
-                        </Link>
-                      </>
-                    )}
-                    {me.signedIn && !me.nda && (
-                      <Link href={`${APP.nda}?next=${encodeURIComponent(here)}`} className="flex h-12 items-center justify-center rounded-[10px] bg-ink text-[15px] font-semibold text-paper">
-                        Sign the NDA (one time)
-                      </Link>
-                    )}
-                    {me.signedIn && me.nda && me.nda !== "rejected" && !me.access && (
-                      <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/access`, { method: "POST" }), "Request sent to the seller")} className="flex h-12 items-center justify-center gap-2 rounded-[10px] bg-ink text-[15px] font-semibold text-paper disabled:opacity-60">
-                        {busy && <Loader2 className="size-4 animate-spin" />} Request full details
-                      </button>
-                    )}
-                    {me.access === "requested" && <Notice>Request sent. The seller will review it and you’ll see the answer here.</Notice>}
-                    {me.access === "approved" && !me.unlocked && <Notice>The seller approved you. Your ID check is with our team; details open as soon as it passes.</Notice>}
-                    {me.access === "declined" && <Notice>The seller didn&apos;t approve this request. Other businesses are waiting.</Notice>}
-                    {me.nda === "rejected" && <Notice tone="error">Your ID check didn&apos;t pass. Please contact us so we can sort it out.</Notice>}
-                    {me.signedIn && (
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button disabled={busy} onClick={message} className="flex h-12 items-center justify-center gap-2 rounded-[10px] border border-ink/30 text-[15px] font-semibold hover:bg-paper-2">
-                          <MessagesSquare className="size-4" /> {me.thread ? "Messages" : "Ask the seller"}
-                        </button>
-                        <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/save`, { method: "POST" }), me.saved ? "Removed from saved" : "Saved to your account")} className={clsx("flex h-12 items-center justify-center gap-2 rounded-[10px] border text-[15px] font-semibold", me.saved ? "border-ink bg-ink text-paper" : "border-ink/30 hover:bg-paper-2")}>
-                          <Bookmark className="size-4" /> {me.saved ? "Saved" : "Save"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
+          {/* ask us about it */}
+          <aside id="enquire" className="lg:sticky lg:top-28 lg:self-start">
+            <div className="overflow-hidden rounded-[28px] bg-card ring-1 ring-rule">
+              <div className="p-6 md:p-7">
+                <p className="text-[21px] font-semibold leading-snug">Interested in this business?</p>
+                <p className="mt-1.5 text-[15px] text-ink-2">Ask us anything: the name, the books, the lease, a visit. A person replies within one business day.</p>
+                <a href={waLink(ask)} target="_blank" rel="noopener noreferrer" className="mt-5 flex h-12 items-center justify-center gap-2 rounded-[10px] bg-[#25d366] text-[15px] font-semibold text-ink transition hover:brightness-95">
+                  <WhatsAppIcon className="size-5" /> Ask on WhatsApp
+                </a>
+                <div className="my-5 flex items-center gap-3 text-[13px] text-muted">
+                  <span className="h-px flex-1 bg-rule" /> or send us your details <span className="h-px flex-1 bg-rule" />
                 </div>
-                <div className="relative flex items-end gap-3 bg-[#f6e3b5] px-6 pt-4">
-                  <p className="pb-5 text-[14px] leading-snug text-ink-2">All messages go through SMEmarket, so every step of the deal stays on record.</p>
-                  <Character who="karim" mood="explaining" body="Paper" size={110} className="shrink-0" />
-                </div>
+                <LeadForm
+                  type="listing"
+                  compact
+                  messageLabel="Your question"
+                  messagePlaceholder="I'd like to know more about this business."
+                  submitLabel="Ask about this business"
+                  doneTitle="Thanks"
+                  doneBody="We'll get back to you about this business within one business day."
+                  meta={{ Listing: l.title, "Listing ID": l.id, Price: aed(l.asking_price), Location: place }}
+                />
               </div>
-            )}
+              <div className="relative flex items-end gap-3 bg-[#f6e3b5] px-6 pt-4">
+                <p className="pb-5 text-[14px] leading-snug text-ink-2">
+                  Prefer to talk? Call us on{" "}
+                  <a href={SITE.phoneHref} className="font-semibold underline">
+                    {SITE.phone}
+                  </a>
+                  .
+                </p>
+                <Character who="karim" mood="explaining" body="Paper" size={110} className="shrink-0" />
+              </div>
+            </div>
           </aside>
         </div>
       </div>
 
       {/* phones: price and the next step, always within thumb's reach */}
-      {!me.owner && !me.admin && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur-xl lg:hidden">
-          <div className="flex items-center gap-3">
-            <span className="min-w-0 flex-1">
-              <span className="block text-[12px] text-muted">Asking price</span>
-              <span className="block truncate text-[18px] font-semibold tracking-tight">{aed(l.asking_price)}</span>
-            </span>
-            {!me.signedIn ? (
-              <Link href={`${APP.signup}&next=${encodeURIComponent(here)}`} className="flex h-12 items-center rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper">
-                See full details
-              </Link>
-            ) : !me.nda ? (
-              <Link href={`${APP.nda}?next=${encodeURIComponent(here)}`} className="flex h-12 items-center rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper">
-                Sign the NDA
-              </Link>
-            ) : !me.access && me.nda !== "rejected" ? (
-              <button disabled={busy} onClick={() => act(() => api(`listings/${l.id}/access`, { method: "POST" }), "Request sent to the seller")} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper disabled:opacity-60">
-                {busy && <Loader2 className="size-4 animate-spin" />} Request details
-              </button>
-            ) : (
-              <button disabled={busy} onClick={message} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper">
-                <MessagesSquare className="size-4" /> {me.thread ? "Messages" : "Ask the seller"}
-              </button>
-            )}
-          </div>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur-xl lg:hidden">
+        <div className="flex items-center gap-2">
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] text-muted">Asking price</span>
+            <span className="block truncate text-[18px] font-semibold tracking-tight">{aed(l.asking_price)}</span>
+          </span>
+          <a href={waLink(ask)} target="_blank" rel="noopener noreferrer" aria-label="Ask on WhatsApp" className="grid size-12 place-items-center rounded-[10px] bg-[#25d366] text-ink">
+            <WhatsAppIcon className="size-5" />
+          </a>
+          <button onClick={toForm} className="flex h-12 items-center gap-2 rounded-[10px] bg-ink px-4 text-[15px] font-semibold text-paper">
+            <MessageCircle className="size-4 text-lime" /> Ask about it
+          </button>
         </div>
-      )}
+      </div>
     </section>
-  );
-}
-
-/** The three steps to see a business, ticked off as the buyer goes. */
-function BuyerSteps({ me }: { me: Me }) {
-  const steps = [
-    { t: "Free account", done: me.signedIn },
-    { t: "Sign one NDA with ID", done: !!me.nda },
-    { t: "Seller approves you", done: me.access === "approved" },
-  ];
-  return (
-    <div>
-      <p className="text-[19px] font-semibold">{me.unlocked ? "You can see everything." : "See the name, figures and documents"}</p>
-      <ol className="mt-4 space-y-3">
-        {steps.map((s, i) => (
-          <li key={s.t} className="flex items-center gap-3 text-[15px]">
-            <span className={clsx("grid size-7 shrink-0 place-items-center rounded-full text-[13px] font-semibold", s.done ? "bg-lime" : "bg-paper-2 text-muted")}>{s.done ? <BadgeCheck className="size-4" /> : i + 1}</span>
-            <span className={s.done ? "text-ink" : "text-ink-2"}>{s.t}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
-/** The seller's side: status, who's asking, approve or decline. */
-function OwnerPanel({ l, me, onChange }: { l: Full; me: Me; onChange: () => void }) {
-  const [reqs, setReqs] = useState<Req[] | null>(null);
-  const [err, setErr] = useState("");
-  const load = useCallback(() => {
-    api<{ requests: Req[] }>(`listings/${l.id}/requests`)
-      .then((d) => setReqs(d.requests))
-      .catch((e) => setErr(e.message));
-  }, [l.id]);
-  useEffect(load, [load]);
-  const decide = async (rid: string, decision: "approved" | "declined") => {
-    try {
-      await api(`access/${rid}`, { body: { decision } });
-      load();
-      onChange();
-    } catch (e) {
-      setErr((e as Error).message);
-    }
-  };
-  return (
-    <div className="rounded-[28px] bg-card p-6 ring-1 ring-rule md:p-7">
-      <p className="text-[14px] font-semibold text-muted">{me.owner ? "Your listing" : "Admin view"}</p>
-      <p className="mt-1 flex items-center gap-2 text-[20px] font-semibold">
-        {l.status === "live" ? <ShieldCheck className="size-5" /> : <Clock className="size-5" />} {STATUS[l.status] ?? l.status}
-      </p>
-      {l.status === "pending" && <p className="mt-2 text-[15px] text-ink-2">We review every business before it goes live. We&apos;ll be in touch if we need anything.</p>}
-      {l.review_note && <Notice>{l.review_note}</Notice>}
-      <h3 className="mt-6 text-[17px] font-semibold">Buyers asking for details</h3>
-      {err && <Notice tone="error">{err}</Notice>}
-      <ul className="mt-3 grid gap-2.5">
-        {reqs?.length === 0 && <li className="text-[15px] text-muted">No requests yet. Verified buyers will appear here.</li>}
-        {reqs?.map((r) => (
-          <li key={r.id} className="rounded-2xl border border-rule p-4">
-            <div className="flex items-start justify-between gap-3">
-              <span>
-                <span className="block text-[16px] font-semibold">{r.full_name}</span>
-                <span className="block text-[13px] text-muted">
-                  {[r.company, r.budget && `Budget ${r.budget}`, r.timeline].filter(Boolean).join(" · ") || "NDA signed"} · {ago(r.created_at)}
-                </span>
-              </span>
-              <span className={clsx("shrink-0 rounded-full px-2.5 py-1 text-[12px] font-semibold", r.id_status === "approved" ? "bg-lime" : "bg-paper-2 text-muted")}>{r.id_status === "approved" ? "ID checked" : "ID in review"}</span>
-            </div>
-            {r.status === "requested" ? (
-              <div className="mt-3 flex gap-2">
-                <button onClick={() => decide(r.id, "approved")} className="h-10 flex-1 rounded-[10px] bg-ink text-[14px] font-semibold text-paper">
-                  Approve
-                </button>
-                <button onClick={() => decide(r.id, "declined")} className="h-10 flex-1 rounded-[10px] border border-ink/30 text-[14px] font-semibold">
-                  Decline
-                </button>
-              </div>
-            ) : (
-              <p className="mt-2 text-[14px] font-medium">{r.status === "approved" ? "Approved" : "Declined"}</p>
-            )}
-          </li>
-        ))}
-      </ul>
-      <Link href={APP.messages} className="mt-5 flex h-11 items-center justify-center gap-2 rounded-[10px] border border-ink/30 text-[15px] font-semibold">
-        <MessagesSquare className="size-4" /> Messages from buyers
-      </Link>
-    </div>
-  );
-}
-
-function DocUpload({ id, onDone }: { id: string; onDone: () => void }) {
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-  return (
-    <div className="mt-3">
-      <label className={clsx("flex h-12 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-dashed border-ink/40 text-[15px] font-semibold hover:bg-paper-2", busy && "opacity-60")}>
-        {busy ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Add a document (up to 15 MB)
-        <input
-          type="file"
-          className="sr-only"
-          disabled={busy}
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const form = new FormData();
-            form.set("file", file);
-            setBusy(true);
-            setErr("");
-            try {
-              await api(`listings/${id}/docs`, { form });
-              onDone();
-            } catch (x) {
-              setErr((x as Error).message);
-            } finally {
-              setBusy(false);
-              e.target.value = "";
-            }
-          }}
-        />
-      </label>
-      {err && <p className="mt-2 text-[14px] text-stamp">{err}</p>}
-      <p className="mt-2 text-[13px] text-muted">Only you, our team and buyers you approve can open these.</p>
-    </div>
   );
 }

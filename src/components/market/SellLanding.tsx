@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import clsx from "clsx";
-import { ArrowRight, BadgeCheck, Check, Eye, EyeOff, FileSignature, FileText, Lock, MapPin, MessagesSquare, PenLine, ShieldCheck, Unlock } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Eye, EyeOff, FileText, Lock, MapPin, MessagesSquare, PenLine, ShieldCheck, Unlock } from "lucide-react";
 import Character from "@/components/ui/Character";
 import { Reveal } from "@/components/ui/Reveal";
 import FeeCalc from "@/components/home/FeeCalc";
@@ -10,25 +10,25 @@ import Faq from "@/components/home/Faq";
 import { useCycle, useInView } from "@/lib/useInView";
 
 const STEPS = [
-  { icon: PenLine, t: "Answer 12 quick questions", d: "About three minutes. Nothing goes live when you send it." },
-  { icon: ShieldCheck, t: "We review it with you", d: "We check the business and write the listing together. Your name stays hidden." },
-  { icon: FileSignature, t: "Verified buyers ask for more", d: "Every buyer has signed an NDA and passed an ID check before they can ask." },
-  { icon: BadgeCheck, t: "You choose who sees what", d: "Approve or decline each buyer. Pay 5% only when the SPA is signed." },
+  { icon: PenLine, t: "Answer 7 quick questions", d: "About two minutes, no account needed. Nothing goes live when you send it." },
+  { icon: ShieldCheck, t: "We call you and list it", d: "We check the details with you and write the listing. Your business name stays private." },
+  { icon: MessagesSquare, t: "Buyers ask us, not you", d: "Every enquiry comes to our team. We answer questions and qualify each buyer." },
+  { icon: BadgeCheck, t: "We bring you serious buyers", d: "You only meet buyers we've spoken to. Pay 5% only when the SPA is signed." },
 ];
 
 const TIMELINE = [
-  { icon: PenLine, t: "Business submitted", s: "12 questions, 3 minutes" },
-  { icon: ShieldCheck, t: "Reviewed by SMEmarket", s: "Listing goes live, name hidden" },
-  { icon: FileSignature, t: "A buyer signed the NDA", s: "ID checked by our team" },
-  { icon: BadgeCheck, t: "You approved them", s: "Figures and documents open" },
+  { icon: PenLine, t: "Business submitted", s: "7 questions, 2 minutes" },
+  { icon: ShieldCheck, t: "Reviewed by SMEmarket", s: "Listing goes live, name private" },
+  { icon: MessagesSquare, t: "A buyer asked about it", s: "Our team answered and qualified them" },
+  { icon: BadgeCheck, t: "Introduced to you", s: "A serious buyer, ready to talk" },
 ];
 
 const SELLER_FAQ = [
-  { q: "Will people know my business is for sale?", a: "No. Your listing is anonymous: industry, area and figures only. The name, exact location and documents open only to buyers you approve." },
+  { q: "Will people know my business is for sale?", a: "Your listing shows the industry, area and figures, not the name. We share the name and documents only with buyers we've spoken to and agreed with you." },
   { q: "What does it cost to sell?", a: "Nothing to list and nothing while it's listed. A 5% success fee on the final sale price, payable when the Sale & Purchase Agreement is signed. If it doesn't sell, you pay nothing." },
-  { q: "Who are the buyers?", a: "People and companies with a free SMEmarket account who have signed our NDA and passed an Emirates ID or passport check. You see their name, company, budget and timeline before you decide." },
-  { q: "Do I have to answer every question?", a: "Only a few are required. Skip what you don't know; we'll go through the rest with you when we review the listing." },
-  { q: "Can I take my listing down?", a: "Yes, at any time, from your account." },
+  { q: "Who are the buyers?", a: "People and companies who contact us about your listing. We talk to each one first, so you only meet buyers with a real budget and timeline." },
+  { q: "Do I need an account?", a: "No. Answer a few questions and leave your number. We call you to go through the rest." },
+  { q: "Can I take my listing down?", a: "Yes, at any time. Message or call us and we take it down the same day." },
 ];
 
 /** Everything a seller wants to know before they start, with the form one click away. */
@@ -45,7 +45,7 @@ export default function SellLanding({ onStart, resume }: { onStart: () => void; 
           <div className="relative overflow-hidden rounded-[32px] bg-ink px-6 py-12 text-paper md:px-14 md:py-16">
             <div className="relative z-10 max-w-xl">
               <h2 className="display text-[clamp(2.2rem,4vw,3.6rem)]">Ready when you are.</h2>
-              <p className="mt-3 text-[18px] text-paper/70">Three minutes now. We take it from there.</p>
+              <p className="mt-3 text-[18px] text-paper/70">Two minutes now. We take it from there.</p>
               <button onClick={onStart} className="group mt-8 flex h-14 items-center gap-2 rounded-[10px] bg-lime px-7 text-[16px] font-semibold text-ink">
                 {resume ? "Continue your listing" : "Start your free listing"} <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </button>
@@ -72,18 +72,18 @@ function Hero({ onStart, resume }: { onStart: () => void; resume: boolean }) {
             <br />
             <span className="text-ink/45">For a fair price.</span>
           </h1>
-          <p className="mt-5 max-w-lg text-[19px] leading-relaxed text-ink-2">List your UAE business for free. We check it, keep your name hidden, and only bring buyers who have signed an NDA and passed an ID check.</p>
+          <p className="mt-5 max-w-lg text-[19px] leading-relaxed text-ink-2">List your UAE business for free, no account needed. We keep the name private, handle every enquiry, and only bring you serious buyers.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <button onClick={onStart} className="group flex h-14 items-center justify-center gap-2 rounded-[10px] bg-ink px-7 text-[16px] font-semibold text-paper transition hover:bg-ink-3">
               {resume ? "Continue where you left off" : "Start your free listing"} <ArrowRight className="size-4 text-lime transition-transform group-hover:translate-x-1" />
             </button>
-            <span className="text-[15px] text-muted">12 questions · about 3 minutes</span>
+            <span className="text-[15px] text-muted">7 questions · about 2 minutes</span>
           </div>
           <ul className="mt-8 grid gap-3 sm:grid-cols-3">
             {[
               ["Free to list", "5% only when it sells"],
-              ["Anonymous", "until you approve a buyer"],
-              ["Verified buyers", "NDA and ID checked"],
+              ["Name private", "shared only with serious buyers"],
+              ["We handle buyers", "every enquiry comes to us"],
             ].map(([t, d]) => (
               <li key={t} className="rounded-2xl bg-paper-2 p-4">
                 <span className="flex items-center gap-2 text-[16px] font-semibold">
@@ -141,7 +141,7 @@ function HowItWorks() {
     <section ref={ref} className="section-y bg-paper-2">
       <div className="container-x">
         <p className="label">How selling works</p>
-        <h2 className="display mt-4 max-w-3xl text-section">Four steps, and you&apos;re in control of every one.</h2>
+        <h2 className="display mt-4 max-w-3xl text-section">Four steps. We do the heavy lifting.</h2>
         <ol className="mt-10 grid gap-3 md:mt-14 md:grid-cols-4 md:gap-4">
           {STEPS.map((s, k) => (
             <li
@@ -164,7 +164,7 @@ function HowItWorks() {
   );
 }
 
-/** Flip between what any visitor sees and what an approved buyer sees, using the real barbershop listing. */
+/** Flip between what any visitor sees and what a buyer gets once we've spoken to them, using the real barbershop listing. */
 function WhatBuyersSee() {
   const [approved, setApproved] = useState(false);
   const ref = useRef<HTMLElement>(null);
@@ -177,11 +177,11 @@ function WhatBuyersSee() {
         <div>
           <p className="label">Privacy</p>
           <h2 className="display mt-4 text-section">Buyers see the business. Not you.</h2>
-          <p className="mt-5 max-w-lg text-[19px] leading-relaxed text-ink-2">Your listing shows the industry, the area and the headline numbers. Everything that could identify you stays locked until you say yes to a specific buyer.</p>
+          <p className="mt-5 max-w-lg text-[19px] leading-relaxed text-ink-2">Your listing shows the industry, the area and the headline numbers. The name and documents stay with our team until we&apos;ve spoken to a serious buyer.</p>
           <div role="tablist" className="mt-8 inline-flex rounded-full bg-paper-2 p-1">
             {[
               [false, "Public view", Eye],
-              [true, "Approved buyer", EyeOff],
+              [true, "Serious buyer", EyeOff],
             ].map(([v, l, I]) => {
               const Icon = I as typeof Eye;
               const on = open === v;
@@ -199,12 +199,12 @@ function WhatBuyersSee() {
             <div className="relative aspect-[16/8]">
               <Image src="/images/barber-cut.jpg" alt="A barber at work" fill sizes="460px" className="object-cover" />
               <span className={clsx("absolute right-3 top-3 flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold transition-colors", open ? "bg-lime text-ink" : "bg-ink/80 text-paper")}>
-                {open ? <Unlock className="size-3.5" /> : <Lock className="size-3.5" />} {open ? "Approved" : "Locked"}
+                {open ? <Unlock className="size-3.5" /> : <Lock className="size-3.5" />} {open ? "Shared by us" : "Private"}
               </span>
             </div>
             <div className="p-6">
               <p className="text-[13px] text-muted">Business name</p>
-              <p className={clsx("text-[22px] font-semibold tracking-tight transition-all duration-700", !open && "select-none blur-[7px]")}>{open ? "JLT Barbershop" : "Hidden until approved"}</p>
+              <p className={clsx("text-[22px] font-semibold tracking-tight transition-all duration-700", !open && "select-none blur-[7px]")}>{open ? "JLT Barbershop" : "Kept private"}</p>
               <p className="mt-1 flex items-center gap-1 text-[14px] text-muted">
                 <MapPin className="size-3.5" /> JLT, Dubai · Beauty & grooming
               </p>
@@ -224,7 +224,7 @@ function WhatBuyersSee() {
                 {[
                   [FileText, "Trade licence and lease"],
                   [FileText, "Bank statements and VAT returns"],
-                  [MessagesSquare, "Direct thread with the owner"],
+                  [MessagesSquare, "A visit, arranged by us"],
                 ].map(([I, t]) => {
                   const Icon = I as typeof FileText;
                   return (

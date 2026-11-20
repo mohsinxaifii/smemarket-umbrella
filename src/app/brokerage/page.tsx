@@ -12,20 +12,20 @@ import { APP, FAQ, getPillar } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Buy or sell a UAE business",
-  description: "Curated UAE businesses for sale, verified buyers, NDAs before details unlock. Free to list, 5% success fee only when your business sells.",
+  description: "Curated UAE businesses for sale, reviewed by our team. Ask us about any listing. Free to list, 5% success fee only when your business sells.",
   alternates: { canonical: "/brokerage" },
 };
 
 const BUY = [
   { t: "Browse curated listings", d: "Every business is reviewed before it goes up. Filter by city, industry and price." },
-  { t: "Sign one NDA", d: "A quick ID check and an NDA, once. Then request access to the listings you like." },
-  { t: "Get approved, see everything", d: "When the seller approves you, the name, figures and full details open." },
-  { t: "Talk, check, agree", d: "Ask questions in a private thread, check the books, and agree terms through to the SPA." },
+  { t: "Ask us about it", d: "Send a message or WhatsApp us about any listing. A person replies within one business day." },
+  { t: "Get the full picture", d: "We share the name, the books and the lease, and arrange a visit with the owner." },
+  { t: "Check, agree, sign", d: "We help you check the figures and agree terms, all the way to the SPA." },
 ];
 const SELL = [
   { t: "Answer 12 quick questions", d: "About three minutes. Nothing is published when you send it." },
   { t: "We review and prepare it", d: "We check your business and write the listing with you. Anonymous by default." },
-  { t: "Verified buyers request access", d: "Each one has signed an NDA and passed an ID check. You decide who sees more." },
+  { t: "We handle the buyers", d: "Every enquiry comes to us first. We qualify buyers and only bring you the serious ones." },
   { t: "Sell, then pay", d: "Listing is free. 5% of the final price, only when the SPA is signed." },
 ];
 

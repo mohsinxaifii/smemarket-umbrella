@@ -21,11 +21,8 @@ export const APP = {
   listings: "/listings",
   listing: (id: string) => `/listing?id=${encodeURIComponent(id)}`,
   sell: "/sell",
-  signup: "/login?tab=signup",
+  /** team only: not linked anywhere on the public site */
   login: "/login",
-  account: "/account",
-  nda: "/nda",
-  messages: "/messages",
   admin: "/admin",
 };
 
@@ -88,7 +85,7 @@ export const PILLARS: Pillar[] = [
     short: "Buy & sell",
     job: "Buy or sell a business",
     line: "Help buying or selling an SME, with every listing checked and every buyer verified.",
-    bullets: ["Curated listings, reviewed before they go up", "NDA and ID check before details unlock", "Free to list. 5% only when it sells"],
+    bullets: ["Curated listings, reviewed before they go up", "Ask us about any listing", "Free to list. 5% only when it sells"],
     href: "/brokerage",
     cta: "Buy or sell",
     icon: "handshake",
@@ -161,9 +158,9 @@ export const getPillar = (slug: string) => PILLARS.find((p) => p.slug === slug)!
 /** How a deal stays safe (from the current site, word for word in substance). */
 export const TRUST = [
   { t: "Every listing is reviewed by us", d: "A listing is checked before it goes up. Sending us a form does not publish one." },
-  { t: "NDA and ID check before details unlock", d: "Buyers sign an NDA and pass an Emirates ID or passport check before the name, figures and full details open." },
-  { t: "The seller approves each buyer", d: "Nobody sees the full listing until the seller, or SMEmarket on their behalf, approves them." },
-  { t: "All communication through SMEmarket", d: "Buyers and sellers talk in private SMEmarket threads, so every step of the deal stays on record." },
+  { t: "Ask us about any listing", d: "No account and no paperwork to browse. Message us about a business and a person replies within one business day." },
+  { t: "One team handles every enquiry", d: "Buyers ask us, not the seller. We answer their questions and only bring serious buyers forward." },
+  { t: "Your business name kept private", d: "Listings show the industry, area and figures. We share the name only with buyers we have spoken to." },
 ];
 
 export const FEES = [
@@ -179,9 +176,9 @@ export const EMIRATES = ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaim
 
 export const FAQ = [
   { q: "What is SMEmarket?", a: "One place for the work of running an SME in the UAE. Buy or sell a business, get practical advice, find providers, grow with our marketing studio, and train your team on AI." },
-  { q: "Does one account cover everything?", a: "Yes. The same account works for buying, selling and growing. Sign up once and use whichever part you need." },
+  { q: "Do I need an account?", a: "No. Browse every listing freely, ask us about any of them, and list your own business with a short form." },
   { q: "How much does it cost to list my business?", a: "Listing is free. We charge a 5% success fee on the final sale price, payable only when the Sale & Purchase Agreement is signed. If it doesn't sell, you pay nothing." },
-  { q: "Who can see my listing's details?", a: "Only buyers who have signed an NDA, passed an ID check and been approved by you, or by us on your behalf. Everyone else sees an anonymous summary." },
+  { q: "Who can see my listing's details?", a: "Everyone sees the industry, area and figures. Your business name and anything else you share stay with our team until we've spoken to a serious buyer." },
   { q: "Are the figures on listings checked?", a: "We review every listing before it goes up. Price, sales and profit stay claims until a bank statement, VAT return or the books back them up." },
   { q: "Is the directory a recommendation?", a: "No. It's a starting point for finding UAE providers. We look up real businesses for what you need and show a short list. Always check them yourself." },
   { q: "How are growth services priced?", a: "Each service has its own monthly price and one number we report on, and the website is a one-time payment. Full prices are on the Growth Studio site." },
@@ -193,4 +190,4 @@ export const linkProps = (href: string) =>
   href.startsWith("http") && !isOwnSite(href) ? { target: "_blank", rel: "noopener noreferrer" } : {};
 
 /** Pages this site renders. Any other path on the same domain belongs to the app, so it gets a normal page load. */
-export const SITE_ROUTES = ["/", "/brokerage", "/advisory", "/directory", "/about", "/contact", "/privacy", "/listings", "/listing", "/sell", "/login", "/account", "/nda", "/messages", "/admin"];
+export const SITE_ROUTES = ["/", "/brokerage", "/advisory", "/directory", "/about", "/contact", "/privacy", "/listings", "/listing", "/sell", "/login", "/admin"];

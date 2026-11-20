@@ -26,7 +26,7 @@ export default function Marketplace({ head = true, cards = true }: { head?: bool
             <div className="relative">
               <p className="text-[15px] font-semibold text-lime">Buy</p>
               <h3 className="display mt-2 text-[clamp(2rem,3.4vw,3rem)]">Find a business worth owning.</h3>
-              <p className="mt-2 max-w-md text-[17px] text-paper/80">Browse curated UAE businesses for sale. Sign one NDA and unlock the full details once the seller approves you.</p>
+              <p className="mt-2 max-w-md text-[17px] text-paper/80">Browse curated UAE businesses for sale. See one you like? Ask us and we&apos;ll share the full details.</p>
               <span className="mt-6 inline-flex h-12 items-center gap-2 rounded-full bg-paper px-5 text-[15px] font-semibold text-ink">
                 Browse businesses <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
               </span>

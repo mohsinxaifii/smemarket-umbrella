@@ -6,10 +6,10 @@ import { useInView } from "@/lib/useInView";
 
 const ROWS = [
   "Every listing reviewed before it goes up",
-  "Buyers sign an NDA and pass an ID check",
-  "Your name hidden until you approve a buyer",
+  "Every enquiry checked by our team first",
+  "Your business name kept private",
   "Real figures, with documents to back them",
-  "Every message kept on record",
+  "One team handles every buyer for you",
   "Free to list, pay only when it sells",
 ];
 

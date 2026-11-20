@@ -1,9 +1,9 @@
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import Character from "@/components/ui/Character";
 import SmartLink from "@/components/ui/SmartLink";
-import { PILLARS, SITE, waLink, mailLink } from "@/lib/site";
-import AccountCta, { MarketLinks } from "./FooterAccount";
+import { APP, PILLARS, SITE, waLink, mailLink } from "@/lib/site";
 
 const COMPANY = [
   ["/about", "About"],
@@ -25,7 +25,9 @@ export default function Footer() {
               <a href={waLink()} target="_blank" rel="noopener noreferrer" className="flex h-14 items-center justify-center gap-2.5 rounded-[10px] bg-[#25D366] px-6 text-[16px] font-semibold text-white transition hover:brightness-95">
                 <WhatsAppIcon className="size-5" /> Chat on WhatsApp
               </a>
-              <AccountCta />
+              <a href={APP.sell} className="group flex h-14 items-center justify-center gap-2 rounded-[10px] bg-lime px-6 text-[16px] font-semibold text-ink transition hover:brightness-95">
+                List your business free <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
+              </a>
             </div>
           </div>
 
@@ -60,7 +62,16 @@ export default function Footer() {
             ))}
           </Col>
           <Col title="Marketplace">
-            <MarketLinks />
+            {[
+              [APP.listings, "Businesses for sale"],
+              [APP.sell, "Sell your business"],
+            ].map(([h, l]) => (
+              <li key={l}>
+                <a href={h} className="text-[15px] text-paper/75 transition-colors hover:text-paper">
+                  {l}
+                </a>
+              </li>
+            ))}
           </Col>
           <Col title="Company">
             {COMPANY.map(([h, l]) => (
