@@ -130,17 +130,7 @@ export default function Hero() {
         </div>
 
         <div data-fade className="mt-[clamp(0.9rem,2.2vh,1.3rem)] flex max-w-[760px] flex-wrap items-center gap-x-5 gap-y-2 text-[15px] text-paper/65">
-          <span className="hidden sm:inline">Popular:</span>
-          {[
-            ["Cafés & restaurants", "Food & beverage"],
-            ["Salons", "Beauty & grooming"],
-            ["Retail", "Retail"],
-            ["E-commerce", "E-commerce"],
-          ].map(([label, industry]) => (
-            <a key={label} href={`${APP.listings}?industry=${encodeURIComponent(industry)}`} className="hidden underline decoration-paper/25 underline-offset-4 transition hover:text-paper hover:decoration-paper sm:inline">
-              {label}
-            </a>
-          ))}
+          <PopularIndustries />
           <a href={APP.sell} className="group ml-auto inline-flex items-center gap-1.5 font-semibold text-paper sm:ml-auto">
             Selling? List yours free <ArrowUpRight className="size-4 text-lime transition-transform duration-300 group-hover:rotate-45" />
           </a>
@@ -454,5 +444,30 @@ function DeckCard({ l }: { l: PublicListing }) {
       </span>
       </div>
     </div>
+  );
+}
+
+/** The industries that actually have businesses for sale right now, most listings first. */
+function PopularIndustries() {
+  const [top, setTop] = useState<[string, number][]>([]);
+  useEffect(() => {
+    api<{ listings: PublicListing[] }>("listings")
+      .then((d) => {
+        const n = new Map<string, number>();
+        d.listings.forEach((l) => n.set(l.industry, (n.get(l.industry) ?? 0) + 1));
+        setTop([...n].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 4));
+      })
+      .catch(() => {});
+  }, []);
+  if (!top.length) return null;
+  return (
+    <>
+      <span className="hidden animate-[pageIn_.5s_ease-out_both] sm:inline">Popular:</span>
+      {top.map(([industry, count]) => (
+        <a key={industry} href={`${APP.listings}?industry=${encodeURIComponent(industry)}`} className="hidden animate-[pageIn_.5s_ease-out_both] underline decoration-paper/25 underline-offset-4 transition hover:text-paper hover:decoration-paper sm:inline">
+          {industry} <span className="text-paper/40 no-underline">({count})</span>
+        </a>
+      ))}
+    </>
   );
 }
