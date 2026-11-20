@@ -2,7 +2,6 @@
 
 export interface Env {
   DB: D1Database;
-  FILES: R2Bucket;
   ADMIN_EMAILS?: string;
   /** optional: Google Places (New) key. Without it the directory searches OpenStreetMap. */
   GOOGLE_PLACES_KEY?: string;

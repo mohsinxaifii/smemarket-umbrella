@@ -5,14 +5,14 @@ This repo is the full rebuilt SMEmarket site:
 - **Website:** a static Next.js export, built into `out/`.
 - **Marketplace API:** Cloudflare Pages Functions in `functions/`, with the code in `server/`.
 - **D1 database:** accounts, listings, NDAs, messages and leads.
-- **Private R2 bucket:** buyer ID documents and sellers' data-room files.
+- **Private files** (buyer ID documents, sellers' data-room files) are stored in the same D1 database. No R2 is needed.
 
 ## The plan
 
 | | Old site (keep, offline after cutover) | New site (this repo) |
 |---|---|---|
 | Pages project | `smemarket` (`smemarket-e2w.pages.dev`), branch `main` | **`smemarket-site`**, branch `master` |
-| Data | Workers KV `SUBMISSIONS` | D1 `smemarket` and R2 `smemarket-files` |
+| Data | Workers KV `SUBMISSIONS` | D1 `smemarket` (accounts, listings and files) |
 
 We build the new site in its own Pages project, test it on its pages.dev address, then move the
 `www.smemarket.ae` custom domain from the old project to the new one. The old project, its KV data and its
@@ -33,7 +33,7 @@ variables.
 You need:
 
 - An API token on account `2947ebc94208e9440eb2351fe5ba4abf` with these permissions:
-  - Account: **D1 Edit**, **Workers R2 Storage Edit**, **Cloudflare Pages Edit**
+  - Account: **D1 Edit**, **Cloudflare Pages Edit**
   - Zone smemarket.ae: **DNS Edit**, **Zone Read**
 - The Web3Forms key, sent to you privately.
 - Node 22, run as `npx -y node@22 …` if it isn't the default.
@@ -50,14 +50,13 @@ npm ci
 Export every DNS record of the zone to a file with
 `GET /zones/b8181b7bc8dceaf465841c81c20ca8c4/dns_records/export`, and keep it. This is the rollback copy.
 
-## 2. Database and file storage
+## 2. Database
 
 ```bash
 npx wrangler d1 create smemarket            # if the name is taken, stop and report
 # put the printed database_id into wrangler.toml, replacing 00000000-0000-0000-0000-000000000000
 # (a local edit is enough; no need to push it)
 
-npx wrangler r2 bucket create smemarket-files   # private: never enable public access. If R2 isn't enabled on the account, stop and report.
 npx wrangler d1 migrations apply smemarket --remote
 npx wrangler d1 execute smemarket --remote --file scripts/seed-production.sql   # the 2 real listings
 ```
@@ -122,10 +121,6 @@ If the new site isn't serving within 30 minutes, roll back.
 ## 6. Clean up the QA data
 
 ```bash
-# list the private files the QA accounts uploaded, then delete each one
-npx wrangler d1 execute smemarket --remote --command "SELECT id_doc_key AS k FROM ndas WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@example.com') AND id_doc_key IS NOT NULL UNION ALL SELECT r2_key FROM docs WHERE listing_id IN (SELECT id FROM listings WHERE seller_id IN (SELECT id FROM users WHERE email LIKE '%@example.com'))"
-npx wrangler r2 object delete "smemarket-files/<key>" --remote     # for each key listed
-
 npx wrangler d1 execute smemarket --remote --file scripts/cleanup-test-data.sql
 npx wrangler d1 execute smemarket --remote --command "SELECT COUNT(*) AS users FROM users; SELECT id, status FROM listings"
 ```

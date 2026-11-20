@@ -1,5 +1,6 @@
 import { currentUser, endSession, login, requireAdmin, requireUser, signup, startSession } from "./auth";
 import { searchDirectory } from "./directory";
+import { getFile, putFile } from "./files";
 import { type Env, type User, HttpError, body, fail, id, isEmail, json, now, num, str } from "./util";
 
 /*
@@ -233,7 +234,7 @@ route("POST", "nda", async ({ req, env }) => {
     if (doc.size > MAX_ID) fail(400, "That file is over 8 MB. A phone photo is fine.");
     if (!/^(image\/(jpeg|png|webp|heic)|application\/pdf)$/.test(doc.type)) fail(400, "Please upload a photo (JPG or PNG) or a PDF of your ID.");
     key = `ids/${u.id}/${id(8)}`;
-    await env.FILES.put(key, await doc.arrayBuffer(), { httpMetadata: { contentType: doc.type } });
+    await putFile(env, key, await doc.arrayBuffer(), doc.type);
   }
   const existing = await env.DB.prepare("SELECT id_doc_key, id_status FROM ndas WHERE user_id = ?").bind(u.id).first<{ id_doc_key: string | null; id_status: string }>();
   if (!key && !existing?.id_doc_key) fail(400, "Please upload a photo of your Emirates ID or passport.");
@@ -301,7 +302,7 @@ route("POST", "listings/:id/docs", async ({ req, env, params }) => {
   if (doc.size > MAX_DOC) fail(400, "Files can be up to 15 MB.");
   const did = id(9);
   const key = `docs/${l.id}/${did}`;
-  await env.FILES.put(key, await doc.arrayBuffer(), { httpMetadata: { contentType: doc.type || "application/octet-stream" } });
+  await putFile(env, key, await doc.arrayBuffer(), doc.type || "application/octet-stream");
   await env.DB.prepare("INSERT INTO docs (id, listing_id, name, kind, r2_key, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(did, l.id, str(doc.name, 160) || "Document", str(form!.get("kind"), 60) || null, key, doc.size, now())
     .run();
@@ -313,9 +314,9 @@ route("GET", "docs/:id", async ({ req, env, params }) => {
   const d = (await env.DB.prepare("SELECT * FROM docs WHERE id = ?").bind(params[0]).first<{ listing_id: string; r2_key: string; name: string }>()) ?? fail(404, "Not found.");
   const l = await getListing(env, d!.listing_id);
   if (!(await relation(env, l, u)).unlocked) fail(403, "You need the seller's approval to open this.");
-  const obj = (await env.FILES.get(d!.r2_key)) ?? fail(404, "File missing.");
+  const obj = (await getFile(env, d!.r2_key)) ?? fail(404, "File missing.");
   return new Response(obj!.body, {
-    headers: { "content-type": obj!.httpMetadata?.contentType || "application/octet-stream", "content-disposition": `inline; filename="${d!.name.replace(/"/g, "")}"`, "cache-control": "private, no-store" },
+    headers: { "content-type": obj!.type, "content-disposition": `inline; filename="${d!.name.replace(/"/g, "")}"`, "cache-control": "private, no-store" },
   });
 });
 
@@ -509,8 +510,8 @@ route("POST", "admin/ndas/:id", async ({ req, env, params }) => {
 route("GET", "admin/ndas/:id/doc", async ({ req, env, params }) => {
   await requireAdmin(env, req);
   const n = (await env.DB.prepare("SELECT id_doc_key FROM ndas WHERE user_id = ?").bind(params[0]).first<{ id_doc_key: string | null }>()) ?? fail(404, "Not found.");
-  const obj = (n!.id_doc_key && (await env.FILES.get(n!.id_doc_key))) || fail(404, "No ID on file.");
-  return new Response((obj as R2ObjectBody).body, { headers: { "content-type": (obj as R2ObjectBody).httpMetadata?.contentType || "application/octet-stream", "cache-control": "private, no-store" } });
+  const obj = (n!.id_doc_key && (await getFile(env, n!.id_doc_key))) || fail(404, "No ID on file.");
+  return new Response(obj.body, { headers: { "content-type": obj.type, "cache-control": "private, no-store" } });
 });
 
 route("POST", "admin/providers/:id", async ({ req, env, params }) => {

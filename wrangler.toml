@@ -17,7 +17,4 @@ database_name = "smemarket"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
 
-[[r2_buckets]]
-# private files: buyer ID documents and sellers' data-room documents. Never public.
-binding = "FILES"
-bucket_name = "smemarket-files"
+# No R2: private files (ID documents, data-room documents) live in D1 (migrations/0002_files.sql, server/files.ts).
