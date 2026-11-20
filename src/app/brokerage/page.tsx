@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Swipe from "@/components/ui/Swipe";
+import PhotoBand from "@/components/ui/PhotoBand";
 import { ArrowUpRight } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import Button from "@/components/ui/Button";
@@ -53,6 +54,8 @@ export default function BrokeragePage() {
           </>
         }
       />
+
+      <PhotoBand title="The kinds of businesses that change hands here." tone="bg-paper" />
 
       {/* how it works, both sides */}
       <section className="section-y bg-paper-2">

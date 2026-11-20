@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 };
 
 const AREAS = [
-  { icon: Compass, t: "Positioning", d: "Where you win, who you're really for, and how to say it so the right customers listen." },
-  { icon: Map, t: "Planning", d: "The next twelve months on one page: what to do first, what to stop, and what it should cost." },
-  { icon: Scale, t: "Before you buy or sell", d: "A second opinion on a deal: is the price fair, what to check, and what to ask the other side." },
-  { icon: Route, t: "A clear next step", d: "Not a thick report. A decision, the reasons for it, and what happens on Monday." },
+  { icon: Compass, img: "whiteboard", t: "Positioning", d: "Where you win, who you're really for, and how to say it so the right customers listen." },
+  { icon: Map, img: "sticky-notes", t: "Planning", d: "The next twelve months on one page: what to do first, what to stop, and what it should cost." },
+  { icon: Scale, img: "accounts", t: "Before you buy or sell", d: "A second opinion on a deal: is the price fair, what to check, and what to ask the other side." },
+  { icon: Route, img: "team-meeting", t: "A clear next step", d: "Not a thick report. A decision, the reasons for it, and what happens on Monday." },
 ];
 
 const HOW = [
@@ -61,11 +61,15 @@ export default function AdvisoryPage() {
           <SectionHead eyebrow="What we help with" title="The decisions that are hard to make alone." intro="This is an in-house service. You talk to our team, not a marketplace of consultants." />
           <Reveal className="mt-7 grid gap-2 md:mt-14 md:grid-cols-2 md:gap-4" stagger={0.08}>
             {AREAS.map((a) => (
-              <div key={a.t} data-reveal className="flex gap-4 rounded-[20px] bg-card p-4 ring-1 ring-rule md:gap-5 md:rounded-[28px] md:p-8">
-                <span className={`grid size-10 shrink-0 place-items-center rounded-2xl md:size-12 ${p.tone}`}>
-                  <a.icon className="size-5" strokeWidth={1.75} />
+              <div key={a.t} data-reveal className="group flex gap-4 overflow-hidden rounded-[20px] bg-card p-3 ring-1 ring-rule md:flex-col md:gap-0 md:rounded-[28px] md:p-3">
+                {/* the photo: a square on phones, a wide header from tablets up */}
+                <span className="relative size-[92px] shrink-0 overflow-hidden rounded-[14px] md:aspect-[16/7] md:size-auto md:w-full md:rounded-[20px]">
+                  <Image src={`/images/${a.img}.jpg`} alt="" fill sizes="(min-width:768px) 45vw, 92px" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.05]" />
+                  <span className={`absolute left-3 top-3 hidden size-10 place-items-center rounded-xl md:grid ${p.tone}`}>
+                    <a.icon className="size-5" strokeWidth={1.75} />
+                  </span>
                 </span>
-                <span>
+                <span className="self-center md:self-auto md:px-4 md:pb-4 md:pt-5">
                   <span className="block text-[18px] font-semibold tracking-tight md:text-[22px]">{a.t}</span>
                   <span className="mt-1 block text-[15px] leading-relaxed text-ink-2 md:mt-1.5 md:text-[17px]">{a.d}</span>
                 </span>
@@ -96,12 +100,12 @@ export default function AdvisoryPage() {
               />
             </div>
           </div>
-          <div className="relative hidden lg:block">
-            <div className="relative aspect-[4/3.6] overflow-hidden rounded-[32px]">
+          <div className="relative">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-[24px] md:aspect-[4/3.6] md:rounded-[32px]">
               <Image src="/images/handshake.jpg" alt="Two business owners shaking hands" fill sizes="(min-width:1024px) 40vw, 100vw" className="object-cover" />
             </div>
             <div className={`absolute -bottom-6 -left-4 overflow-hidden rounded-[24px] ring-4 ring-paper ${p.tone}`}>
-              <Character who={p.person.who} mood={p.person.mood} body={p.person.body} size={140} className="translate-y-[8%] animate-idle" />
+              <Character who={p.person.who} mood={p.person.mood} body={p.person.body} size={140} className="translate-y-[8%] animate-idle max-md:!size-[96px]" />
             </div>
             <p className="absolute right-4 top-4 max-w-[240px] rounded-2xl rounded-tr-md bg-paper px-4 py-3 text-[15px] font-semibold leading-snug shadow-lg">“Bring me the decision. You&apos;ll leave with a next step.”</p>
           </div>
@@ -112,7 +116,12 @@ export default function AdvisoryPage() {
         <div className="container-x">
           <p className="label !text-paper/60">How it works</p>
           <h2 className="display mt-4 text-section">Three steps to a clear answer.</h2>
-          <Reveal className="mt-7 grid gap-2 md:mt-14 md:grid-cols-3 md:gap-4" stagger={0.12}>
+          <div className="relative mt-7 h-[170px] overflow-hidden rounded-[20px] md:mt-12 md:h-[300px] md:rounded-[28px]">
+            <Image src="/images/laptop-charts.jpg" alt="Two people going through a business's numbers on a laptop" fill sizes="100vw" className="object-cover" />
+            <span className="absolute inset-0 bg-gradient-to-r from-ink/60 to-transparent" />
+            <p className="absolute bottom-4 left-5 max-w-[16rem] text-[17px] font-semibold leading-snug md:bottom-8 md:left-8 md:max-w-sm md:text-[24px]">Real numbers, real decisions. No thick reports.</p>
+          </div>
+          <Reveal className="mt-3 grid gap-2 md:mt-4 md:grid-cols-3 md:gap-4" stagger={0.12}>
             {HOW.map((h, i) => (
               <div key={h.t} data-reveal className="flex gap-4 rounded-[20px] border border-rule-dark p-4 md:block md:rounded-[28px] md:p-8">
                 <span className="grid size-9 shrink-0 place-items-center rounded-full bg-lime text-[15px] font-semibold text-ink md:size-10">{i + 1}</span>

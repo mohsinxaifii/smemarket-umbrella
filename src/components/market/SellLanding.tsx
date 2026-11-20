@@ -6,6 +6,7 @@ import { ArrowRight, BadgeCheck, Check, Eye, EyeOff, FileText, Lock, MapPin, Mes
 import Character from "@/components/ui/Character";
 import { Reveal } from "@/components/ui/Reveal";
 import FeeCalc from "@/components/home/FeeCalc";
+import PhotoBand from "@/components/ui/PhotoBand";
 import Faq from "@/components/home/Faq";
 import { useCycle, useInView } from "@/lib/useInView";
 
@@ -36,6 +37,7 @@ export default function SellLanding({ onStart, resume }: { onStart: () => void; 
   return (
     <>
       <Hero onStart={onStart} resume={resume} />
+      <PhotoBand title="Every kind of business, from cafés to trading companies." tone="bg-paper" />
       <HowItWorks />
       <WhatBuyersSee />
       <FeeCalc />

@@ -24,3 +24,21 @@ None of these are shared with growth.smemarket.ae.
 | salon.jpg | Barney Goodman | https://unsplash.com/photos/a-modern-hair-salon-interior-with-stylish-chairs-and-mirrors-_Fy7Kq0w6OI |
 
 Listing photos (src/lib/listingImage.ts) are illustrative stock photos chosen by business type, labelled as such on the listing page.
+
+## Pexels
+
+Under the Pexels License (free for commercial use, no attribution required).
+
+| File | Source |
+|---|---|
+| bur-dubai-night.jpg | https://www.pexels.com/photo/downtown-city-street-with-lights-at-night-15653484/ |
+| dubai-towers.jpg | https://www.pexels.com/photo/modern-skyscrapers-in-downtown-dubai-skyline-31023487/ |
+| cafe-owners.jpg | https://www.pexels.com/photo/smiling-coffee-shop-owners-behind-counter-34164499/ |
+| shop-counter.jpg | https://www.pexels.com/photo/man-behind-the-counter-3738387/ |
+| sticky-notes.jpg | https://www.pexels.com/photo/team-brainstorming-with-sticky-notes-in-office-39204843/ |
+| warehouse.jpg | https://www.pexels.com/photo/warehouse-workers-carrying-boxes-4487361/ |
+| laptop-charts.jpg | https://www.pexels.com/photo/business-people-working-together-in-front-of-their-laptops-7651734/ |
+| team-meeting.jpg | https://www.pexels.com/photo/a-group-of-people-having-a-meeting-in-the-office-7652176/ |
+| whiteboard.jpg | https://www.pexels.com/photo/photo-of-a-man-and-a-woman-writing-on-a-whiteboard-with-sticky-notes-7710074/ |
+| accounts.jpg | https://pexels.com/photo/a-person-examining-a-document-8296977/ |
+| accountant.jpg | https://www.pexels.com/photo/woman-in-polo-long-sleeves-computing-using-a-calculator-8297044/ |
