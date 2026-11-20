@@ -32,7 +32,7 @@ export default function Footer() {
           </div>
 
           {/* the team, together on one stage */}
-          <div className="relative h-[170px] overflow-hidden rounded-[28px] bg-paper-2 sm:h-[230px]">
+          <div className="relative h-[112px] overflow-hidden rounded-[24px] bg-paper-2 sm:h-[230px] sm:rounded-[28px]">
             <div className="absolute inset-x-0 bottom-0 flex justify-center">
               {PILLARS.map((p, i) => (
                 <SmartLink

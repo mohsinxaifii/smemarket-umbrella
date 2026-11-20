@@ -30,18 +30,18 @@ export default function Compare() {
           <h2 className="display mt-4 text-section">Not another WhatsApp group.</h2>
           <p className="mt-4 text-[19px] leading-relaxed text-ink-2">Most small businesses in the UAE still change hands through forwarded messages and classified ads. Here&apos;s what changes on SMEmarket.</p>
         </div>
-        <div className="mx-auto mt-12 max-w-4xl overflow-hidden rounded-[28px] ring-1 ring-rule">
-          <div className="grid grid-cols-[1fr_88px_88px] bg-paper-2 px-5 py-4 text-[14px] font-semibold md:grid-cols-[1fr_180px_180px] md:px-8">
+        <div className="mx-auto mt-8 max-w-4xl overflow-hidden rounded-[22px] ring-1 ring-rule md:mt-12 md:rounded-[28px]">
+          <div className="grid grid-cols-[1fr_64px_64px] bg-paper-2 px-4 py-3 text-[13px] font-semibold md:grid-cols-[1fr_180px_180px] md:px-8">
             <span />
             <span className="text-center text-muted">
-              <span className="md:hidden">Groups & ads</span>
+              <span className="md:hidden">Ads</span>
               <span className="hidden md:inline">WhatsApp groups & classifieds</span>
             </span>
             <span className="text-center">SMEmarket</span>
           </div>
           {ROWS.map((r, i) => (
-            <div key={r} className="grid grid-cols-[1fr_88px_88px] items-center border-t border-rule bg-card px-5 py-4 md:grid-cols-[1fr_180px_180px] md:px-8">
-              <span className="text-[16px] font-medium md:text-[17px]">{r}</span>
+            <div key={r} className="grid grid-cols-[1fr_64px_64px] items-center border-t border-rule bg-card px-4 py-3 md:grid-cols-[1fr_180px_180px] md:px-8">
+              <span className="text-[15px] font-medium leading-snug md:text-[17px]">{r}</span>
               <span className="flex justify-center">
                 <span className={clsx("grid size-8 place-items-center rounded-full bg-paper-2 text-muted transition-opacity duration-500", seen ? "opacity-100" : "opacity-0")} style={{ transitionDelay: `${i * 220}ms` }}>
                   <X className="size-4" />

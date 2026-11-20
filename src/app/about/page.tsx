@@ -25,7 +25,7 @@ export default function AboutPage() {
             Small businesses deserve a proper market.
           </SplitHeading>
           <p className="mt-6 max-w-2xl animate-[pageIn_.8s_cubic-bezier(.16,1,.3,1)_.3s_both] text-[19px] leading-relaxed text-paper/80 md:text-[21px]">
-            The UAE&apos;s marketplace for buying, selling and growing small businesses. Curated listings, verified buyers, and one trusted place to do the deal.
+            The UAE&apos;s marketplace for buying, selling and growing small businesses. Curated listings, a team that handles every enquiry, and one trusted place to do the deal.
           </p>
         </div>
       </section>
@@ -41,7 +41,7 @@ export default function AboutPage() {
               Buying or selling a small business in the UAE is harder than it should be. Deals happen through word of mouth, scattered classifieds and middlemen. Figures are hard to check and there is no trusted place to start.
             </p>
             <p className="text-ink">
-              <span className="font-semibold">SMEmarket is that place.</span> We check listings before they go up, verify buyers before they see the details, and keep the conversation in one private place until the deal is signed.
+              <span className="font-semibold">SMEmarket is that place.</span> We check listings before they go up, handle every buyer enquiry ourselves, and stay with both sides until the deal is signed.
             </p>
             <p>
               And because owning a business is more than the day you buy it, we added the rest: advice when the decision is hard, a directory when you need a provider, a growth studio when you need customers, and training when your team needs to keep up.
@@ -75,17 +75,17 @@ export default function AboutPage() {
         <div className="container-x">
           <p className="label">One team</p>
           <h2 className="display mt-4 max-w-3xl text-section">Buy. Sell. Grow. With the same people throughout.</h2>
-          <Reveal className="mt-10 grid grid-cols-2 gap-3 md:mt-14 md:grid-cols-3 md:gap-4 lg:grid-cols-5" stagger={0.07}>
+          <Reveal className="-mx-5 mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none] max-md:[&>*]:w-[46%] max-md:[&>*]:shrink-0 max-md:[&>*]:snap-start max-md:[&>*]:scroll-ml-5 md:mx-0 md:mt-14 md:grid md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-5 [&::-webkit-scrollbar]:hidden" stagger={0.07}>
             {PILLARS.map((p) => (
               <SmartLink key={p.slug} href={p.href} data-reveal className="group flex flex-col overflow-hidden rounded-[24px] bg-card ring-1 ring-rule">
-                <span className={`relative block h-[170px] ${p.tone}`}>
+                <span className={`relative block h-[140px] md:h-[170px] ${p.tone}`}>
                   <span className="absolute inset-x-0 bottom-0 flex justify-center">
-                    <Character who={p.person.who} mood={p.person.mood} body={p.person.body} size={170} className="translate-y-[8%] transition-transform duration-500 ease-out-expo group-hover:-translate-y-1" />
+                    <Character who={p.person.who} mood={p.person.mood} body={p.person.body} size={170} className="translate-y-[8%] max-md:!size-[140px] transition-transform duration-500 ease-out-expo group-hover:-translate-y-1" />
                   </span>
                 </span>
-                <span className="flex flex-1 flex-col p-5">
-                  <span className="text-[14px] text-muted">{p.person.role}</span>
-                  <span className="mt-1 flex items-start justify-between gap-2 text-[18px] font-semibold leading-tight">
+                <span className="flex flex-1 flex-col p-4 md:p-5">
+                  <span className="text-[13px] text-muted md:text-[14px]">{p.person.role}</span>
+                  <span className="mt-1 flex items-start justify-between gap-2 text-[16px] font-semibold leading-tight md:text-[18px]">
                     {p.name} <ArrowUpRight className="mt-0.5 size-4 shrink-0 transition-transform group-hover:rotate-45" />
                   </span>
                 </span>

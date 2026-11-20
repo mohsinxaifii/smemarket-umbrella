@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Swipe from "@/components/ui/Swipe";
 import { ArrowUpRight } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import Button from "@/components/ui/Button";
@@ -23,8 +24,8 @@ const BUY = [
   { t: "Check, agree, sign", d: "We help you check the figures and agree terms, all the way to the SPA." },
 ];
 const SELL = [
-  { t: "Answer 12 quick questions", d: "About three minutes. Nothing is published when you send it." },
-  { t: "We review and prepare it", d: "We check your business and write the listing with you. Anonymous by default." },
+  { t: "Answer 7 quick questions", d: "About two minutes, no account needed. Nothing is published when you send it." },
+  { t: "We review and prepare it", d: "We check your business and write the listing with you. Your business name stays private." },
   { t: "We handle the buyers", d: "Every enquiry comes to us first. We qualify buyers and only bring you the serious ones." },
   { t: "Sell, then pay", d: "Listing is free. 5% of the final price, only when the SPA is signed." },
 ];
@@ -36,7 +37,7 @@ export default function BrokeragePage() {
       <PageHero
         eyebrow="Business brokerage · by SMEmarket"
         title="Buy or sell a UAE business."
-        intro="Curated listings, checked before they go up. Verified buyers. One trusted place to do the deal, from first message to signed SPA."
+        intro="Curated listings, checked before they go up. One team that handles every enquiry, from first question to signed SPA."
         image="/images/keys.jpg"
         alt="A new shop owner holding up the keys"
         person={p.person}
@@ -58,24 +59,25 @@ export default function BrokeragePage() {
         <div className="container-x">
           <p className="label">How it works</p>
           <h2 className="display mt-4 max-w-3xl text-section">Four steps, whichever side of the table you&apos;re on.</h2>
-          <div className="mt-10 grid gap-4 md:mt-14 lg:grid-cols-2">
+          <div className="mt-8 md:mt-14">
+          <Swipe bp="lg" desktop="lg:grid lg:grid-cols-2 lg:gap-4" itemWidth="88%">
             {[
               { side: "Buying", steps: BUY, href: APP.listings, cta: "Browse businesses", dark: false, img: "/images/cafe-counter.jpg", alt: "A café counter, the kind of business you could own" },
               { side: "Selling", steps: SELL, href: APP.sell, cta: "Start your listing", dark: true, img: "/images/handshake.jpg", alt: "Two business owners shaking hands on a deal" },
             ].map((c) => (
-              <div key={c.side} className={`group flex flex-col overflow-hidden rounded-[28px] ${c.dark ? "bg-ink text-paper" : "bg-card ring-1 ring-rule"}`}>
+              <div key={c.side} className={`group flex h-full flex-col overflow-hidden rounded-[24px] md:rounded-[28px] ${c.dark ? "bg-ink text-paper" : "bg-card ring-1 ring-rule"}`}>
                 <div className="relative aspect-[16/7] overflow-hidden">
                   <Image src={c.img} alt={c.alt} fill sizes="(min-width:1024px) 45vw, 100vw" className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]" />
                   <span className={`absolute left-5 top-5 rounded-full px-3 py-1 text-[14px] font-semibold ${c.dark ? "bg-lime text-ink" : "bg-paper text-ink"}`}>{c.side}</span>
                 </div>
-                <div className="flex flex-1 flex-col p-6 pt-2 md:p-9 md:pt-3">
+                <div className="flex flex-1 flex-col p-5 pt-1 md:p-9 md:pt-3">
                 <Reveal as="ul" stagger={0.08}>
                   {c.steps.map((s, i) => (
-                    <li key={s.t} data-reveal className={`flex gap-4 border-b py-5 last:border-0 ${c.dark ? "border-rule-dark" : "border-rule"}`}>
+                    <li key={s.t} data-reveal className={`flex gap-3.5 border-b py-4 last:border-0 md:gap-4 md:py-5 ${c.dark ? "border-rule-dark" : "border-rule"}`}>
                       <span className={`grid size-9 shrink-0 place-items-center rounded-full text-[14px] font-semibold ${c.dark ? "bg-lime text-ink" : "bg-ink text-lime"}`}>{i + 1}</span>
                       <span>
-                        <span className="block text-[19px] font-semibold">{s.t}</span>
-                        <span className={`mt-1 block text-[16px] leading-relaxed ${c.dark ? "text-paper/70" : "text-ink-2"}`}>{s.d}</span>
+                        <span className="block text-[17px] font-semibold md:text-[19px]">{s.t}</span>
+                        <span className={`mt-1 block text-[15px] leading-relaxed md:text-[16px] ${c.dark ? "text-paper/70" : "text-ink-2"}`}>{s.d}</span>
                       </span>
                     </li>
                   ))}
@@ -86,6 +88,7 @@ export default function BrokeragePage() {
                 </div>
               </div>
             ))}
+          </Swipe>
           </div>
         </div>
       </section>

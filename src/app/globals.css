@@ -248,7 +248,7 @@ button:disabled {
     font-size: clamp(2.6rem, min(7vw, 12vh), 6.5rem);
   }
   .section-y {
-    padding-block: 4rem;
+    padding-block: 3.25rem;
   }
   @media (min-width: 768px) {
     .section-y {
@@ -502,3 +502,12 @@ html[data-nav="leaving"] main {
 
 /* the directory search box shows focus on the whole bar instead of the bare input */
 #dir-q:focus-visible { outline: none; }
+
+/* Phones: a tighter type scale, so sections read in one or two screens instead of four.
+   (Unlayered, so it wins over the utility classes it adjusts.) */
+@media (max-width: 767px) {
+  .text-\[19px\] { font-size: 16.5px; }
+  .text-\[18px\] { font-size: 16px; }
+  .text-\[17px\] { font-size: 15.5px; }
+  .text-section { font-size: 1.9rem; }
+}

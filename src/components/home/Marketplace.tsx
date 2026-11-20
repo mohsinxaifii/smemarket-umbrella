@@ -13,7 +13,7 @@ export default function Marketplace({ head = true, cards = true }: { head?: bool
           <SectionHead
             eyebrow="The marketplace"
             title="Buy a business. Sell yours. Safely."
-            intro="Curated listings, verified buyers and one private place to do the deal, from first message to signed SPA."
+            intro="Curated listings and one team that handles every enquiry, from first question to signed SPA."
           />
         )}
 
@@ -40,7 +40,7 @@ export default function Marketplace({ head = true, cards = true }: { head?: bool
             <div className="relative pt-4">
               <p className="text-[15px] font-semibold text-lime">Sell</p>
               <h3 className="display mt-2 text-[clamp(2rem,3.4vw,3rem)]">List it quietly. Sell it properly.</h3>
-              <p className="mt-2 max-w-md text-[17px] text-paper/75">Twelve quick questions, about three minutes. We review your business, prepare the listing with you and bring verified buyers.</p>
+              <p className="mt-2 max-w-md text-[17px] text-paper/75">Seven quick questions, about two minutes, no account needed. We review your business, prepare the listing with you and handle every buyer.</p>
               <span className="mt-6 inline-flex h-12 items-center gap-2 rounded-full bg-lime px-5 text-[15px] font-semibold text-ink">
                 Sell your business <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
               </span>
@@ -50,33 +50,35 @@ export default function Marketplace({ head = true, cards = true }: { head?: bool
         )}
 
         {/* trust */}
-        <div className={cards || head ? "mt-16 md:mt-24" : ""}>
+        <div className={cards || head ? "mt-12 md:mt-24" : ""}>
           <p className="label">Trust</p>
           <h3 className="display mt-4 text-[clamp(1.8rem,3vw,2.8rem)]">How we keep deals safe.</h3>
-          <Reveal className="mt-8 grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4" stagger={0.1}>
+          <Reveal className="mt-6 grid gap-2 md:mt-8 md:grid-cols-2 md:gap-4 lg:grid-cols-4" stagger={0.1}>
             {TRUST.map((t, i) => (
-              <div key={t.t} data-reveal className="rounded-[24px] bg-card p-6 ring-1 ring-rule md:p-7">
-                <span className="grid size-10 place-items-center rounded-full bg-ink text-[15px] font-semibold text-lime">{i + 1}</span>
-                <h4 className="mt-6 text-[20px] font-semibold leading-snug">{t.t}</h4>
-                <p className="mt-2 text-[16px] leading-relaxed text-ink-2">{t.d}</p>
+              <div key={t.t} data-reveal className="flex gap-3.5 rounded-[20px] bg-card p-4 ring-1 ring-rule md:block md:rounded-[24px] md:p-7">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-[15px] font-semibold text-lime md:size-10">{i + 1}</span>
+                <span className="block">
+                  <h4 className="text-[17px] font-semibold leading-snug md:mt-6 md:text-[20px]">{t.t}</h4>
+                  <p className="mt-1 text-[15px] leading-relaxed text-ink-2 md:mt-2 md:text-[16px]">{t.d}</p>
+                </span>
               </div>
             ))}
           </Reveal>
         </div>
 
         {/* fees */}
-        <div className="mt-16 grid gap-8 md:mt-24 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+        <div className="mt-12 grid gap-5 md:mt-24 md:gap-8 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
           <div>
             <p className="label">Fees</p>
             <h3 className="display mt-4 text-[clamp(1.8rem,3vw,2.8rem)]">Fair fees. You pay only on a sale.</h3>
           </div>
           <dl className="grid border-t border-rule-strong sm:grid-cols-3">
             {FEES.map((f, i) => (
-              <div key={f.k} className={`border-b border-rule-strong py-6 sm:border-b-0 sm:py-2 ${i ? "sm:border-l sm:pl-6" : "sm:pr-6"}`}>
+              <div key={f.k} className={`border-b border-rule-strong py-4 sm:border-b-0 sm:py-2 ${i ? "sm:border-l sm:pl-6" : "sm:pr-6"}`}>
                 <dt className="text-[15px] text-muted sm:mt-5">{f.k}</dt>
                 <dd>
-                  <span className="mt-1 block text-[clamp(2.2rem,3.6vw,3.2rem)] font-semibold leading-none tracking-tight">{f.v}</span>
-                  <span className="mt-3 block text-[16px] leading-relaxed text-ink-2">{f.d}</span>
+                  <span className="mt-1 block text-[clamp(1.8rem,3.6vw,3.2rem)] font-semibold leading-none tracking-tight">{f.v}</span>
+                  <span className="mt-2 block text-[15px] leading-relaxed text-ink-2 md:mt-3 md:text-[16px]">{f.d}</span>
                 </dd>
               </div>
             ))}

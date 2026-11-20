@@ -23,13 +23,13 @@ export default function DealFlow() {
   return (
     <section ref={root} className="bg-paper-2">
       <div className="section-y">
-        <div className="container-x grid items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
+        <div className="container-x grid items-center gap-8 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
           <div>
             <p className="label">Trust, built in</p>
             <h2 className="display mt-4 text-section">From listing to handshake.</h2>
             <p className="mt-5 max-w-xl text-[19px] leading-relaxed text-ink-2">Every buyer asks us first. We answer their questions, check they&apos;re serious, and introduce them to the owner. Sellers never deal with time-wasters.</p>
 
-            <ol className="relative mt-10 space-y-2">
+            <ol className="relative mt-7 space-y-1 md:mt-10 md:space-y-2">
               <span className="absolute bottom-6 left-[19px] top-6 w-[2px] bg-ink/10">
                 <span className="block origin-top bg-ink transition-[height] duration-700 ease-out-expo" style={{ height: `${(step / 3) * 100}%` }} />
               </span>
@@ -55,7 +55,7 @@ export default function DealFlow() {
 
           {/* the listing, unlocking */}
           <div className="relative mx-auto w-full max-w-[460px]">
-            <div className="rounded-[28px] bg-card p-6 shadow-[0_50px_100px_-50px_rgba(21,19,15,.55)] ring-1 ring-rule md:p-7">
+            <div className="rounded-[24px] bg-card p-5 shadow-[0_50px_100px_-50px_rgba(21,19,15,.55)] ring-1 ring-rule md:rounded-[28px] md:p-7">
               <div className="flex items-center justify-between">
                 <span className="rounded-full bg-paper-2 px-3 py-1 text-[13px] font-semibold">Beauty & grooming</span>
                 <span key={step} className={clsx("flex animate-[viewIn_.5s_ease_both] items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold", open ? "bg-lime" : "bg-paper-2 text-muted")}>
@@ -91,7 +91,7 @@ export default function DealFlow() {
                 ))}
               </div>
 
-              <div className="mt-3 space-y-2">
+              <div className="mt-3 hidden space-y-2 sm:block">
                 {["Trade licence", "Lease / Ejari", "Last 12 months' bank statements"].map((d, i) => (
                   <div key={d} className={clsx("flex items-center justify-between rounded-xl border border-rule px-3.5 py-2.5 text-[14px] transition-opacity duration-500", open ? "opacity-100" : "opacity-40")} style={{ transitionDelay: `${i * 90}ms` }}>
                     <span className="flex items-center gap-2">

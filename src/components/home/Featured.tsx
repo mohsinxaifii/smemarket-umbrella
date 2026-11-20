@@ -33,7 +33,7 @@ export default function Featured() {
         </div>
         {/* phones: swipe through; bigger screens: a grid */}
         <div className="mt-10">
-          <Swipe desktop="md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3" itemWidth="86%">
+          <Swipe desktop="md:grid md:grid-cols-2 md:gap-4 lg:grid-cols-3" itemWidth="86%" autoplay={4000}>
             {items.map((l) => (
               <ListingCard key={l.id} l={l} />
             ))}

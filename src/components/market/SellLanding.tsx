@@ -79,20 +79,20 @@ function Hero({ onStart, resume }: { onStart: () => void; resume: boolean }) {
             </button>
             <span className="text-[15px] text-muted">7 questions · about 2 minutes</span>
           </div>
-          <ul className="mt-8 grid gap-3 sm:grid-cols-3">
+          <ul className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:grid sm:grid-cols-3 sm:gap-3">
             {[
               ["Free to list", "5% only when it sells"],
               ["Name private", "shared only with serious buyers"],
               ["We handle buyers", "every enquiry comes to us"],
             ].map(([t, d]) => (
-              <li key={t} className="rounded-2xl bg-paper-2 p-4">
-                <span className="flex items-center gap-2 text-[16px] font-semibold">
+              <li key={t} className="rounded-full bg-paper-2 py-2 pl-2.5 pr-3.5 sm:rounded-2xl sm:p-4">
+                <span className="flex items-center gap-2 text-[14px] font-semibold sm:text-[16px]">
                   <span className="grid size-5 place-items-center rounded-full bg-lime">
                     <Check className="size-3" strokeWidth={3.5} />
                   </span>
                   {t}
                 </span>
-                <span className="mt-1 block text-[14px] text-muted">{d}</span>
+                <span className="mt-1 hidden text-[14px] text-muted sm:block">{d}</span>
               </li>
             ))}
           </ul>
@@ -142,19 +142,24 @@ function HowItWorks() {
       <div className="container-x">
         <p className="label">How selling works</p>
         <h2 className="display mt-4 max-w-3xl text-section">Four steps. We do the heavy lifting.</h2>
-        <ol className="mt-10 grid gap-3 md:mt-14 md:grid-cols-4 md:gap-4">
+        <ol className="mt-7 grid gap-2 md:mt-14 md:grid-cols-4 md:gap-4">
           {STEPS.map((s, k) => (
             <li
               key={s.t}
               onClick={() => setI(k)}
-              className={clsx("relative cursor-pointer overflow-hidden rounded-[24px] p-6 transition-all duration-500 md:p-7", k === i ? "-translate-y-1 bg-ink text-paper shadow-[0_24px_50px_-28px_rgba(21,19,15,.6)]" : "bg-card ring-1 ring-rule")}
+              className={clsx("relative cursor-pointer overflow-hidden rounded-[20px] p-4 transition-all duration-500 md:rounded-[24px] md:p-7", k === i ? "-translate-y-1 bg-ink text-paper shadow-[0_24px_50px_-28px_rgba(21,19,15,.6)]" : "bg-card ring-1 ring-rule")}
             >
-              <span className={clsx("grid size-11 place-items-center rounded-2xl transition-colors duration-500", k === i ? "bg-lime text-ink" : "bg-paper-2")}>
-                <s.icon className="size-5" />
-              </span>
-              <p className={clsx("mt-6 text-[13px] font-semibold", k === i ? "text-paper/50" : "text-muted")}>Step {k + 1}</p>
-              <h3 className="mt-1 text-[20px] font-semibold leading-snug">{s.t}</h3>
-              <p className={clsx("mt-2 text-[15px] leading-relaxed", k === i ? "text-paper/75" : "text-ink-2")}>{s.d}</p>
+              <div className="flex items-center gap-3.5 md:block">
+                <span className={clsx("grid size-10 shrink-0 place-items-center rounded-2xl transition-colors duration-500 md:size-11", k === i ? "bg-lime text-ink" : "bg-paper-2")}>
+                  <s.icon className="size-5" />
+                </span>
+                <div>
+                  <p className={clsx("text-[12px] font-semibold md:mt-6 md:text-[13px]", k === i ? "text-paper/50" : "text-muted")}>Step {k + 1}</p>
+                  <h3 className="text-[17px] font-semibold leading-snug md:mt-1 md:text-[20px]">{s.t}</h3>
+                </div>
+              </div>
+              {/* phones: only the active step opens */}
+              <p className={clsx("mt-2 text-[15px] leading-relaxed", k === i ? "text-paper/75 max-md:pl-[54px]" : "text-ink-2 max-md:hidden")}>{s.d}</p>
               {k === i && seen && <span key={k} className="absolute inset-x-0 bottom-0 h-1 origin-left bg-lime [animation:grow_2.4s_linear_both]" />}
             </li>
           ))}

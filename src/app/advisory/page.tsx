@@ -59,15 +59,15 @@ export default function AdvisoryPage() {
       <section className="section-y bg-paper-2">
         <div className="container-x">
           <SectionHead eyebrow="What we help with" title="The decisions that are hard to make alone." intro="This is an in-house service. You talk to our team, not a marketplace of consultants." />
-          <Reveal className="mt-10 grid gap-3 md:mt-14 md:grid-cols-2 md:gap-4" stagger={0.08}>
+          <Reveal className="mt-7 grid gap-2 md:mt-14 md:grid-cols-2 md:gap-4" stagger={0.08}>
             {AREAS.map((a) => (
-              <div key={a.t} data-reveal className="flex gap-5 rounded-[28px] bg-card p-6 ring-1 ring-rule md:p-8">
-                <span className={`grid size-12 shrink-0 place-items-center rounded-2xl ${p.tone}`}>
+              <div key={a.t} data-reveal className="flex gap-4 rounded-[20px] bg-card p-4 ring-1 ring-rule md:gap-5 md:rounded-[28px] md:p-8">
+                <span className={`grid size-10 shrink-0 place-items-center rounded-2xl md:size-12 ${p.tone}`}>
                   <a.icon className="size-5" strokeWidth={1.75} />
                 </span>
                 <span>
-                  <span className="block text-[22px] font-semibold tracking-tight">{a.t}</span>
-                  <span className="mt-1.5 block text-[17px] leading-relaxed text-ink-2">{a.d}</span>
+                  <span className="block text-[18px] font-semibold tracking-tight md:text-[22px]">{a.t}</span>
+                  <span className="mt-1 block text-[15px] leading-relaxed text-ink-2 md:mt-1.5 md:text-[17px]">{a.d}</span>
                 </span>
               </div>
             ))}
@@ -77,7 +77,7 @@ export default function AdvisoryPage() {
 
       {/* the questions owners actually bring: tap one and it lands in the form */}
       <section className="section-y bg-paper">
-        <div className="container-x grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+        <div className="container-x grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <div>
             <p className="label">Bring us a question</p>
             <h2 className="display mt-4 text-section">What owners ask us most.</h2>
@@ -96,7 +96,7 @@ export default function AdvisoryPage() {
               />
             </div>
           </div>
-          <div className="relative">
+          <div className="relative hidden lg:block">
             <div className="relative aspect-[4/3.6] overflow-hidden rounded-[32px]">
               <Image src="/images/handshake.jpg" alt="Two business owners shaking hands" fill sizes="(min-width:1024px) 40vw, 100vw" className="object-cover" />
             </div>
@@ -112,12 +112,14 @@ export default function AdvisoryPage() {
         <div className="container-x">
           <p className="label !text-paper/60">How it works</p>
           <h2 className="display mt-4 text-section">Three steps to a clear answer.</h2>
-          <Reveal className="mt-10 grid gap-3 md:mt-14 md:grid-cols-3 md:gap-4" stagger={0.12}>
+          <Reveal className="mt-7 grid gap-2 md:mt-14 md:grid-cols-3 md:gap-4" stagger={0.12}>
             {HOW.map((h, i) => (
-              <div key={h.t} data-reveal className="rounded-[28px] border border-rule-dark p-6 md:p-8">
-                <span className="grid size-10 place-items-center rounded-full bg-lime text-[15px] font-semibold text-ink">{i + 1}</span>
-                <h3 className="mt-8 text-[22px] font-semibold">{h.t}</h3>
-                <p className="mt-2 text-[16px] leading-relaxed text-paper/70">{h.d}</p>
+              <div key={h.t} data-reveal className="flex gap-4 rounded-[20px] border border-rule-dark p-4 md:block md:rounded-[28px] md:p-8">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-lime text-[15px] font-semibold text-ink md:size-10">{i + 1}</span>
+                <span className="block">
+                  <h3 className="text-[18px] font-semibold md:mt-8 md:text-[22px]">{h.t}</h3>
+                  <p className="mt-1 text-[15px] leading-relaxed text-paper/70 md:mt-2 md:text-[16px]">{h.d}</p>
+                </span>
               </div>
             ))}
           </Reveal>

@@ -13,6 +13,7 @@ export default function Swipe({
   itemWidth = "84%",
   outer,
   dark,
+  autoplay,
 }: {
   children: React.ReactNode;
   /** classes applied from the breakpoint up, e.g. "md:grid md:grid-cols-3 md:gap-5" */
@@ -23,6 +24,8 @@ export default function Swipe({
   outer?: string;
   /** light progress dots, for dark sections */
   dark?: boolean;
+  /** phones only: move to the next card every N ms while on screen, until the visitor touches it */
+  autoplay?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -40,6 +43,36 @@ export default function Swipe({
     el.addEventListener("scroll", on, { passive: true });
     return () => el.removeEventListener("scroll", on);
   }, [count]);
+
+  // plays by itself on phones while it's on screen; any touch hands control to the visitor for good
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !autoplay || count < 2) return;
+    const wide = window.matchMedia(`(min-width: ${{ sm: 640, md: 768, lg: 1024 }[bp]}px)`);
+    if (wide.matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let visible = false;
+    let stopped = false;
+    let i = 0;
+    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting), { threshold: 0.6 });
+    io.observe(el);
+    const stop = () => (stopped = true);
+    el.addEventListener("pointerdown", stop, { passive: true });
+    el.addEventListener("touchstart", stop, { passive: true });
+    const t = setInterval(() => {
+      if (!visible || stopped || document.hidden) return;
+      const first = el.children[0] as HTMLElement | undefined;
+      if (!first) return;
+      i = (Math.round(el.scrollLeft / (first.offsetWidth + 16)) + 1) % count;
+      const child = el.children[i] as HTMLElement;
+      el.scrollTo({ left: child.offsetLeft - 20, behavior: "smooth" });
+    }, autoplay);
+    return () => {
+      clearInterval(t);
+      io.disconnect();
+      el.removeEventListener("pointerdown", stop);
+      el.removeEventListener("touchstart", stop);
+    };
+  }, [autoplay, count, bp]);
 
   const go = (i: number) => {
     const el = ref.current;

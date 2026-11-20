@@ -62,7 +62,7 @@ export default function DirectoryPage() {
       {/* how it works */}
       <section className="section-y bg-paper">
         <div className="container-x grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <div className="relative">
+          <div className="relative hidden lg:block">
             <div className="relative aspect-[4/3.4] overflow-hidden rounded-[32px]">
               <Image src="/images/dubai-shop-owner.jpg" alt="A shop owner in Dubai" fill sizes="(min-width:1024px) 40vw, 100vw" className="object-cover" />
             </div>

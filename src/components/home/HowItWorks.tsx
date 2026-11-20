@@ -65,7 +65,7 @@ export default function HowItWorks() {
   return (
     <section ref={root} id="how" className="section-y bg-paper-2">
       <div className="container-x">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="label">How it works</p>
             <h2 className="display mt-4 text-section">Three steps. Whichever side you&apos;re on.</h2>
@@ -80,28 +80,31 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-4 md:mt-12 lg:grid-cols-[1fr_340px]">
-          <ol key={side} className="grid gap-3 md:grid-cols-3 md:gap-4">
+        <div className="mt-7 grid gap-3 md:mt-12 md:gap-4 lg:grid-cols-[1fr_340px]">
+          <ol key={side} className="grid gap-2 md:grid-cols-3 md:gap-4">
             {s.steps.map((st, i) => (
               <li
                 key={st.t}
                 onClick={() => (setAuto(false), setStep(i))}
-                className={clsx("relative flex cursor-pointer flex-col overflow-hidden rounded-[24px] p-6 transition-all duration-500 md:p-7", i === step ? "-translate-y-1 bg-ink text-paper shadow-[0_24px_50px_-28px_rgba(21,19,15,.6)]" : "bg-card ring-1 ring-rule")}
+                className={clsx("relative flex cursor-pointer flex-col overflow-hidden rounded-[20px] p-4 transition-all duration-500 md:rounded-[24px] md:p-7", i === step ? "-translate-y-1 bg-ink text-paper shadow-[0_24px_50px_-28px_rgba(21,19,15,.6)]" : "bg-card ring-1 ring-rule")}
                 style={{ animation: `pageIn .6s cubic-bezier(.16,1,.3,1) ${i * 90}ms both` }}
               >
-                <span className={clsx("grid size-10 place-items-center rounded-full text-[15px] font-semibold transition-colors duration-500", i === step ? "bg-lime text-ink" : "bg-ink text-lime")}>{i + 1}</span>
+                <div className="flex items-center gap-3.5 md:block">
+                <span className={clsx("grid size-9 shrink-0 place-items-center rounded-full text-[15px] font-semibold transition-colors duration-500 md:size-10", i === step ? "bg-lime text-ink" : "bg-ink text-lime")}>{i + 1}</span>
                 {i === step && auto && seen && <span key={`${side}${step}`} className="absolute inset-x-0 bottom-0 h-1 origin-left bg-lime [animation:grow_2.2s_linear_both]" />}
-                <h3 className="mt-6 text-[21px] font-semibold leading-snug">{st.t}</h3>
-                <p className={clsx("mt-2 text-[16px] leading-relaxed transition-colors duration-500", i === step ? "text-paper/75" : "text-ink-2")}>{st.d}</p>
+                <h3 className="text-[18px] font-semibold leading-snug md:mt-6 md:text-[21px]">{st.t}</h3>
+                </div>
+                {/* phones: only the active step opens, the rest stay one line */}
+                <p className={clsx("mt-2 text-[15px] leading-relaxed transition-colors duration-500 md:text-[16px]", i === step ? "text-paper/75 max-md:pl-[50px]" : "text-ink-2 max-md:hidden")}>{st.d}</p>
               </li>
             ))}
           </ol>
-          <div className={clsx("relative flex min-h-[300px] flex-col overflow-hidden rounded-[24px] p-6 transition-colors duration-700 md:p-7", s.tone)}>
-            <p className="text-[15px] font-semibold text-ink/70">{s.note}</p>
-            <a href={s.cta.href} className="group relative z-10 mt-4 inline-flex h-12 w-fit items-center gap-2 rounded-[10px] bg-ink px-5 text-[15px] font-semibold text-paper transition hover:bg-ink-3">
+          <div className={clsx("relative flex min-h-[176px] flex-col overflow-hidden rounded-[20px] p-5 transition-colors duration-700 md:min-h-[300px] md:rounded-[24px] md:p-7", s.tone)}>
+            <p className="text-[15px] font-semibold text-ink/70 max-md:pr-[100px]">{s.note}</p>
+            <a href={s.cta.href} className="group relative z-10 mt-4 inline-flex h-11 w-fit items-center gap-2 whitespace-nowrap rounded-[10px] bg-ink px-4 text-[14px] font-semibold text-paper transition hover:bg-ink-3 md:h-12 md:px-5 md:text-[15px]">
               {s.cta.label} <ArrowUpRight className="size-4 text-lime transition-transform duration-300 group-hover:rotate-45" />
             </a>
-            <Character key={side} who="rashid" mood={s.mood} body={s.body} size={220} className="absolute -bottom-3 right-0 animate-idle" />
+            <Character key={side} who="rashid" mood={s.mood} body={s.body} size={220} className="absolute -bottom-3 -right-3 animate-idle max-md:!size-[124px] md:right-0" />
           </div>
         </div>
       </div>

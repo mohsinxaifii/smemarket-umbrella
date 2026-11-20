@@ -48,8 +48,8 @@ export default function FeeCalc() {
   return (
     <section ref={root} className="section-y bg-paper">
       <div className="container-x">
-        <div className="relative overflow-hidden rounded-[36px] bg-ink p-6 text-paper md:p-12 lg:p-16">
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+        <div className="relative overflow-hidden rounded-[28px] bg-ink p-5 text-paper md:rounded-[36px] md:p-12 lg:p-16">
+          <div className="grid gap-8 md:gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
             <div className="relative z-10">
               <p className="text-[15px] font-semibold text-lime">Selling with SMEmarket</p>
               <h2 className="display mt-4 text-section">Free to list. You only pay when it sells.</h2>
@@ -64,17 +64,17 @@ export default function FeeCalc() {
                   </li>
                 ))}
               </ul>
-              <a href={APP.sell} className="group mt-9 inline-flex h-14 items-center gap-2 rounded-[10px] bg-lime px-6 text-[16px] font-semibold text-ink transition hover:brightness-95">
+              <a href={APP.sell} className="group mt-7 inline-flex h-14 md:mt-9 items-center gap-2 rounded-[10px] bg-lime px-6 text-[16px] font-semibold text-ink transition hover:brightness-95">
                 Start your free listing <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
               </a>
-              <p className="mt-3 text-[14px] text-paper/50">12 quick questions, about three minutes.</p>
+              <p className="mt-3 text-[14px] text-paper/50">7 quick questions, about two minutes. No account needed.</p>
             </div>
 
             {/* the calculator */}
-            <div className="relative z-10 rounded-[28px] bg-paper p-6 text-ink md:p-8">
+            <div className="relative z-10 rounded-[22px] bg-paper p-5 text-ink md:rounded-[28px] md:p-8">
               <label htmlFor="price" className="flex items-baseline justify-between gap-4">
-                <span className="text-[15px] font-medium text-muted">Your asking price</span>
-                <span className="text-[clamp(1.6rem,3vw,2.2rem)] font-semibold tabular-nums tracking-tight">{fmt(price)}</span>
+                <span className="text-[15px] font-medium text-muted">Asking price</span>
+                <span className="whitespace-nowrap text-[clamp(1.6rem,3vw,2.2rem)] font-semibold tabular-nums tracking-tight">{fmt(price)}</span>
               </label>
               <input
                 id="price"
@@ -98,12 +98,12 @@ export default function FeeCalc() {
                 <Row k="While it's listed" v="AED 0" note="every month" />
                 <Row k="If it doesn't sell" v="AED 0" note="ever" />
               </dl>
-              <div className="mt-5 flex items-end justify-between gap-4 rounded-2xl bg-lime p-5">
+              <div className="mt-5 flex flex-col gap-1 rounded-2xl bg-lime p-4 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:p-5">
                 <span>
                   <span className="block text-[15px] font-semibold">When the SPA is signed</span>
                   <span className="block text-[14px] text-ink/70">5% of the final sale price</span>
                 </span>
-                <span className="text-[clamp(1.5rem,2.6vw,2rem)] font-semibold tabular-nums tracking-tight">{fmt(price * 0.05)}</span>
+                <span className="whitespace-nowrap text-[clamp(1.4rem,2.6vw,2rem)] font-semibold tabular-nums tracking-tight">{fmt(price * 0.05)}</span>
               </div>
               <p className="mt-4 text-[15px] text-ink-2">
                 You keep <span className="font-semibold text-ink">{fmt(price * 0.95)}</span>. Once the SPA is signed, our work is done.
