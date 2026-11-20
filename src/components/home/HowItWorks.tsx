@@ -42,24 +42,38 @@ export default function HowItWorks() {
   const [side, setSide] = useState<keyof typeof SIDES>("buy");
   const [step, setStep] = useState(0);
   const [auto, setAuto] = useState(true);
+  // once someone picks a side, keep playing that side's steps instead of flipping back and forth
+  const [locked, setLocked] = useState(false);
+  const resume = useRef<number | undefined>(undefined);
   const s = SIDES[side];
 
-  // plays on its own: step 1, 2, 3, then the other side, until someone clicks
+  // plays on its own: step 1, 2, 3, then the other side (or the same side again, if one was picked)
   useEffect(() => {
     if (!seen || !auto || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t = setTimeout(() => {
       if (step < 2) setStep(step + 1);
       else {
-        setSide((x) => (x === "buy" ? "sell" : "buy"));
+        if (!locked) setSide((x) => (x === "buy" ? "sell" : "buy"));
         setStep(0);
       }
     }, step === 2 ? 3000 : 2200);
     return () => clearTimeout(t);
-  }, [seen, auto, step]);
+  }, [seen, auto, step, locked]);
+  useEffect(() => () => clearTimeout(resume.current), []);
+
   const pick = (k: keyof typeof SIDES) => {
-    setAuto(false);
+    setLocked(true);
     setSide(k);
     setStep(0);
+    setAuto(true);
+    clearTimeout(resume.current);
+  };
+  // tapping a step holds it for a few seconds so it can be read, then playing carries on
+  const hold = (i: number) => {
+    setStep(i);
+    setAuto(false);
+    clearTimeout(resume.current);
+    resume.current = window.setTimeout(() => setAuto(true), 6000);
   };
 
   return (
@@ -85,7 +99,7 @@ export default function HowItWorks() {
             {s.steps.map((st, i) => (
               <li
                 key={st.t}
-                onClick={() => (setAuto(false), setStep(i))}
+                onClick={() => hold(i)}
                 className={clsx("relative flex cursor-pointer flex-col overflow-hidden rounded-[20px] p-4 transition-all duration-500 md:rounded-[24px] md:p-7", i === step ? "-translate-y-1 bg-ink text-paper shadow-[0_24px_50px_-28px_rgba(21,19,15,.6)]" : "bg-card ring-1 ring-rule")}
                 style={{ animation: `pageIn .6s cubic-bezier(.16,1,.3,1) ${i * 90}ms both` }}
               >

@@ -98,7 +98,7 @@ export default function Hero() {
   );
 
   return (
-    <section ref={root} className="relative flex h-[100svh] min-h-[620px] flex-col overflow-hidden bg-ink text-paper">
+    <section ref={root} className="relative flex flex-col overflow-hidden bg-ink text-paper md:h-[100svh] md:min-h-[620px]">
       <div data-photo-wrap className="absolute inset-0">
         <Image data-photo quality={90} src="/images/dubai-sunrise.jpg" alt="Dubai from above at first light" fill priority sizes="100vw" className="object-cover object-[50%_60%]" />
       </div>
@@ -107,7 +107,7 @@ export default function Hero() {
       <div className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-ink via-ink/70 to-transparent" />
 
       {/* words + search, centred in the space between the header and the people */}
-      <div className="container-x relative grid flex-1 items-center gap-10 pb-[clamp(4.5rem,11vh,7rem)] pt-[clamp(88px,12vh,120px)] lg:grid-cols-[1.32fr_0.68fr] lg:gap-12">
+      <div className="container-x relative grid flex-1 items-center gap-10 pb-[5.5rem] pt-[104px] md:pb-[clamp(4.5rem,11vh,7rem)] md:pt-[clamp(88px,12vh,120px)] lg:grid-cols-[1.32fr_0.68fr] lg:gap-12">
         <div>
         <h1 className="font-semibold leading-[0.98] tracking-[-0.05em]">
           <span className="-mx-[0.12em] -mb-[0.14em] block overflow-hidden px-[0.12em] pb-[0.2em]">
@@ -135,6 +135,11 @@ export default function Hero() {
           <a href={APP.sell} className="group ml-auto inline-flex items-center gap-1.5 font-semibold text-paper sm:ml-auto">
             Selling? List yours free <ArrowUpRight className="size-4 text-lime transition-transform duration-300 group-hover:rotate-45" />
           </a>
+        </div>
+
+        {/* phones: the newest listings, one at a time (desktop has the card deck on the right) */}
+        <div data-fade className="mt-6 lg:hidden">
+          <ListedTicker />
         </div>
         </div>
 
@@ -470,5 +475,48 @@ function PopularIndustries() {
         </a>
       ))}
     </>
+  );
+}
+
+/** Phones: a small live card that rotates through the newest listings. Tap to open one. */
+function ListedTicker() {
+  const [items, setItems] = useState<PublicListing[]>([]);
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    api<{ listings: PublicListing[] }>("listings")
+      .then((d) => setItems(d.listings.slice(0, 6)))
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (items.length < 2) return;
+    const t = setInterval(() => setI((x) => (x + 1) % items.length), 3200);
+    return () => clearInterval(t);
+  }, [items.length]);
+  if (!items.length) return null;
+  const l = items[i];
+  const img = listingImage(l);
+  return (
+    <Link href={APP.listing(l.id)} className="flex items-center gap-3 rounded-2xl bg-paper/10 p-2.5 pr-4 ring-1 ring-paper/15 backdrop-blur-md transition active:scale-[.98]">
+      <span key={l.id} className="relative size-14 shrink-0 animate-[pageIn_.5s_cubic-bezier(.16,1,.3,1)_both] overflow-hidden rounded-xl">
+        <Image src={img.src} alt="" fill sizes="56px" className="object-cover" />
+      </span>
+      <span key={`t${l.id}`} className="min-w-0 flex-1 animate-[pageIn_.5s_cubic-bezier(.16,1,.3,1)_both]">
+        <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wide text-lime">
+          <span className="size-1.5 animate-pulse rounded-full bg-lime" /> Just listed
+        </span>
+        <span className="mt-0.5 block truncate text-[15px] font-semibold text-paper">{l.title}</span>
+        <span className="block truncate text-[13px] text-paper/60">
+          {aed(l.asking_price)} · {[l.area, l.city].filter(Boolean).join(", ")}
+        </span>
+      </span>
+      {items.length > 1 && (
+        <span className="flex shrink-0 flex-col gap-1">
+          {items.map((x, k) => (
+            <span key={x.id} className={clsx("w-1 rounded-full transition-all duration-500", k === i ? "h-4 bg-lime" : "h-1 bg-paper/30")} />
+          ))}
+        </span>
+      )}
+      <ArrowUpRight className="size-4 shrink-0 text-lime" />
+    </Link>
   );
 }
